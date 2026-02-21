@@ -17,12 +17,14 @@ app.get('/', (req, res) => {
 });
 
 // Import component routes
+const authRoutes = require('./components/auth/authRoutes');
 const farmerRoutes = require('./components/farmer/farmerRoutes');
 const distributorRoutes = require('./components/distributor/distributorRoutes');
 const retailerRoutes = require('./components/retailer/retailerRoutes');
 const consumerRoutes = require('./components/consumer/consumerRoutes');
 
 // Define API routes
+app.use('/api/auth', authRoutes);
 app.use('/api/farmer', farmerRoutes);
 app.use('/api/distributor', distributorRoutes);
 app.use('/api/retailer', retailerRoutes);
