@@ -134,9 +134,8 @@ const storeInventorySchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-storeInventorySchema.pre('save', function(next) {
+storeInventorySchema.pre('save', function () {
   this.updatedAt = Date.now();
-  next();
 });
 
 // Add indexes for common queries

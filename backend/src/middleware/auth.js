@@ -2,7 +2,13 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 require('dotenv').config();
 
-const ROLES = User.ROLES;
+const ROLES = User.ROLES || {
+  FARMER: 'ROLE_FARMER',
+  DISTRIBUTOR: 'ROLE_DISTRIBUTOR',
+  RETAILER: 'ROLE_RETAILER',
+  CONSUMER: 'ROLE_CONSUMER',
+  ADMIN: 'ROLE_ADMIN'
+};
 
 // Authentication middleware
 const authenticateToken = (req, res, next) => {
@@ -51,25 +57,15 @@ const authorizeRoles = (...roles) => {
 };
 
 // Specific role middleware functions
-const farmerOnly = (req, res, next) => {
-  authorizeRoles(ROLES.FARMER)(req, res, next);
-};
+const farmerOnly = authorizeRoles(ROLES.FARMER);
 
-const distributorOnly = (req, res, next) => {
-  authorizeRoles(ROLES.DISTRIBUTOR)(req, res, next);
-};
+const distributorOnly = authorizeRoles(ROLES.DISTRIBUTOR);
 
-const retailerOnly = (req, res, next) => {
-  authorizeRoles(ROLES.RETAILER)(req, res, next);
-};
+const retailerOnly = authorizeRoles(ROLES.RETAILER);
 
-const consumerOnly = (req, res, next) => {
-  authorizeRoles(ROLES.CONSUMER)(req, res, next);
-};
+const consumerOnly = authorizeRoles(ROLES.CONSUMER);
 
-const adminOnly = (req, res, next) => {
-  authorizeRoles(ROLES.ADMIN)(req, res, next);
-};
+const adminOnly = authorizeRoles(ROLES.ADMIN);
 
 // Combined middleware for role hierarchy (e.g., admin can access everything)
 const adminOrSelf = (req, res, next) => {

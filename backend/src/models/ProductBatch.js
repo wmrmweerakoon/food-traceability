@@ -77,6 +77,9 @@ const productBatchSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  qrCode: {
+    type: String, // Stores the data URL of the QR code
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -88,9 +91,8 @@ const productBatchSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-productBatchSchema.pre('save', function(next) {
+productBatchSchema.pre('save', function () {
   this.updatedAt = Date.now();
-  next();
 });
 
 // Add indexes for common queries
