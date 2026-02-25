@@ -50,6 +50,8 @@ const createBatch = async (req, res) => {
       });
     }
 
+    const frontendBaseUrl = process.env.FRONTEND_BASE_URL || 'http://localhost:5173';
+
     // Create new batch
     const newBatch = new ProductBatch({
       batchId: generateBatchId(),
@@ -70,14 +72,8 @@ const createBatch = async (req, res) => {
     const savedBatch = await newBatch.save();
     console.log('Batch saved successfully:', savedBatch._id); // Debug log
 
-    // Generate QR code for the batch
-    const qrData = JSON.stringify({
-      batchId: savedBatch.batchId,
-      productName: savedBatch.productName,
-      farmerId: savedBatch.farmerId,
-      harvestDate: savedBatch.harvestDate,
-      expiryDate: savedBatch.expiryDate
-    });
+    // Generate QR code that links to the public traceability page
+    const qrData = `${frontendBaseUrl}/trace/${savedBatch.batchId}`;
 
     console.log('Generating QR code...'); // Debug log
     const qrCodeUrl = await QRCode.toDataURL(qrData);
@@ -270,15 +266,10 @@ const generateQRCode = async (req, res) => {
       });
     }
 
-    // Generate QR code with batch information
-    const qrData = JSON.stringify({
-      batchId: batch.batchId,
-      productName: batch.productName,
-      farmerId: batch.farmerId,
-      harvestDate: batch.harvestDate,
-      expiryDate: batch.expiryDate,
-      createdAt: batch.createdAt
-    });
+    const frontendBaseUrl = process.env.FRONTEND_BASE_URL || 'http://localhost:5173';
+
+    // Generate QR code that links to the public traceability page
+    const qrData = `${frontendBaseUrl}/trace/${batch.batchId}`;
 
     const qrCodeUrl = await QRCode.toDataURL(qrData);
 

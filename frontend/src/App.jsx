@@ -9,6 +9,8 @@ import Dashboard from './pages/Dashboard';
 import FarmerDashboard from './pages/dashboards/FarmerDashboard';
 import CreateBatch from './pages/farmer/CreateBatch';
 import BatchDetail from './pages/farmer/BatchDetail';
+import EditBatch from './pages/farmer/EditBatch';
+import TraceView from './pages/TraceView';
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
@@ -67,6 +69,8 @@ function App() {
               </PublicRoute>
             }
           />
+          {/* Public consumer traceability route (QR codes point here) */}
+          <Route path="/trace/:batchId" element={<TraceView />} />
           <Route
             path="/dashboard"
             element={
@@ -104,6 +108,16 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <BatchDetail />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/farmer/batches/:id/edit"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <EditBatch />
                 </Layout>
               </ProtectedRoute>
             }
