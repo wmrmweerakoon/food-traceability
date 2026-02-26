@@ -3,26 +3,28 @@ const router = express.Router();
 const { authenticateToken, consumerOnly } = require('../../middleware/auth');
 const { 
   getTraceabilityReport,
-  getProductStatus,
-  searchProducts
+  generateQRCode
 } = require('./traceabilityController');
 
-// All consumer routes require authentication and consumer role
+const consumerController = require('./consumerController');
+
+// Public Consumer Routes
+router.post('/login', consumerController.login);
+router.post('/register', consumerController.register);
+
+// The traceability endpoints could be public, but project structure might prefer protected ones. 
+// Given the requirements "GET /api/consumer/trace/:batchId: Public access (or protected)" Let's make it public for now since tracing via QR scan might happen without logging in.
+router.get('/trace/:batchId', getTraceabilityReport);
+
+// Protected routes
 router.use(authenticateToken, consumerOnly);
 
-// @route   GET api/consumer/traceability/:batchId
-// @desc    Get complete traceability report for a product batch
-// @access  Private (Consumer)
-router.get('/traceability/:batchId', getTraceabilityReport);
+// Consumer Profile Management
+router.get('/:id', consumerController.getProfile);
+router.put('/:id', consumerController.updateProfile);
+router.delete('/:id', consumerController.deleteAccount);
 
-// @route   GET api/consumer/status/:batchId
-// @desc    Get simplified status of a product batch
-// @access  Private (Consumer)
-router.get('/status/:batchId', getProductStatus);
-
-// @route   GET api/consumer/search
-// @desc    Search for products by name or batch ID
-// @access  Private (Consumer)
-router.get('/search', searchProducts);
+// Generates QR Code to the trace route
+router.get('/qrcode/:batchId', generateQRCode);
 
 module.exports = router;
