@@ -27,6 +27,7 @@ const farmerRoutes = require('./components/farmer/farmerRoutes');
 const distributorRoutes = require('./components/distributor/distributorRoutes');
 const retailerRoutes = require('./components/retailer/retailerRoutes');
 const consumerRoutes = require('./components/consumer/consumerRoutes');
+const storeRoutes = require('./components/store/storeRoutes');
 
 // Define API routes
 app.use('/api/auth', authRoutes);
@@ -34,5 +35,6 @@ app.use('/api/farmer', farmerRoutes);
 app.use('/api/distributor', distributorRoutes);
 app.use('/api/retailer', retailerRoutes);
 app.use('/api/consumer', consumerRoutes);
+app.use('/api/store', storeRoutes);
 
 module.exports = app;
