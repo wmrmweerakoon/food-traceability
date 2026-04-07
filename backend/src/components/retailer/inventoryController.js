@@ -421,11 +421,47 @@ const validateProductExpiry = async(req, res) => {
     }
 };
 
+// Get all stores managed by the retailer
+const getRetailerStores = async(req, res) => {
+    try {
+        const RetailStore = require('../../models/RetailStore');
+        const stores = await RetailStore.find({ managerId: req.user.id });
+        res.status(200).json({
+            success: true,
+            data: stores
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+// Get all available product batches
+const getAvailableBatches = async(req, res) => {
+    try {
+        const ProductBatch = require('../../models/ProductBatch');
+        const batches = await ProductBatch.find({ status: 'active' });
+        res.status(200).json({
+            success: true,
+            data: batches
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
 module.exports = {
     addProductToInventory,
     getInventoryItems,
     getInventoryItemById,
     updateInventoryItem,
     deleteInventoryItem,
-    validateProductExpiry
+    validateProductExpiry,
+    getRetailerStores,
+    getAvailableBatches
 };

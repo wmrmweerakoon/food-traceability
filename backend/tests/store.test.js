@@ -76,7 +76,7 @@ describe('Store Service', () => {
             expect(parseShelfLifeToDays('unknown')).toBeNull();
         });
 
-        test('fetchShelfLifeFromOpenFoodFacts returns shelf life days on success', async () => {
+        test('fetchShelfLifeFromOpenFoodFacts returns shelf life days on success', async() => {
             axios.get.mockResolvedValue({
                 data: {
                     products: [
@@ -90,7 +90,7 @@ describe('Store Service', () => {
             expect(axios.get).toHaveBeenCalledTimes(1);
         });
 
-        test('fetchShelfLifeFromOpenFoodFacts returns null when API has no shelf_life', async () => {
+        test('fetchShelfLifeFromOpenFoodFacts returns null when API has no shelf_life', async() => {
             axios.get.mockResolvedValue({
                 data: {
                     products: [
@@ -103,14 +103,14 @@ describe('Store Service', () => {
             expect(result).toBeNull();
         });
 
-        test('fetchShelfLifeFromOpenFoodFacts returns null when API is unreachable', async () => {
+        test('fetchShelfLifeFromOpenFoodFacts returns null when API is unreachable', async() => {
             axios.get.mockRejectedValue(new Error('Network Error'));
 
             const result = await fetchShelfLifeFromOpenFoodFacts('Apple');
             expect(result).toBeNull();
         });
 
-        test('addProductToStore calculates expiryDate correctly from API shelf life', async () => {
+        test('addProductToStore calculates expiryDate correctly from API shelf life', async() => {
             const shelfDate = new Date('2026-03-01');
 
             ProductBatch.findOne.mockResolvedValue(mockProductBatch);
@@ -123,7 +123,7 @@ describe('Store Service', () => {
                 }
             });
 
-            const saveMock = jest.fn().mockImplementation(function () {
+            const saveMock = jest.fn().mockImplementation(function() {
                 return Promise.resolve(this);
             });
 
@@ -150,7 +150,7 @@ describe('Store Service', () => {
     // 2. Safety Restriction — Reject exceeding expiry
     // ─────────────────────────────────────────────
     describe('Safety Restriction', () => {
-        test('rejects manual expiry date that exceeds API-suggested shelf life', async () => {
+        test('rejects manual expiry date that exceeds API-suggested shelf life', async() => {
             const shelfDate = new Date('2026-03-01');
             const manualExpiry = new Date('2026-04-01'); // Way beyond 7 days
 
@@ -169,7 +169,7 @@ describe('Store Service', () => {
             ).rejects.toThrow('exceeds the API-suggested shelf life');
         });
 
-        test('accepts manual expiry date within API-suggested shelf life', async () => {
+        test('accepts manual expiry date within API-suggested shelf life', async() => {
             const shelfDate = new Date('2026-03-01');
             const manualExpiry = new Date('2026-03-05'); // Within 7 days
 
@@ -182,7 +182,7 @@ describe('Store Service', () => {
                 }
             });
 
-            const saveMock = jest.fn().mockImplementation(function () {
+            const saveMock = jest.fn().mockImplementation(function() {
                 return Promise.resolve(this);
             });
 
@@ -199,7 +199,7 @@ describe('Store Service', () => {
             expect(savedExpiryDate.toISOString().split('T')[0]).toBe('2026-03-05');
         });
 
-        test('allows manual entry when API is unreachable (fallback)', async () => {
+        test('allows manual entry when API is unreachable (fallback)', async() => {
             const shelfDate = new Date('2026-03-01');
             const manualExpiry = new Date('2026-04-01');
 
@@ -209,7 +209,7 @@ describe('Store Service', () => {
             // API fails
             axios.get.mockRejectedValue(new Error('Network Error'));
 
-            const saveMock = jest.fn().mockImplementation(function () {
+            const saveMock = jest.fn().mockImplementation(function() {
                 return Promise.resolve(this);
             });
 
@@ -229,13 +229,13 @@ describe('Store Service', () => {
     // 3. Status Toggle — isAvailable update
     // ─────────────────────────────────────────────
     describe('Status Toggle', () => {
-        test('marking product as "Sold" sets isAvailable to false', async () => {
+        test('marking product as "Sold" sets isAvailable to false', async() => {
             const mockInventoryItem = {
                 _id: '507f1f77bcf86cd799439055',
                 batchId: 'BATCH-12345',
                 storeId: mockStore._id,
                 isAvailable: true,
-                save: jest.fn().mockImplementation(function () {
+                save: jest.fn().mockImplementation(function() {
                     return Promise.resolve(this);
                 })
             };
@@ -248,13 +248,13 @@ describe('Store Service', () => {
             expect(mockInventoryItem.save).toHaveBeenCalledTimes(1);
         });
 
-        test('marking product as "Available" sets isAvailable to true', async () => {
+        test('marking product as "Available" sets isAvailable to true', async() => {
             const mockInventoryItem = {
                 _id: '507f1f77bcf86cd799439055',
                 batchId: 'BATCH-12345',
                 storeId: mockStore._id,
                 isAvailable: false,
-                save: jest.fn().mockImplementation(function () {
+                save: jest.fn().mockImplementation(function() {
                     return Promise.resolve(this);
                 })
             };
@@ -331,7 +331,7 @@ describe('Store Service', () => {
     // 5. CRUD — getStoreProduct and removeProduct
     // ─────────────────────────────────────────────
     describe('CRUD Operations', () => {
-        test('getStoreProduct returns populated inventory item', async () => {
+        test('getStoreProduct returns populated inventory item', async() => {
             const populateMock = jest.fn().mockResolvedValue({
                 batchId: 'BATCH-12345',
                 storeId: mockStore,
@@ -349,7 +349,7 @@ describe('Store Service', () => {
             expect(StoreInventory.findOne).toHaveBeenCalledWith({ batchId: 'BATCH-12345' });
         });
 
-        test('getStoreProduct throws when not found', async () => {
+        test('getStoreProduct throws when not found', async() => {
             StoreInventory.findOne.mockReturnValue({
                 populate: jest.fn().mockResolvedValue(null)
             });
@@ -357,7 +357,7 @@ describe('Store Service', () => {
             await expect(getStoreProduct('BATCH-MISSING')).rejects.toThrow('not found');
         });
 
-        test('removeProduct deletes the record', async () => {
+        test('removeProduct deletes the record', async() => {
             StoreInventory.findOne.mockResolvedValue({
                 batchId: 'BATCH-12345'
             });
@@ -369,7 +369,7 @@ describe('Store Service', () => {
             expect(StoreInventory.deleteOne).toHaveBeenCalledWith({ batchId: 'BATCH-12345' });
         });
 
-        test('removeProduct throws when not found', async () => {
+        test('removeProduct throws when not found', async() => {
             StoreInventory.findOne.mockResolvedValue(null);
 
             await expect(removeProduct('BATCH-MISSING')).rejects.toThrow('not found');
