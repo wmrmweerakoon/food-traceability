@@ -80,6 +80,76 @@ const getProductHistory = async (batchId) => {
   };
 };
 
+const saveFeedback = async (batchId, feedbackData) => {
+  if (!batchId) {
+    throw new Error('Batch ID is required');
+  }
+
+  const { rating, comment, consumerId } = feedbackData;
+
+  if (!rating || rating < 1 || rating > 5) {
+    throw new Error('Rating must be between 1 and 5');
+  }
+
+  // Verify the batch exists
+  let productBatch;
+  if (batchId.match(/^[0-9a-fA-F]{24}$/)) {
+    productBatch = await ProductBatch.findById(batchId);
+  } else {
+    productBatch = await ProductBatch.findOne({ batchId });
+  }
+
+  if (!productBatch) {
+    throw new Error('Product not found');
+  }
+
+  const Feedback = require('../../models/Feedback');
+
+  const feedback = new Feedback({
+    batchId: productBatch._id,
+    consumerId: consumerId || null,
+    rating,
+    comment
+  });
+
+  await feedback.save();
+  return feedback;
+};
+
+const getFeedbackByBatch = async (batchId) => {
+  if (!batchId) {
+    throw new Error('Batch ID is required');
+  }
+
+  let productBatch;
+  if (batchId.match(/^[0-9a-fA-F]{24}$/)) {
+    productBatch = await ProductBatch.findById(batchId);
+  } else {
+    productBatch = await ProductBatch.findOne({ batchId });
+  }
+
+  if (!productBatch) {
+    throw new Error('Product not found');
+  }
+
+  const Feedback = require('../../models/Feedback');
+  const feedbacks = await Feedback.find({ batchId: productBatch._id })
+    .populate('consumerId', 'name')
+    .sort({ createdAt: -1 });
+
+  // Calculate average rating
+  const totalRating = feedbacks.reduce((sum, f) => sum + f.rating, 0);
+  const averageRating = feedbacks.length > 0 ? (totalRating / feedbacks.length).toFixed(1) : 0;
+
+  return {
+    averageRating: parseFloat(averageRating),
+    totalReviews: feedbacks.length,
+    reviews: feedbacks
+  };
+};
+
 module.exports = {
-  getProductHistory
+  getProductHistory,
+  saveFeedback,
+  getFeedbackByBatch
 };

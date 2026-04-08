@@ -27,4 +27,14 @@ router.delete('/:id', consumerController.deleteAccount);
 // Generates QR Code to the trace route
 router.get('/qrcode/:batchId', generateQRCode);
 
+// --- New Consumer Feedback Routes ---
+// Submit feedback for a product batch
+router.post('/feedback/:batchId', consumerController.submitFeedback || require('./traceabilityController').submitFeedback);
+
+// Get all feedback for a specific product batch
+router.get('/feedback/:batchId', consumerController.getFeedback || require('./traceabilityController').getFeedback);
+
+// Generate 3rd Party QR code for feedback 
+router.get('/qrcode-feedback/:batchId', consumerController.generateFeedbackQRCode || require('./traceabilityController').generateFeedbackQRCode);
+
 module.exports = router;
