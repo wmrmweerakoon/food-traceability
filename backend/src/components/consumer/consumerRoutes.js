@@ -7,13 +7,13 @@ const {
   searchProducts
 } = require('./traceabilityController');
 
-// All consumer routes require authentication and consumer role
-router.use(authenticateToken, consumerOnly);
-
 // @route   GET api/consumer/traceability/:batchId
 // @desc    Get complete traceability report for a product batch
-// @access  Private (Consumer)
+// @access  Public (QR code scan - no login required)
 router.get('/traceability/:batchId', getTraceabilityReport);
+
+// All other consumer routes require authentication and consumer role
+router.use(authenticateToken, consumerOnly);
 
 // @route   GET api/consumer/status/:batchId
 // @desc    Get simplified status of a product batch

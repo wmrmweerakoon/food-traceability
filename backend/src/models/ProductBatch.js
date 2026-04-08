@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+//defines the structure of data that gets stored in mogodb
 const productBatchSchema = new mongoose.Schema({
   batchId: {
     type: String,
