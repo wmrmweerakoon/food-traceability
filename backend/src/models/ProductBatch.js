@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+//defines the structure of data that gets stored in mogodb
 const productBatchSchema = new mongoose.Schema({
   batchId: {
     type: String,
@@ -77,6 +77,9 @@ const productBatchSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  qrCode: {
+    type: String, // Stores the data URL of the QR code
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -88,7 +91,7 @@ const productBatchSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-productBatchSchema.pre('save', function() {
+productBatchSchema.pre('save', function () {
   this.updatedAt = Date.now();
 });
 

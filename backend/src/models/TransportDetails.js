@@ -119,7 +119,7 @@ const transportDetailsSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-transportDetailsSchema.pre('save', function() {
+transportDetailsSchema.pre('save', function () {
   this.updatedAt = Date.now();
 });
 

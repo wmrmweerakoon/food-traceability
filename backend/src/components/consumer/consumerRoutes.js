@@ -3,20 +3,25 @@ const router = express.Router();
 const { authenticateToken, consumerOnly } = require('../../middleware/auth');
 const { 
   getTraceabilityReport,
-  generateQRCode
+  generateQRCode,
+  submitFeedback,
+  getFeedback,
+  generateFeedbackQRCode
 } = require('./traceabilityController');
-
 const consumerController = require('./consumerController');
 
-// Public Consumer Routes
+// ===== Public Routes (no login required) =====
+
+// Consumer login and register
 router.post('/login', consumerController.login);
 router.post('/register', consumerController.register);
 
-// The traceability endpoints could be public, but project structure might prefer protected ones. 
-// Given the requirements "GET /api/consumer/trace/:batchId: Public access (or protected)" Let's make it public for now since tracing via QR scan might happen without logging in.
+// @route   GET api/consumer/trace/:batchId
+// @desc    Get complete traceability report for a product batch
+// @access  Public (QR code scan - no login required)
 router.get('/trace/:batchId', getTraceabilityReport);
 
-// Protected routes
+// ===== Protected Routes (consumer login required) =====
 router.use(authenticateToken, consumerOnly);
 
 // Consumer Profile Management
@@ -24,17 +29,12 @@ router.get('/:id', consumerController.getProfile);
 router.put('/:id', consumerController.updateProfile);
 router.delete('/:id', consumerController.deleteAccount);
 
-// Generates QR Code to the trace route
+// Generate QR Code for a batch
 router.get('/qrcode/:batchId', generateQRCode);
 
-// --- New Consumer Feedback Routes ---
-// Submit feedback for a product batch
-router.post('/feedback/:batchId', consumerController.submitFeedback || require('./traceabilityController').submitFeedback);
-
-// Get all feedback for a specific product batch
-router.get('/feedback/:batchId', consumerController.getFeedback || require('./traceabilityController').getFeedback);
-
-// Generate 3rd Party QR code for feedback 
-router.get('/qrcode-feedback/:batchId', consumerController.generateFeedbackQRCode || require('./traceabilityController').generateFeedbackQRCode);
+// Consumer Feedback Routes
+router.post('/feedback/:batchId', submitFeedback);
+router.get('/feedback/:batchId', getFeedback);
+router.get('/qrcode-feedback/:batchId', generateFeedbackQRCode);
 
 module.exports = router;

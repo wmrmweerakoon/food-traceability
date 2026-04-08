@@ -5,7 +5,7 @@ const ROLES = {
   FARMER: 'ROLE_FARMER',
   DISTRIBUTOR: 'ROLE_DISTRIBUTOR',
   RETAILER: 'ROLE_RETAILER',
- CONSUMER: 'ROLE_CONSUMER',
+  CONSUMER: 'ROLE_CONSUMER',
   ADMIN: 'ROLE_ADMIN'
 };
 
@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
   contactNumber: {
     type: String,
     trim: true
- },
+  },
   address: {
     street: String,
     city: String,
@@ -74,5 +74,6 @@ userSchema.pre('save', function() {
 // Add compound index for email and username
 userSchema.index({ email: 1, username: 1 });
 
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+module.exports = User;
 module.exports.ROLES = ROLES;

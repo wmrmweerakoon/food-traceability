@@ -5,6 +5,13 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 
+// Import farmer components
+import FarmerDashboard from './pages/dashboards/FarmerDashboard';
+import CreateBatch from './pages/farmer/CreateBatch';
+import BatchDetail from './pages/farmer/BatchDetail';
+import EditBatch from './pages/farmer/EditBatch';
+import TraceView from './pages/TraceView';
+
 // Protected Route Component
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -62,12 +69,55 @@ function App() {
               </PublicRoute>
             }
           />
+          {/* Public consumer traceability route (QR codes point here) */}
+          <Route path="/trace/:batchId" element={<TraceView />} />
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
                 <Layout>
                   <Dashboard />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          {/* Farmer Routes */}
+          <Route
+            path="/farmer/dashboard"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <FarmerDashboard />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/farmer/batches/new"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <CreateBatch />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/farmer/batches/:id"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <BatchDetail />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/farmer/batches/:id/edit"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <EditBatch />
                 </Layout>
               </ProtectedRoute>
             }

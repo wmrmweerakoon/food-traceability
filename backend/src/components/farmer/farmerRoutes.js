@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateToken, farmerOnly } = require('../../middleware/auth');
-const { 
-  createBatch, 
-  getBatches, 
-  getBatchById, 
-  updateBatch, 
-  deleteBatch, 
-  generateQRCode 
+const {
+    createBatch,
+    getBatches,
+    getBatchById,
+    updateBatch,
+    deleteBatch,
+    generateQRCode
 } = require('./batchController');
 
 // All farmer routes require authentication and farmer role
@@ -15,7 +15,7 @@ router.use(authenticateToken, farmerOnly);
 
 // @route   POST api/farmer/batches
 // @desc    Create a new product batch
-// @access  Private (Farmer)
+// @access  Private (Farmer) 
 router.post('/batches', createBatch);
 
 // @route   GET api/farmer/batches
