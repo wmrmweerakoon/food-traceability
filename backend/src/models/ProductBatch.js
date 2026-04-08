@@ -88,9 +88,8 @@ const productBatchSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-productBatchSchema.pre('save', function(next) {
+productBatchSchema.pre('save', function() {
   this.updatedAt = Date.now();
-  next();
 });
 
 // Add indexes for common queries

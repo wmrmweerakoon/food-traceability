@@ -119,9 +119,8 @@ const transportDetailsSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-transportDetailsSchema.pre('save', function(next) {
+transportDetailsSchema.pre('save', function() {
   this.updatedAt = Date.now();
-  next();
 });
 
 // Add indexes for common queries

@@ -1,6 +1,6 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { LogOut, User } from 'lucide-react';
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { LogOut, User } from "lucide-react";
 
 function Layout({ children }) {
   const { user, logout, isAuthenticated } = useAuth();
@@ -8,7 +8,7 @@ function Layout({ children }) {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   if (!isAuthenticated()) {
@@ -17,11 +17,11 @@ function Layout({ children }) {
 
   const getRoleDisplayName = (role) => {
     const roleNames = {
-      ROLE_FARMER: 'Farmer',
-      ROLE_DISTRIBUTOR: 'Distributor',
-      ROLE_RETAILER: 'Retailer',
-      ROLE_CONSUMER: 'Consumer',
-      ROLE_ADMIN: 'Admin',
+      ROLE_FARMER: "Farmer",
+      ROLE_DISTRIBUTOR: "Distributor",
+      ROLE_RETAILER: "Retailer",
+      ROLE_CONSUMER: "Consumer",
+      ROLE_ADMIN: "Admin",
     };
     return roleNames[role] || role;
   };
@@ -33,14 +33,20 @@ function Layout({ children }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <Link to="/dashboard" className="text-xl font-bold text-green-600">
-                Food Traceability
+              <Link to="/dashboard">
+                <img
+                  src="/public/AgriTrace.png"
+                  alt="Food Traceability Logo"
+                  className="h-60 w-auto mt-8"
+                />
               </Link>
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <User className="w-4 h-4" />
-                <span>{user?.firstName} {user?.lastName}</span>
+                <span>
+                  {user?.firstName} {user?.lastName}
+                </span>
                 <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
                   {getRoleDisplayName(user?.role)}
                 </span>
@@ -64,4 +70,3 @@ function Layout({ children }) {
 }
 
 export default Layout;
-
