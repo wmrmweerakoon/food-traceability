@@ -22,8 +22,23 @@ export const retailerAPI = {
     return response.data;
   },
 
-  validateProductExpiry: async (itemId) => {
-    const response = await api.get(`/api/retailer/inventory/${itemId}/validate-expiry`);
+  deleteInventoryItem: async (itemId) => {
+    const response = await api.delete(`/api/retailer/inventory/${itemId}`);
+    return response.data;
+  },
+
+  validateProductExpiry: async (validationData) => {
+    const response = await api.post('/api/retailer/validate-expiry', validationData);
+    return response.data;
+  },
+
+  getRetailerStores: async () => {
+    const response = await api.get('/api/retailer/stores');
+    return response.data;
+  },
+
+  getAvailableBatches: async () => {
+    const response = await api.get('/api/retailer/batches');
     return response.data;
   },
 };

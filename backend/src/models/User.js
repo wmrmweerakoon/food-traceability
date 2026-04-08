@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
   contactNumber: {
     type: String,
     trim: true
- },
+  },
   address: {
     street: String,
     city: String,
