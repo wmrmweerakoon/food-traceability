@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { distributorAPI } from '../../api/distributor';
 import DataTable from '../../components/DataTable';
 import TransportMap from '../../components/TransportMap';
-import { Truck, Plus, X, Edit2, CheckCircle, MapPin, Activity } from 'lucide-react';
+import { Truck, Plus, X, Edit2, CheckCircle, MapPin, Activity, Trash2 } from 'lucide-react';
 
 function DistributorDashboard() {
   const { user } = useAuth();
@@ -144,6 +144,26 @@ function DistributorDashboard() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!selectedTransport) return;
+    
+    // We get string batchId from population or direct property
+    const batchIdStr = typeof selectedTransport.batchId === 'object' 
+      ? selectedTransport.batchId.batchId 
+      : selectedTransport.batchId;
+
+    if (window.confirm(`Are you sure you want to completely cancel and delete transport log for Batch: ${batchIdStr}?`)) {
+      try {
+        await distributorAPI.deleteTransport(batchIdStr);
+        setSelectedTransport(null);
+        loadTransports();
+        openAddModal(); // optional: refresh available batches logic if needed, but not strictly necessary here
+      } catch (error) {
+        alert(error.response?.data?.message || 'Failed to delete transport');
+      }
+    }
+  };
+
   const columns = [
     { header: 'Transport ID', key: 'transportId' },
     { header: 'Batch ID', accessor: (row) => typeof row.batchId === 'object' ? row.batchId.batchId : row.batchId },
@@ -165,6 +185,23 @@ function DistributorDashboard() {
           </span>
         );
       },
+    },
+    {
+      header: 'Update Tracker',
+      render: (row) => (
+        <button
+          onClick={(e) => { 
+            e.stopPropagation(); 
+            handleRowClick(row);
+            // Optionally scroll to map area if on a small screen
+            window.scrollTo({ top: 500, behavior: 'smooth' });
+          }}
+          className="flex items-center px-3 py-1 bg-slate-100 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition text-sm font-medium"
+          title="Update Status & Location"
+        >
+          <Edit2 className="w-4 h-4 mr-1" /> Edit
+        </button>
+      )
     }
   ];
 
@@ -271,7 +308,15 @@ function DistributorDashboard() {
                       </div>
                     </div>
                     
-                    <div className="pt-4 flex justify-end">
+                    <div className="pt-4 flex justify-between items-center border-t border-slate-100 mt-2">
+                      <button 
+                        type="button" 
+                        onClick={handleDelete}
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50 px-4 py-2 rounded-lg flex items-center transition"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Cancel Delivery Log
+                      </button>
                       <button type="submit" className="bg-slate-900 text-white px-6 py-2 rounded-lg hover:bg-slate-800 flex items-center transition shadow-md shadow-slate-200">
                         <CheckCircle className="w-4 h-4 mr-2" />
                         Transmit Log Data

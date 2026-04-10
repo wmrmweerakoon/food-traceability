@@ -1,6 +1,7 @@
 const TransportDetails = require('../../models/TransportDetails');
 const ProductBatch = require('../../models/ProductBatch');
 const geolib = require('geolib');
+const axios = require('axios');
 
 // Temperature threshold in °C — batches above this are flagged "High Risk"
 const TEMPERATURE_THRESHOLD = 8;
@@ -51,17 +52,21 @@ const calculateRouteInfo = (originCoords, destCoords) => {
 };
 
 /**
- * Validate a location string using Google Maps Geocoding API (stub).
- * Currently returns the string as-is. Replace with real API call when
- * GOOGLE_MAPS_API_KEY is configured in .env.
+ * Validate a location string using Google Maps Geocoding API.
+ * Falls back to original string if GOOGLE_MAPS_API_KEY is not defined.
  */
 const validateLocationWithMaps = async (locationString) => {
-    // Stub: In production, call Google Maps Geocoding API here
-    // const response = await axios.get(
-    //   `https://maps.googleapis.com/maps/api/geocode/json`,
-    //   { params: { address: locationString, key: process.env.GOOGLE_MAPS_API_KEY } }
-    // );
-    // return response.data.results[0]?.formatted_address || locationString;
+    if (process.env.GOOGLE_MAPS_API_KEY) {
+        try {
+            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json`, {
+                params: { address: locationString, key: process.env.GOOGLE_MAPS_API_KEY }
+            });
+            return response.data.results[0]?.formatted_address || locationString;
+        } catch (error) {
+            console.warn('Google Maps Geocoding failed, falling back to original string:', error.message);
+            return locationString;
+        }
+    }
     return locationString;
 };
 

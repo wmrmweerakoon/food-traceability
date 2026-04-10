@@ -35,6 +35,11 @@ export const distributorAPI = {
   getAvailableBatches: async () => {
     const response = await api.get('/api/distributor/available-batches');
     return response.data;
+  },
+
+  deleteTransport: async (batchId) => {
+    const response = await api.delete(`/api/distributor/transport/${batchId}`);
+    return response.data;
   }
 };
 
