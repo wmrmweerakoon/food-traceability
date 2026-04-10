@@ -125,7 +125,7 @@ const createTransport = async (req, res) => {
       });
     }
 
-    const productBatch = await ProductBatch.findById(batchId);
+    const productBatch = await ProductBatch.findOne({ batchId: batchId });
     if (!productBatch) {
       return res.status(404).json({
         success: false,
@@ -146,7 +146,7 @@ const createTransport = async (req, res) => {
 
     const newTransport = new TransportDetails({
       transportId,
-      batchId,
+      batchId: productBatch._id,
       transporterId: req.user.id,
       vehicleNumber: vn || vehicleDetails?.vehicleNumber || 'N/A',
       currentLocation: cl || origin.locationName || 'Origin',
@@ -405,6 +405,25 @@ const getRouteDetails = async (req, res) => {
   }
 };
 
+/**
+ * GET /api/distributor/available-batches
+ */
+const getAvailableBatches = async (req, res) => {
+  try {
+    const batches = await distributorService.getAvailableBatches();
+    res.status(200).json({
+      success: true,
+      count: batches.length,
+      data: batches
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 module.exports = {
   // New spec endpoints
   addTransport,
@@ -417,5 +436,6 @@ module.exports = {
   getTransportById,
   updateTransportStatus,
   trackRouteUpdate,
-  getRouteDetails
+  getRouteDetails,
+  getAvailableBatches
 };

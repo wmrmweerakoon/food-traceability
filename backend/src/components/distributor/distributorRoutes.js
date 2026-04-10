@@ -19,6 +19,11 @@ const {
 // All distributor routes require authentication and distributor role
 router.use(authenticateToken, distributorOnly);
 
+// @route   GET api/distributor/available-batches
+// @desc    Get batches not yet assigned to transport
+// @access  Private (Distributor)
+router.get('/available-batches', getAvailableBatches);
+
 // ─── New spec-aligned endpoints (by batchId) ─────────────────────────────────
 
 // @route   POST api/distributor/transport

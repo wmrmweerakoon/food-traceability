@@ -99,7 +99,7 @@ const addTransportInfo = async (data, userId) => {
     }
 
     // 2. Verify the batch exists
-    const productBatch = await ProductBatch.findById(batchId);
+    const productBatch = await ProductBatch.findOne({ batchId: batchId });
     if (!productBatch) {
         const error = new Error('Product batch not found. Cannot create transport for a non-existent batch.');
         error.statusCode = 404;
@@ -107,7 +107,7 @@ const addTransportInfo = async (data, userId) => {
     }
 
     // 3. Check if transport already exists for this batch
-    const existingTransport = await TransportDetails.findOne({ batchId });
+    const existingTransport = await TransportDetails.findOne({ batchId: productBatch._id });
     if (existingTransport) {
         const error = new Error('Transport record already exists for this batch. Use PUT to update.');
         error.statusCode = 409;
@@ -136,7 +136,7 @@ const addTransportInfo = async (data, userId) => {
     // 8. Build and save transport record
     const newTransport = new TransportDetails({
         transportId,
-        batchId,
+        batchId: productBatch._id,
         transporterId: userId,
         vehicleNumber,
         currentLocation: validatedLocation,
@@ -332,12 +332,24 @@ const getAllTransports = async (userId) => {
     return transports;
 };
 
+/**
+ * Get all available product batches not currently assigned to a transport.
+ */
+const getAvailableBatches = async () => {
+    const transports = await TransportDetails.find().select('batchId');
+    const assignedBatchIds = transports.map(t => t.batchId);
+    
+    return await ProductBatch.find({ _id: { $nin: assignedBatchIds } })
+                             .select('batchId productName harvestDate expiryDate quantity');
+};
+
 module.exports = {
     addTransportInfo,
     updateLogistics,
     getTransportHistory,
     deleteTransport,
     getAllTransports,
+    getAvailableBatches,
     calculateRouteInfo,
     validateLocationWithMaps,
     evaluateRiskFlag,

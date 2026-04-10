@@ -3,17 +3,17 @@ import { useAuth } from '../../context/AuthContext';
 import { distributorAPI } from '../../api/distributor';
 import DataTable from '../../components/DataTable';
 import TransportMap from '../../components/TransportMap';
-import { Truck, Plus, X, Edit2, CheckCircle } from 'lucide-react';
+import { Truck, Plus, X, Edit2, CheckCircle, MapPin, Activity } from 'lucide-react';
 
 function DistributorDashboard() {
   const { user } = useAuth();
   const [transports, setTransports] = useState([]);
+  const [availableBatches, setAvailableBatches] = useState([]);
   const [selectedTransport, setSelectedTransport] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
   // Form states
   const [addForm, setAddForm] = useState({
@@ -49,6 +49,21 @@ function DistributorDashboard() {
     }
   };
 
+  const openAddModal = async () => {
+    setIsAddModalOpen(true);
+    try {
+      const resp = await distributorAPI.getAvailableBatches();
+      if (resp.success) {
+        setAvailableBatches(resp.data || []);
+        if (resp.data.length > 0) {
+          setAddForm(prev => ({ ...prev, batchId: resp.data[0].batchId }));
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching batches", error);
+    }
+  };
+
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -72,7 +87,7 @@ function DistributorDashboard() {
     }
   };
 
-  const handleUpdateClick = (transport) => {
+  const handleRowClick = (transport) => {
     setSelectedTransport(transport);
     setUpdateForm({
       status: transport.status || 'in-transit',
@@ -80,29 +95,50 @@ function DistributorDashboard() {
       longitude: '',
       temperature: ''
     });
-    setIsUpdateModalOpen(true);
   };
 
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
+    if (!selectedTransport) return;
+
     try {
-      // If status changed to delivered
       if (updateForm.status !== selectedTransport.status) {
         await distributorAPI.updateTransportStatus(selectedTransport._id, { status: updateForm.status });
       }
 
-      // If location or temperature is provided, log it
       if (updateForm.latitude && updateForm.longitude) {
         await distributorAPI.trackRouteUpdate(selectedTransport._id, {
-          location: {
-            coordinates: [parseFloat(updateForm.longitude), parseFloat(updateForm.latitude)]
-          },
-          temperature: updateForm.temperature ? parseFloat(updateForm.temperature) : undefined
+          lat: parseFloat(updateForm.latitude),
+          lng: parseFloat(updateForm.longitude)
         });
+        
+        // Log temperature if provided
+        if(updateForm.temperature) {
+            await distributorAPI.updateTransportStatus(selectedTransport._id, { 
+                storageTemperature: parseFloat(updateForm.temperature),
+                temperatureLog: {
+                    temperature: parseFloat(updateForm.temperature),
+                    location: `${updateForm.latitude}, ${updateForm.longitude}`
+                }
+            });
+        }
+      } else if (updateForm.temperature) {
+          await distributorAPI.updateTransportStatus(selectedTransport._id, { 
+              storageTemperature: parseFloat(updateForm.temperature),
+              temperatureLog: {
+                  temperature: parseFloat(updateForm.temperature)
+              }
+          });
       }
 
-      setIsUpdateModalOpen(false);
+      alert("Logistics updated successfully!");
+      setUpdateForm({ ...updateForm, latitude: '', longitude: '', temperature: '' });
       loadTransports();
+      
+      // Refresh the selected transport
+      const refreshTransport = transports.find(t => t._id === selectedTransport._id);
+      if(refreshTransport) setSelectedTransport(refreshTransport);
+      
     } catch (error) {
       alert(error.response?.data?.message || 'Failed to update transport');
     }
@@ -110,6 +146,7 @@ function DistributorDashboard() {
 
   const columns = [
     { header: 'Transport ID', key: 'transportId' },
+    { header: 'Batch ID', accessor: (row) => typeof row.batchId === 'object' ? row.batchId.batchId : row.batchId },
     { header: 'Origin', accessor: (row) => row.origin?.locationName || 'N/A' },
     { header: 'Destination', accessor: (row) => row.destination?.locationName || 'N/A' },
     {
@@ -128,38 +165,22 @@ function DistributorDashboard() {
           </span>
         );
       },
-    },
-    {
-      header: 'Departure',
-      accessor: (row) => row.departureTime ? new Date(row.departureTime).toLocaleDateString() : 'N/A',
-    },
-    {
-      header: 'Actions',
-      render: (row) => (
-        <button
-          onClick={(e) => { e.stopPropagation(); handleUpdateClick(row); }}
-          className="p-1 text-slate-600 hover:bg-slate-100 rounded transition"
-          title="Update Route/Status"
-        >
-          <Edit2 className="w-4 h-4" />
-        </button>
-      )
     }
   ];
 
   if (loading) return <div className="p-8 text-center text-slate-500">Loading transports...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 font-['Outfit',sans-serif]">
+    <div className="min-h-screen bg-slate-50 font-['Outfit',sans-serif]">
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Distributor Dashboard</h1>
-            <p className="text-slate-500 mt-1">Manage Logistics & Transportation</p>
+            <h1 className="text-3xl font-bold text-slate-900">Logistics Hub</h1>
+            <p className="text-slate-500 mt-1">Manage active transport legs and telemetry</p>
           </div>
           <button 
-            onClick={() => setIsAddModalOpen(true)}
+            onClick={openAddModal}
             className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-sm"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -170,10 +191,14 @@ function DistributorDashboard() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Transports Table */}
+          
+          {/* Active Deliveries */}
           <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
             <div className="p-6 border-b border-slate-100">
-              <h2 className="text-xl font-bold text-slate-900">Active Deliveries</h2>
+              <h2 className="text-xl font-bold text-slate-900 flex items-center">
+                <Truck className="w-5 h-5 mr-2 text-blue-600"/> 
+                Active Deliveries
+              </h2>
             </div>
             <div className="p-0">
               <DataTable
@@ -181,33 +206,82 @@ function DistributorDashboard() {
                 columns={columns}
                 searchable
                 pagination
-                onRowClick={(row) => setSelectedTransport(row)}
+                onRowClick={(row) => handleRowClick(row)}
               />
             </div>
           </div>
 
-          {/* Map */}
-          <div>
-            <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 mb-4">
-              <h2 className="text-xl font-bold text-slate-900 mb-2">Live Route Map</h2>
-              <p className="text-sm text-slate-500">Click on a delivery record in the table to display its route mapping.</p>
+          {/* Map & Update Console */}
+          <div className="space-y-6">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+              <h2 className="text-xl font-bold text-slate-900 mb-2 flex items-center">
+                <MapPin className="w-5 h-5 mr-2 text-red-500"/>
+                Live Route Map
+              </h2>
+              {selectedTransport ? (
+                <div className="rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-6">
+                  <TransportMap
+                    origin={selectedTransport.origin}
+                    destination={selectedTransport.destination}
+                    currentLocation={selectedTransport.currentLocation}
+                    locationHistory={selectedTransport.temperatureLogs || []}
+                    height="300px"
+                  />
+                </div>
+              ) : (
+                <div className="bg-slate-100 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center p-12 text-slate-400 h-[300px] mb-6">
+                  <MapPin className="w-12 h-12 mb-4 opacity-30" />
+                  <span>Select a delivery to view the map route</span>
+                </div>
+              )}
             </div>
-            {selectedTransport ? (
-              <div className="bg-white p-2 rounded-xl border border-slate-100 shadow-sm overflow-hidden">
-                <TransportMap
-                  origin={selectedTransport.origin}
-                  destination={selectedTransport.destination}
-                  currentLocation={selectedTransport.currentLocation}
-                  locationHistory={selectedTransport.locationHistory || []}
-                  height="500px"
-                />
-              </div>
-            ) : (
-              <div className="bg-slate-100 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center p-12 text-slate-400 h-[500px]">
-                <Truck className="w-12 h-12 mb-4 opacity-50" />
-                <span>Select a transport record</span>
+
+            {/* In-Line Update Terminal */}
+            {selectedTransport && (
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div className="bg-slate-800 p-4 border-b border-slate-700">
+                   <h3 className="text-white font-semibold flex items-center">
+                     <Activity className="w-4 h-4 mr-2 text-emerald-400" />
+                     Telemetry Console: {selectedTransport.transportId}
+                   </h3>
+                </div>
+                <div className="p-6">
+                  <form onSubmit={handleUpdateSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-600 mb-1">Status Override</label>
+                        <select className="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none transition" value={updateForm.status} onChange={e => setUpdateForm({...updateForm, status: e.target.value})}>
+                          <option value="pending">Pending</option>
+                          <option value="in-transit">In Transit</option>
+                          <option value="delivered">Delivered</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-600 mb-1">Temperature Logger (°C)</label>
+                        <input type="number" step="0.1" placeholder="e.g. 4.5" className="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none transition" value={updateForm.temperature} onChange={e => setUpdateForm({...updateForm, temperature: e.target.value})} />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-600 mb-1">GPS Latitude</label>
+                        <input type="number" step="any" placeholder="e.g. 6.9271" className="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none transition" value={updateForm.latitude} onChange={e => setUpdateForm({...updateForm, latitude: e.target.value})} />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-600 mb-1">GPS Longitude</label>
+                        <input type="number" step="any" placeholder="e.g. 79.8612" className="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none transition" value={updateForm.longitude} onChange={e => setUpdateForm({...updateForm, longitude: e.target.value})} />
+                      </div>
+                    </div>
+                    
+                    <div className="pt-4 flex justify-end">
+                      <button type="submit" className="bg-slate-900 text-white px-6 py-2 rounded-lg hover:bg-slate-800 flex items-center transition shadow-md shadow-slate-200">
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Transmit Log Data
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
             )}
+            
           </div>
         </div>
       </div>
@@ -217,77 +291,71 @@ function DistributorDashboard() {
         <Modal title="Start New Transport Leg" onClose={() => setIsAddModalOpen(false)}>
           <form onSubmit={handleAddSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Batch ID</label>
-                <input required type="text" className="w-full border rounded-lg p-2 bg-slate-50" value={addForm.batchId} onChange={e => setAddForm({...addForm, batchId: e.target.value})} placeholder="e.g. BATCH-1234" />
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-slate-700 mb-1">Available Product Batches</label>
+                {availableBatches.length > 0 ? (
+                  <select 
+                    required 
+                    className="w-full border rounded-lg p-3 bg-blue-50 border-blue-200 text-blue-900 font-medium" 
+                    value={addForm.batchId} 
+                    onChange={e => setAddForm({...addForm, batchId: e.target.value})}
+                  >
+                    {availableBatches.map(b => (
+                      <option key={b.batchId} value={b.batchId}>
+                        {b.batchId} - {b.productName} ({b.quantity})
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <div className="w-full border-2 border-dashed border-red-200 bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+                     No pending product batches available from farmers.
+                  </div>
+                )}
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Transport ID</label>
                 <input required type="text" className="w-full border rounded-lg p-2 bg-slate-50" value={addForm.transportId} onChange={e => setAddForm({...addForm, transportId: e.target.value})} placeholder="e.g. TR-5555" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Origin Facility</label>
-                <input required type="text" className="w-full border rounded-lg p-2 bg-slate-50" value={addForm.originName} onChange={e => setAddForm({...addForm, originName: e.target.value})} />
+                 {/* Empty grid space for alignment if needed, or make Transport ID col-span-2. Given spacing, making it span 2 is better */}
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Destination Facility</label>
-                <input required type="text" className="w-full border rounded-lg p-2 bg-slate-50" value={addForm.destinationName} onChange={e => setAddForm({...addForm, destinationName: e.target.value})} />
+              
+              <div className="col-span-2 grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Origin Facility</label>
+                    <input required type="text" className="w-full border rounded-lg p-2 bg-slate-50 border-slate-200" value={addForm.originName} onChange={e => setAddForm({...addForm, originName: e.target.value})} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Destination Facility</label>
+                    <input required type="text" className="w-full border rounded-lg p-2 bg-slate-50 border-slate-200" value={addForm.destinationName} onChange={e => setAddForm({...addForm, destinationName: e.target.value})} />
+                  </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Departure Time</label>
-                <input required type="datetime-local" className="w-full border rounded-lg p-2 bg-slate-50" value={addForm.departureTime} onChange={e => setAddForm({...addForm, departureTime: e.target.value})} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Est. Arrival</label>
-                <input required type="datetime-local" className="w-full border rounded-lg p-2 bg-slate-50" value={addForm.estimatedArrivalTime} onChange={e => setAddForm({...addForm, estimatedArrivalTime: e.target.value})} />
+
+              <div className="col-span-2 grid grid-cols-2 gap-4 border-t pt-4 mt-2 border-slate-100">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Departure Time</label>
+                    <input required type="datetime-local" className="w-full border rounded-lg p-2 bg-slate-50 border-slate-200 text-sm" value={addForm.departureTime} onChange={e => setAddForm({...addForm, departureTime: e.target.value})} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Est. Arrival</label>
+                    <input required type="datetime-local" className="w-full border rounded-lg p-2 bg-slate-50 border-slate-200 text-sm" value={addForm.estimatedArrivalTime} onChange={e => setAddForm({...addForm, estimatedArrivalTime: e.target.value})} />
+                  </div>
               </div>
             </div>
             <div className="flex justify-end pt-4">
-              <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Create Transport</button>
-            </div>
-          </form>
-        </Modal>
-      )}
-
-      {/* Update Modal */}
-      {isUpdateModalOpen && selectedTransport && (
-        <Modal title="Update Transport Log" onClose={() => setIsUpdateModalOpen(false)}>
-          <form onSubmit={handleUpdateSubmit} className="space-y-4">
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-slate-700 mb-1">Delivery Status</label>
-              <select className="w-full border rounded-lg p-2 bg-slate-50" value={updateForm.status} onChange={e => setUpdateForm({...updateForm, status: e.target.value})}>
-                <option value="in-transit">In Transit</option>
-                <option value="delivered">Delivered</option>
-                <option value="delayed">Delayed</option>
-              </select>
-            </div>
-            
-            <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-4">
-              <h4 className="font-semibold text-blue-900 mb-2">Log Location & Telemetry</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-blue-800 mb-1">Latitude</label>
-                  <input type="number" step="any" placeholder="e.g. 6.9271" className="w-full border rounded pl-2 py-1" value={updateForm.latitude} onChange={e => setUpdateForm({...updateForm, latitude: e.target.value})} />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-blue-800 mb-1">Longitude</label>
-                  <input type="number" step="any" placeholder="e.g. 79.8612" className="w-full border rounded pl-2 py-1" value={updateForm.longitude} onChange={e => setUpdateForm({...updateForm, longitude: e.target.value})} />
-                </div>
-                <div className="col-span-2">
-                  <label className="block text-xs font-medium text-blue-800 mb-1">Temperature (°C) - Optional</label>
-                  <input type="number" step="0.1" placeholder="e.g. 4.5" className="w-full border rounded pl-2 py-1" value={updateForm.temperature} onChange={e => setUpdateForm({...updateForm, temperature: e.target.value})} />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end pt-4">
-              <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 flex items-center">
-                <CheckCircle className="w-4 h-4 mr-2" /> Save Log
+              <button 
+                 type="submit" 
+                 disabled={availableBatches.length === 0}
+                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition"
+              >
+                 Create Transport
               </button>
             </div>
           </form>
         </Modal>
       )}
+
     </div>
   );
 }

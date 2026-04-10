@@ -31,5 +31,10 @@ export const distributorAPI = {
     const response = await api.get(`/api/distributor/transports/${transportId}/route-details`);
     return response.data;
   },
+
+  getAvailableBatches: async () => {
+    const response = await api.get('/api/distributor/available-batches');
+    return response.data;
+  }
 };
 
