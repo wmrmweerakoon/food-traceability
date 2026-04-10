@@ -16,5 +16,16 @@ export const consumerAPI = {
     const response = await api.get('/api/consumer/search', { params: searchParams });
     return response.data;
   },
+
+  // Profile Management
+  getProfile: async (userId) => {
+    const response = await api.get(`/api/consumer/${userId}`);
+    return response.data;
+  },
+
+  updateProfile: async (userId, profileData) => {
+    const response = await api.put(`/api/consumer/${userId}`, profileData);
+    return response.data;
+  }
 };
 

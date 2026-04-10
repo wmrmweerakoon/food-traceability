@@ -13,6 +13,9 @@ import BatchDetail from './pages/farmer/BatchDetail';
 import EditBatch from './pages/farmer/EditBatch';
 import TraceView from './pages/TraceView';
 
+// Import consumer component
+import ConsumerProfile from './pages/consumer/ConsumerProfile';
+
 // Protected Route Component
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -120,6 +123,17 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <EditBatch />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          {/* Consumer Routes */}
+          <Route
+            path="/consumer/profile"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <ConsumerProfile />
                 </Layout>
               </ProtectedRoute>
             }

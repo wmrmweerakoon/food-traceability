@@ -51,6 +51,16 @@ function Layout({ children }) {
                   {getRoleDisplayName(user?.role)}
                 </span>
               </div>
+              
+              {user?.role === 'ROLE_CONSUMER' && (
+                <Link 
+                  to="/consumer/profile"
+                  className="text-sm font-medium text-emerald-600 hover:text-emerald-700 transition px-3"
+                >
+                  My Profile
+                </Link>
+              )}
+
               <button
                 onClick={handleLogout}
                 className="flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition"
