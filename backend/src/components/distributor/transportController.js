@@ -98,70 +98,7 @@ const { calculateRouteInfo } = require('./distributorService');
  */
 const createTransport = async (req, res) => {
   try {
-    const {
-      batchId,
-      origin,
-      destination,
-      departureTime,
-      estimatedArrivalTime,
-      vehicleDetails,
-      driverDetails,
-      vehicleNumber: vn,
-      currentLocation: cl,
-      storageTemperature: st
-    } = req.body;
-
-    if (!batchId || !origin || !destination || !departureTime || !estimatedArrivalTime) {
-      return res.status(400).json({
-        success: false,
-        message: 'Missing required fields: batchId, origin, destination, departureTime, estimatedArrivalTime'
-      });
-    }
-
-    if (req.user.role !== 'ROLE_DISTRIBUTOR') {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied. Distributors only.'
-      });
-    }
-
-    const productBatch = await ProductBatch.findOne({ batchId: batchId });
-    if (!productBatch) {
-      return res.status(404).json({
-        success: false,
-        message: 'Product batch not found'
-      });
-    }
-
-    const transportId = `TRANS-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-
-    let routeInfo = null;
-    if (origin.coordinates && destination.coordinates) {
-      routeInfo = calculateRouteInfo(origin.coordinates, destination.coordinates);
-      if (routeInfo) {
-        routeInfo.startAddress = `${origin.locationName}, ${origin.address?.city || ''}, ${origin.address?.state || ''}`;
-        routeInfo.endAddress = `${destination.locationName}, ${destination.address?.city || ''}, ${destination.address?.state || ''}`;
-      }
-    }
-
-    const newTransport = new TransportDetails({
-      transportId,
-      batchId: productBatch._id,
-      transporterId: req.user.id,
-      vehicleNumber: vn || vehicleDetails?.vehicleNumber || 'N/A',
-      currentLocation: cl || origin.locationName || 'Origin',
-      storageTemperature: st !== undefined ? st : 0,
-      origin,
-      destination,
-      departureTime,
-      estimatedArrivalTime,
-      vehicleDetails,
-      driverDetails,
-      ...routeInfo ? { routeInfo } : {}
-    });
-
-    const savedTransport = await newTransport.save();
-
+    const savedTransport = await distributorService.addTransportInfo(req.body, req.user.id);
     res.status(201).json({
       success: true,
       message: 'Transport record created successfully',
@@ -274,7 +211,7 @@ const updateTransportStatus = async (req, res) => {
     const updatedTransport = await TransportDetails.findByIdAndUpdate(
       id,
       { ...updateData, updatedAt: Date.now() },
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     );
 
     res.status(200).json({
@@ -326,7 +263,7 @@ const trackRouteUpdate = async (req, res) => {
         currentLocation: `${lat}, ${lng}`,
         updatedAt: Date.now()
       },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     let eta = null;

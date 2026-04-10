@@ -83,7 +83,7 @@ const updateProfile = async (id, updateData) => {
   const consumer = await Consumer.findByIdAndUpdate(
     id,
     { $set: updateData },
-    { new: true, runValidators: true }
+    { returnDocument: 'after', runValidators: true }
   ).select('-password');
 
   if (!consumer) {

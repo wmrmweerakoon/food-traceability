@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const TransportDetails = require('../../models/TransportDetails');
 const ProductBatch = require('../../models/ProductBatch');
 const geolib = require('geolib');
@@ -56,18 +57,42 @@ const calculateRouteInfo = (originCoords, destCoords) => {
  * Falls back to original string if GOOGLE_MAPS_API_KEY is not defined.
  */
 const validateLocationWithMaps = async (locationString) => {
-    if (process.env.GOOGLE_MAPS_API_KEY) {
-        try {
-            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json`, {
-                params: { address: locationString, key: process.env.GOOGLE_MAPS_API_KEY }
-            });
-            return response.data.results[0]?.formatted_address || locationString;
-        } catch (error) {
-            console.warn('Google Maps Geocoding failed, falling back to original string:', error.message);
-            return locationString;
-        }
+    try {
+        const response = await axios.get(`https://nominatim.openstreetmap.org/search`, {
+            params: { format: 'json', q: locationString, limit: 1 },
+            headers: { 'User-Agent': 'Food-Traceability-App-Student-Project' }
+        });
+        return response.data[0]?.display_name || locationString;
+    } catch (error) {
+        console.warn('Map Geocoding failed, falling back:', error.message);
+        return locationString;
     }
-    return locationString;
+};
+
+/**
+ * Enriches a fully structured location object with actual Google Maps coordinates
+ * Prevents the marker from showing up at [0,0] (Null Island in the ocean).
+ */
+const enrichLocationData = async (locationObj) => {
+    if (!locationObj || !locationObj.locationName) return locationObj;
+    try {
+        const response = await axios.get(`https://nominatim.openstreetmap.org/search`, {
+            params: { format: 'json', q: locationObj.locationName, limit: 1 },
+            headers: { 'User-Agent': 'Food-Traceability-App-Student-Project' }
+        });
+        const result = response.data[0];
+        if (result) {
+            return {
+                ...locationObj,
+                locationName: result.display_name,
+                // GeoJSON format is [longitude, latitude]
+                coordinates: [parseFloat(result.lon), parseFloat(result.lat)]
+            };
+        }
+    } catch (error) {
+        console.warn('Map enrichment failed:', error.message);
+    }
+    return locationObj;
 };
 
 /**
@@ -119,19 +144,35 @@ const addTransportInfo = async (data, userId) => {
         throw error;
     }
 
-    // 4. Validate location string via Google Maps (stub)
+    // 4. Validate location string via Maps
     const validatedLocation = await validateLocationWithMaps(currentLocation);
+    
+    // 4.1 Lookup coordinates for initial location
+    let initialCoords = null;
+    try {
+        const geoResp = await axios.get(`https://nominatim.openstreetmap.org/search`, {
+            params: { format: 'json', q: currentLocation, limit: 1 },
+            headers: { 'User-Agent': 'Food-Traceability-App-Student-Project' }
+        });
+        if (geoResp.data[0]) {
+            initialCoords = [parseFloat(geoResp.data[0].lon), parseFloat(geoResp.data[0].lat)];
+        }
+    } catch (e) { console.warn("Initial location geocode failed", e.message); }
+
+    // 4.2 Enrich origin and destination coordinates via Maps
+    const enrichedOrigin = await enrichLocationData(origin);
+    const enrichedDestination = await enrichLocationData(destination);
 
     // 5. Evaluate risk flag
     const riskFlag = evaluateRiskFlag(storageTemperature);
 
     // 6. Calculate route info if coordinates provided
     let routeInfo = null;
-    if (origin?.coordinates && destination?.coordinates) {
-        routeInfo = calculateRouteInfo(origin.coordinates, destination.coordinates);
+    if (enrichedOrigin?.coordinates && enrichedDestination?.coordinates) {
+        routeInfo = calculateRouteInfo(enrichedOrigin.coordinates, enrichedDestination.coordinates);
         if (routeInfo) {
-            routeInfo.startAddress = `${origin.locationName || ''}, ${origin.address?.city || ''}, ${origin.address?.state || ''}`;
-            routeInfo.endAddress = `${destination.locationName || ''}, ${destination.address?.city || ''}, ${destination.address?.state || ''}`;
+            routeInfo.startAddress = `${enrichedOrigin.locationName || ''}, ${enrichedOrigin.address?.city || ''}, ${enrichedOrigin.address?.state || ''}`;
+            routeInfo.endAddress = `${enrichedDestination.locationName || ''}, ${enrichedDestination.address?.city || ''}, ${enrichedDestination.address?.state || ''}`;
         }
     }
 
@@ -149,15 +190,19 @@ const addTransportInfo = async (data, userId) => {
         deliveryStatus: 'Pending',
         riskFlag,
         warehouseLocation: warehouseLocation || undefined,
-        origin,
-        destination,
+        origin: enrichedOrigin,
+        destination: enrichedDestination,
         departureTime,
         estimatedArrivalTime,
         vehicleDetails,
         driverDetails,
         temperatureLogs: [{
             timestamp: new Date(),
-            temperature: storageTemperature
+            temperature: storageTemperature,
+            location: {
+                type: 'Point',
+                coordinates: initialCoords || enrichedOrigin?.coordinates || [0, 0]
+            }
         }]
     });
 
@@ -169,7 +214,9 @@ const addTransportInfo = async (data, userId) => {
  * Update logistics for an existing transport record (by batchId).
  * Handles temperature monitoring, location updates, and status transitions.
  */
-const updateLogistics = async (batchId, updateData, userId) => {
+const updateLogistics = async (batchIdInput, updateData, userId) => {
+    const batchId = await resolveBatchId(batchIdInput);
+    
     // 1. Find the transport record
     const transport = await TransportDetails.findOne({ batchId });
     if (!transport) {
@@ -192,11 +239,36 @@ const updateLogistics = async (batchId, updateData, userId) => {
         warehouseLocation,
         deliveryDate,
         vehicleNumber,
-        conditionNotes
+        conditionNotes,
+        origin,
+        destination,
+        departureTime,
+        estimatedArrivalTime,
+        latitude,
+        longitude
     } = updateData;
 
     // 3. Build update object
     const update = {};
+
+    // Update origin/destination with geocoding
+    if (origin && origin.locationName !== transport.origin?.locationName) {
+        update.origin = await enrichLocationData(origin);
+    }
+    if (destination && destination.locationName !== transport.destination?.locationName) {
+        update.destination = await enrichLocationData(destination);
+    }
+    if (departureTime) update.departureTime = departureTime;
+    if (estimatedArrivalTime) update.estimatedArrivalTime = estimatedArrivalTime;
+
+    // Determine current point
+    let currentPoint = null;
+    if (latitude && longitude) {
+        currentPoint = {
+            type: 'Point',
+            coordinates: [parseFloat(longitude), parseFloat(latitude)]
+        };
+    }
 
     // Update temperature and re-evaluate risk
     if (storageTemperature !== undefined) {
@@ -208,14 +280,34 @@ const updateLogistics = async (batchId, updateData, userId) => {
         update.$push.temperatureLogs = {
             timestamp: new Date(),
             temperature: storageTemperature,
-            ...(currentLocation ? { location: currentLocation } : {})
+            ...(currentPoint ? { location: currentPoint } : {})
         };
     }
 
-    // Update location
+    // Update location name
     if (currentLocation) {
         const validatedLocation = await validateLocationWithMaps(currentLocation);
         update.currentLocation = validatedLocation;
+
+        // If no explicit lat/lng but we have a new city name, geocode it for the log
+        if (!currentPoint) {
+           try {
+               const geoResp = await axios.get(`https://nominatim.openstreetmap.org/search`, {
+                   params: { format: 'json', q: currentLocation, limit: 1 },
+                   headers: { 'User-Agent': 'Food-Traceability-App-Student-Project' }
+               });
+               if (geoResp.data[0]) {
+                   currentPoint = {
+                       type: 'Point',
+                       coordinates: [parseFloat(geoResp.data[0].lon), parseFloat(geoResp.data[0].lat)]
+                   };
+                   if (!update.$push) update.$push = {};
+                   if (update.$push.temperatureLogs) {
+                       update.$push.temperatureLogs.location = currentPoint;
+                   }
+               }
+           } catch (e) { console.warn("Log geocode failed", e.message); }
+        }
     }
 
     // Update vehicle number
@@ -265,7 +357,7 @@ const updateLogistics = async (batchId, updateData, userId) => {
     const updatedTransport = await TransportDetails.findOneAndUpdate(
         { batchId },
         update,
-        { new: true, runValidators: true }
+        { returnDocument: 'after', runValidators: true }
     )
         .populate('batchId', 'batchId productName harvestDate expiryDate')
         .populate('transporterId', 'username email firstName lastName');
@@ -274,50 +366,64 @@ const updateLogistics = async (batchId, updateData, userId) => {
 };
 
 /**
+ * Helper to resolve human-readable batchId string to MongoDB ObjectId
+ */
+const resolveBatchId = async (batchId) => {
+    // If it's already a valid ObjectId string, return it
+    if (mongoose.Types.ObjectId.isValid(batchId)) return batchId;
+    
+    // Otherwise, find the ProductBatch by its human-readable batchId string
+    const batch = await ProductBatch.findOne({ batchId });
+    if (!batch) {
+        const error = new Error(`Product batch with ID ${batchId} not found`);
+        error.statusCode = 404;
+        throw error;
+    }
+    return batch._id;
+};
+
+/**
  * Retrieve the full transport/logistics history for a specific batch.
  */
-const getTransportHistory = async (batchId) => {
+const getTransportHistory = async (batchIdInput) => {
+    const batchId = await resolveBatchId(batchIdInput);
     const transport = await TransportDetails.findOne({ batchId })
         .populate('batchId', 'batchId productName harvestDate expiryDate quantity unit qualityGrade farmLocation')
-        .populate('transporterId', 'username email firstName lastName contactNumber');
+        .populate('transporterId', 'username email firstName lastName');
 
     if (!transport) {
-        const error = new Error('No transport record found for this batch.');
+        const error = new Error('No transport records found for this product batch');
         error.statusCode = 404;
         throw error;
     }
 
-    // Calculate route details if coordinates are available
-    let routeDetails = null;
-    if (transport.origin?.coordinates && transport.destination?.coordinates) {
-        routeDetails = calculateRouteInfo(transport.origin.coordinates, transport.destination.coordinates);
-        if (routeDetails) {
-            routeDetails.startAddress = `${transport.origin.locationName || ''}, ${transport.origin.address?.city || ''}, ${transport.origin.address?.state || ''}`;
-            routeDetails.endAddress = `${transport.destination.locationName || ''}, ${transport.destination.address?.city || ''}, ${transport.destination.address?.state || ''}`;
-        }
-    }
-
     return {
-        transport: transport.toObject(),
-        routeDetails
+        transportId: transport.transportId,
+        batchInfo: transport.batchId,
+        transporter: transport.transporterId,
+        origin: transport.origin,
+        destination: transport.destination,
+        currentStatus: transport.deliveryStatus,
+        riskLevel: transport.riskFlag,
+        telemetry: transport.temperatureLogs
     };
 };
 
 /**
- * Delete a transport record by batchId. Only the owner can delete.
+ * Delete a transport record.
  */
-const deleteTransport = async (batchId, userId) => {
+const deleteTransport = async (batchIdInput, userId) => {
+    const batchId = await resolveBatchId(batchIdInput);
     const transport = await TransportDetails.findOne({ batchId });
-
+    
     if (!transport) {
-        const error = new Error('Transport record not found for this batch.');
+        const error = new Error('Transport record not found');
         error.statusCode = 404;
         throw error;
     }
 
-    // Verify ownership
-    if (transport.transporterId.toString() !== userId) {
-        const error = new Error('Access denied. You can only delete your own transport records.');
+    if (transport.transporterId.toString() !== userId.toString()) {
+        const error = new Error('Access denied. Only the assigned transporter can delete this log.');
         error.statusCode = 403;
         throw error;
     }

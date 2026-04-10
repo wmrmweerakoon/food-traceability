@@ -191,7 +191,7 @@ const updateBatch = async (req, res) => {
     const updatedBatch = await ProductBatch.findByIdAndUpdate(
       id,
       { ...updateData, updatedAt: Date.now() },
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     );
 
     return res.status(200).json({

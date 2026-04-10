@@ -147,8 +147,6 @@ transportDetailsSchema.pre('save', function () {
 });
 
 // Add indexes for common queries
-transportDetailsSchema.index({ transportId: 1 });
-transportDetailsSchema.index({ batchId: 1 });
 transportDetailsSchema.index({ transporterId: 1 });
 transportDetailsSchema.index({ deliveryStatus: 1 });
 transportDetailsSchema.index({ departureTime: 1 });

@@ -3,7 +3,7 @@ import api from './axios';
 export const distributorAPI = {
   // Transport operations
   createTransport: async (transportData) => {
-    const response = await api.post('/api/distributor/transports', transportData);
+    const response = await api.post('/api/distributor/transport', transportData);
     return response.data;
   },
 
@@ -19,6 +19,11 @@ export const distributorAPI = {
 
   updateTransportStatus: async (transportId, updateData) => {
     const response = await api.put(`/api/distributor/transports/${transportId}`, updateData);
+    return response.data;
+  },
+
+  updateTransportByBatchId: async (batchId, updateData) => {
+    const response = await api.put(`/api/distributor/transport/${batchId}`, updateData);
     return response.data;
   },
 

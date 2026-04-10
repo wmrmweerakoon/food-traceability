@@ -96,7 +96,6 @@ productBatchSchema.pre('save', function () {
 });
 
 // Add indexes for common queries
-productBatchSchema.index({ batchId: 1 });
 productBatchSchema.index({ farmerId: 1 });
 productBatchSchema.index({ harvestDate: 1 });
 productBatchSchema.index({ expiryDate: 1 });

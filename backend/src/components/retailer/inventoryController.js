@@ -333,7 +333,7 @@ const updateInventoryItem = async(req, res) => {
         }
 
         const updatedInventory = await StoreInventory.findByIdAndUpdate(
-            id, {...updateData, updatedAt: Date.now() }, { new: true, runValidators: true }
+            id, {...updateData, updatedAt: Date.now() }, { returnDocument: 'after', runValidators: true }
         );
 
         res.status(200).json({

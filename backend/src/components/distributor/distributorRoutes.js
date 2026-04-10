@@ -13,7 +13,8 @@ const {
   getTransportById,
   updateTransportStatus,
   trackRouteUpdate,
-  getRouteDetails
+  getRouteDetails,
+  getAvailableBatches
 } = require('./transportController');
 
 // All distributor routes require authentication and distributor role

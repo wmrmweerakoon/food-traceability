@@ -48,18 +48,27 @@ function TransportMap({
 }) {
   const mapRef = useRef(null);
 
+  const isValidCoords = (coords) => {
+    return Array.isArray(coords) && 
+           coords.length >= 2 && 
+           typeof coords[0] === 'number' && 
+           typeof coords[1] === 'number' &&
+           !isNaN(coords[0]) && 
+           !isNaN(coords[1]);
+  };
+
   useEffect(() => {
     if (mapRef.current && (origin || destination || currentLocation)) {
       const map = mapRef.current;
       const bounds = [];
 
-      if (origin?.coordinates) {
+      if (origin && isValidCoords(origin.coordinates)) {
         bounds.push([origin.coordinates[1], origin.coordinates[0]]);
       }
-      if (destination?.coordinates) {
+      if (destination && isValidCoords(destination.coordinates)) {
         bounds.push([destination.coordinates[1], destination.coordinates[0]]);
       }
-      if (currentLocation?.coordinates) {
+      if (currentLocation && isValidCoords(currentLocation.coordinates)) {
         bounds.push([currentLocation.coordinates[1], currentLocation.coordinates[0]]);
       }
 
@@ -70,24 +79,24 @@ function TransportMap({
   }, [origin, destination, currentLocation]);
 
   const getCenter = () => {
-    if (currentLocation?.coordinates) {
+    if (currentLocation && isValidCoords(currentLocation.coordinates)) {
       return [currentLocation.coordinates[1], currentLocation.coordinates[0]];
     }
-    if (origin?.coordinates) {
+    if (origin && isValidCoords(origin.coordinates)) {
       return [origin.coordinates[1], origin.coordinates[0]];
     }
-    return [40.7128, -74.0060]; // Default to NYC
+    return [6.9271, 79.8612]; // Default to Sri Lanka (Colombo)
   };
 
   const getRoutePolyline = () => {
     const points = [];
-    if (origin?.coordinates) {
+    if (origin && isValidCoords(origin.coordinates)) {
       points.push([origin.coordinates[1], origin.coordinates[0]]);
     }
-    if (currentLocation?.coordinates) {
+    if (currentLocation && isValidCoords(currentLocation.coordinates)) {
       points.push([currentLocation.coordinates[1], currentLocation.coordinates[0]]);
     }
-    if (destination?.coordinates) {
+    if (destination && isValidCoords(destination.coordinates)) {
       points.push([destination.coordinates[1], destination.coordinates[0]]);
     }
     return points.length > 1 ? points : null;
@@ -97,7 +106,7 @@ function TransportMap({
     <div className="w-full rounded-lg overflow-hidden border border-gray-200" style={{ height }}>
       <MapContainer
         center={getCenter()}
-        zoom={origin && destination ? 10 : 13}
+        zoom={origin && destination ? 8 : 10}
         style={{ height: '100%', width: '100%' }}
         ref={mapRef}
       >
@@ -106,7 +115,7 @@ function TransportMap({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {origin?.coordinates && (
+        {origin && isValidCoords(origin.coordinates) && (
           <Marker
             position={[origin.coordinates[1], origin.coordinates[0]]}
             icon={originIcon}
@@ -115,17 +124,12 @@ function TransportMap({
               <div>
                 <strong className="text-green-600">Origin</strong>
                 <p className="text-sm mt-1">{origin.locationName}</p>
-                {origin.address && (
-                  <p className="text-xs text-gray-600">
-                    {origin.address.city}, {origin.address.state}
-                  </p>
-                )}
               </div>
             </Popup>
           </Marker>
         )}
 
-        {destination?.coordinates && (
+        {destination && isValidCoords(destination.coordinates) && (
           <Marker
             position={[destination.coordinates[1], destination.coordinates[0]]}
             icon={destinationIcon}
@@ -134,17 +138,12 @@ function TransportMap({
               <div>
                 <strong className="text-red-600">Destination</strong>
                 <p className="text-sm mt-1">{destination.locationName}</p>
-                {destination.address && (
-                  <p className="text-xs text-gray-600">
-                    {destination.address.city}, {destination.address.state}
-                  </p>
-                )}
               </div>
             </Popup>
           </Marker>
         )}
 
-        {currentLocation?.coordinates && (
+        {currentLocation && isValidCoords(currentLocation.coordinates) && (
           <Marker
             position={[currentLocation.coordinates[1], currentLocation.coordinates[0]]}
             icon={currentLocationIcon}
@@ -165,17 +164,18 @@ function TransportMap({
         {locationHistory.length > 0 && (
           <>
             {locationHistory.map((entry, index) => {
-              if (!entry.location?.coordinates) return null;
+              if (!entry.location || !isValidCoords(entry.location.coordinates)) return null;
               return (
                 <Marker
-                  key={index}
+                  key={`history-${index}`}
                   position={[entry.location.coordinates[1], entry.location.coordinates[0]]}
                 >
                   <Popup>
                     <div className="text-xs">
-                      <p>Location {index + 1}</p>
+                      <p className="font-bold">Checkpoint {index + 1}</p>
+                      {entry.temperature && <p>Temp: {entry.temperature}°C</p>}
                       {entry.timestamp && (
-                        <p className="text-gray-600">
+                        <p className="text-gray-500 mt-1">
                           {new Date(entry.timestamp).toLocaleString()}
                         </p>
                       )}
@@ -202,4 +202,3 @@ function TransportMap({
 }
 
 export default TransportMap;
-
