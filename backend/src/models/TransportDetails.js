@@ -10,17 +10,48 @@ const transportDetailsSchema = new mongoose.Schema({
   batchId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ProductBatch',
-    required: true
+    required: true,
+    unique: true
   },
   transporterId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
+  vehicleNumber: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  currentLocation: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  storageTemperature: {
+    type: Number,
+    required: true
+  },
+  deliveryStatus: {
+    type: String,
+    enum: ['Pending', 'In-Transit', 'Delivered'],
+    default: 'Pending'
+  },
+  warehouseLocation: {
+    type: String,
+    trim: true
+  },
+  deliveryDate: {
+    type: Date
+  },
+  riskFlag: {
+    type: String,
+    enum: ['Normal', 'High Risk'],
+    default: 'Normal'
+  },
   origin: {
     locationName: {
       type: String,
-      required: true,
       trim: true
     },
     address: {
@@ -38,7 +69,6 @@ const transportDetailsSchema = new mongoose.Schema({
   destination: {
     locationName: {
       type: String,
-      required: true,
       trim: true
     },
     address: {
@@ -54,12 +84,10 @@ const transportDetailsSchema = new mongoose.Schema({
     }
   },
   departureTime: {
-    type: Date,
-    required: true
+    type: Date
   },
   estimatedArrivalTime: {
-    type: Date,
-    required: true
+    type: Date
   },
   actualArrivalTime: {
     type: Date
@@ -93,11 +121,6 @@ const transportDetailsSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-  status: {
-    type: String,
-    enum: ['in-transit', 'delivered', 'delayed', 'cancelled'],
-    default: 'in-transit'
-  },
   insuranceDetails: {
     company: String,
     policyNumber: String,
@@ -127,7 +150,8 @@ transportDetailsSchema.pre('save', function () {
 transportDetailsSchema.index({ transportId: 1 });
 transportDetailsSchema.index({ batchId: 1 });
 transportDetailsSchema.index({ transporterId: 1 });
-transportDetailsSchema.index({ status: 1 });
+transportDetailsSchema.index({ deliveryStatus: 1 });
 transportDetailsSchema.index({ departureTime: 1 });
+transportDetailsSchema.index({ riskFlag: 1 });
 
 module.exports = mongoose.model('TransportDetails', transportDetailsSchema);

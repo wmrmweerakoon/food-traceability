@@ -1,71 +1,116 @@
-const geolib = require('geolib');
+const distributorService = require('./distributorService');
 const TransportDetails = require('../../models/TransportDetails');
-const User = require('../../models/User');
 const ProductBatch = require('../../models/ProductBatch');
 
-// Helper function to calculate distance and duration between two coordinates
-const calculateRouteInfo = (originCoords, destCoords) => {
+// ─── New spec-aligned endpoints (by batchId) ─────────────────────────────────
+
+/**
+ * POST /api/distributor/transport
+ * Add initial transport info for a product batch.
+ */
+const addTransport = async (req, res) => {
   try {
-    // Calculate distance in meters
-    const distanceInMeters = geolib.getDistance(
-      { latitude: originCoords[1], longitude: originCoords[0] },
-      { latitude: destCoords[1], longitude: destCoords[0] }
-    );
-
-    // Convert to kilometers
-    const distanceInKm = distanceInMeters / 1000;
-    
-    // Estimate duration (assuming average speed of 60 km/h for driving)
-    const averageSpeedKmh = 60;
-    const durationInHours = distanceInKm / averageSpeedKmh;
-    const durationInSeconds = Math.round(durationInHours * 3600);
-    const durationInMinutes = Math.round(durationInSeconds / 60);
-
-    // Format distance
-    let distanceText;
-    if (distanceInKm < 1) {
-      distanceText = `${distanceInMeters} m`;
-    } else {
-      distanceText = `${distanceInKm.toFixed(2)} km`;
-    }
-
-    // Format duration
-    let durationText;
-    if (durationInMinutes < 60) {
-      durationText = `${durationInMinutes} mins`;
-    } else {
-      const hours = Math.floor(durationInMinutes / 60);
-      const minutes = durationInMinutes % 60;
-      durationText = minutes > 0 ? `${hours} hrs ${minutes} mins` : `${hours} hrs`;
-    }
-
-    return {
-      distance: distanceText,
-      distanceValue: distanceInMeters,
-      duration: durationText,
-      durationValue: durationInSeconds
-    };
+    const savedTransport = await distributorService.addTransportInfo(req.body, req.user.id);
+    res.status(201).json({
+      success: true,
+      message: 'Transport record created successfully',
+      data: savedTransport
+    });
   } catch (error) {
-    console.warn('Route calculation error:', error.message);
-    return null;
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-// Create a new transport record
+/**
+ * GET /api/distributor/transport/:batchId
+ * View transport details for a specific batch.
+ */
+const getTransportByBatchId = async (req, res) => {
+  try {
+    const { batchId } = req.params;
+    const result = await distributorService.getTransportHistory(batchId);
+    res.status(200).json({
+      success: true,
+      data: result
+    });
+  } catch (error) {
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+/**
+ * PUT /api/distributor/transport/:batchId
+ * Update location, temperature, status, etc.
+ */
+const updateTransport = async (req, res) => {
+  try {
+    const { batchId } = req.params;
+    const updatedTransport = await distributorService.updateLogistics(batchId, req.body, req.user.id);
+    res.status(200).json({
+      success: true,
+      message: 'Transport record updated successfully',
+      data: updatedTransport
+    });
+  } catch (error) {
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+/**
+ * DELETE /api/distributor/transport/:batchId
+ * Remove transport record for a batch.
+ */
+const deleteTransport = async (req, res) => {
+  try {
+    const { batchId } = req.params;
+    const result = await distributorService.deleteTransport(batchId, req.user.id);
+    res.status(200).json({
+      success: true,
+      ...result
+    });
+  } catch (error) {
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// ─── Legacy endpoints (by transport _id) — backward compatible ────────────────
+
+const { calculateRouteInfo } = require('./distributorService');
+
+/**
+ * POST /api/distributor/transports (legacy)
+ */
 const createTransport = async (req, res) => {
   try {
-    const { 
-      batchId, 
-      origin, 
-      destination, 
-      departureTime, 
-      estimatedArrivalTime, 
-      vehicleDetails, 
+    const {
+      batchId,
+      origin,
+      destination,
+      departureTime,
+      estimatedArrivalTime,
+      vehicleDetails,
       driverDetails,
-      routePreferences
+      vehicleNumber: vn,
+      currentLocation: cl,
+      storageTemperature: st
     } = req.body;
 
-    // Validate required fields
     if (!batchId || !origin || !destination || !departureTime || !estimatedArrivalTime) {
       return res.status(400).json({
         success: false,
@@ -73,7 +118,6 @@ const createTransport = async (req, res) => {
       });
     }
 
-    // Check if user is a distributor
     if (req.user.role !== 'ROLE_DISTRIBUTOR') {
       return res.status(403).json({
         success: false,
@@ -81,7 +125,6 @@ const createTransport = async (req, res) => {
       });
     }
 
-    // Verify the batch exists and belongs to a farmer
     const productBatch = await ProductBatch.findById(batchId);
     if (!productBatch) {
       return res.status(404).json({
@@ -90,10 +133,8 @@ const createTransport = async (req, res) => {
       });
     }
 
-    // Create unique transport ID
     const transportId = `TRANS-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
-    // Calculate distance and duration using coordinates
     let routeInfo = null;
     if (origin.coordinates && destination.coordinates) {
       routeInfo = calculateRouteInfo(origin.coordinates, destination.coordinates);
@@ -103,11 +144,13 @@ const createTransport = async (req, res) => {
       }
     }
 
-    // Create new transport record
     const newTransport = new TransportDetails({
       transportId,
       batchId,
       transporterId: req.user.id,
+      vehicleNumber: vn || vehicleDetails?.vehicleNumber || 'N/A',
+      currentLocation: cl || origin.locationName || 'Origin',
+      storageTemperature: st !== undefined ? st : 0,
       origin,
       destination,
       departureTime,
@@ -132,21 +175,12 @@ const createTransport = async (req, res) => {
   }
 };
 
-// Get all transports for a distributor
+/**
+ * GET /api/distributor/transports (legacy)
+ */
 const getTransports = async (req, res) => {
   try {
-    // Check if user is a distributor
-    if (req.user.role !== 'ROLE_DISTRIBUTOR') {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied. Distributors only.'
-      });
-    }
-
-    const transports = await TransportDetails.find({ transporterId: req.user.id })
-      .populate('batchId', 'batchId productName harvestDate expiryDate')
-      .populate('transporterId', 'username email firstName lastName');
-
+    const transports = await distributorService.getAllTransports(req.user.id);
     res.status(200).json({
       success: true,
       count: transports.length,
@@ -160,7 +194,9 @@ const getTransports = async (req, res) => {
   }
 };
 
-// Get a specific transport by ID
+/**
+ * GET /api/distributor/transports/:id (legacy)
+ */
 const getTransportById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -176,7 +212,6 @@ const getTransportById = async (req, res) => {
       });
     }
 
-    // Check if user is the transporter who owns the record or is an admin
     if (transport.transporterId._id.toString() !== req.user.id && req.user.role !== 'ROLE_ADMIN') {
       return res.status(403).json({
         success: false,
@@ -196,11 +231,13 @@ const getTransportById = async (req, res) => {
   }
 };
 
-// Update transport status and location
+/**
+ * PUT /api/distributor/transports/:id (legacy)
+ */
 const updateTransportStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, actualArrivalTime, currentLocation, temperatureLog } = req.body;
+    const { status, actualArrivalTime, currentLocation, temperatureLog, deliveryStatus, storageTemperature } = req.body;
 
     const transport = await TransportDetails.findById(id);
     if (!transport) {
@@ -210,7 +247,6 @@ const updateTransportStatus = async (req, res) => {
       });
     }
 
-    // Check if user is the transporter who owns the record or is an admin
     if (transport.transporterId.toString() !== req.user.id && req.user.role !== 'ROLE_ADMIN') {
       return res.status(403).json({
         success: false,
@@ -218,25 +254,21 @@ const updateTransportStatus = async (req, res) => {
       });
     }
 
-    // Prepare update object
     const updateData = {};
     if (status) updateData.status = status;
+    if (deliveryStatus) updateData.deliveryStatus = deliveryStatus;
     if (actualArrivalTime) updateData.actualArrivalTime = actualArrivalTime;
-    if (currentLocation) {
-      updateData.currentLocation = currentLocation;
-      // Add to location history
-      if (!updateData.locationHistory) updateData.locationHistory = [];
-      updateData.locationHistory.push({
-        location: currentLocation,
-        timestamp: new Date()
-      });
+    if (currentLocation) updateData.currentLocation = currentLocation;
+    if (storageTemperature !== undefined) {
+      updateData.storageTemperature = storageTemperature;
+      updateData.riskFlag = storageTemperature > 8 ? 'High Risk' : 'Normal';
     }
     if (temperatureLog) {
-      if (!updateData.temperatureLogs) updateData.temperatureLogs = [];
-      updateData.temperatureLogs.push({
+      if (!updateData.$push) updateData.$push = {};
+      updateData.$push.temperatureLogs = {
         ...temperatureLog,
         timestamp: new Date()
-      });
+      };
     }
 
     const updatedTransport = await TransportDetails.findByIdAndUpdate(
@@ -258,7 +290,9 @@ const updateTransportStatus = async (req, res) => {
   }
 };
 
-// Track route updates using coordinates
+/**
+ * PUT /api/distributor/transports/:id/route-update (legacy)
+ */
 const trackRouteUpdate = async (req, res) => {
   try {
     const { id } = req.params;
@@ -279,7 +313,6 @@ const trackRouteUpdate = async (req, res) => {
       });
     }
 
-    // Check if user is the transporter who owns the record or is an admin
     if (transport.transporterId.toString() !== req.user.id && req.user.role !== 'ROLE_ADMIN') {
       return res.status(403).json({
         success: false,
@@ -287,30 +320,17 @@ const trackRouteUpdate = async (req, res) => {
       });
     }
 
-    // Update current location
-    const currentLocation = {
-      coordinates: [lng, lat], // GeoJSON format (longitude, latitude)
-      timestamp: new Date()
-    };
-
     const updatedTransport = await TransportDetails.findByIdAndUpdate(
       id,
-      { 
-        currentLocation,
-        $push: { 
-          locationHistory: {
-            location: currentLocation,
-            timestamp: new Date()
-          }
-        },
+      {
+        currentLocation: `${lat}, ${lng}`,
         updatedAt: Date.now()
       },
       { new: true }
     );
 
-    // Calculate estimated time to destination using coordinates
     let eta = null;
-    if (transport.destination.coordinates) {
+    if (transport.destination?.coordinates) {
       const routeInfo = calculateRouteInfo([lng, lat], transport.destination.coordinates);
       if (routeInfo) {
         eta = {
@@ -336,7 +356,9 @@ const trackRouteUpdate = async (req, res) => {
   }
 };
 
-// Get route details between origin and destination
+/**
+ * GET /api/distributor/transports/:id/route-details (legacy)
+ */
 const getRouteDetails = async (req, res) => {
   try {
     const { id } = req.params;
@@ -349,21 +371,18 @@ const getRouteDetails = async (req, res) => {
       });
     }
 
-    // Check if user has access to this transport record
     if (
-      transport.transporterId.toString() !== req.user.id && 
-      transport.batchId.toString() !== req.user.id && 
+      transport.transporterId.toString() !== req.user.id &&
       req.user.role !== 'ROLE_ADMIN'
     ) {
       return res.status(403).json({
         success: false,
-        message: 'Access denied. Transport owner, related parties, or admin only.'
+        message: 'Access denied. Transport owner or admin only.'
       });
     }
 
-    // Get route details using coordinates
     let routeDetails = null;
-    if (transport.origin.coordinates && transport.destination.coordinates) {
+    if (transport.origin?.coordinates && transport.destination?.coordinates) {
       routeDetails = calculateRouteInfo(transport.origin.coordinates, transport.destination.coordinates);
       if (routeDetails) {
         routeDetails.startAddress = `${transport.origin.locationName}, ${transport.origin.address?.city || ''}, ${transport.origin.address?.state || ''}`;
@@ -371,7 +390,6 @@ const getRouteDetails = async (req, res) => {
       }
     }
 
-    // Return transport details with route info if available
     res.status(200).json({
       success: true,
       data: {
@@ -388,6 +406,12 @@ const getRouteDetails = async (req, res) => {
 };
 
 module.exports = {
+  // New spec endpoints
+  addTransport,
+  getTransportByBatchId,
+  updateTransport,
+  deleteTransport,
+  // Legacy endpoints
   createTransport,
   getTransports,
   getTransportById,
