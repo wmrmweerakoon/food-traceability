@@ -65,7 +65,7 @@ function FarmerDashboard() {
   if (loading && batches.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 font-['Outfit',sans-serif]">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-emerald-600 border-t-transparent"></div>
         <p className="mt-4 text-slate-500 font-medium animate-pulse">Syncing Production Data...</p>
       </div>
     );
@@ -77,20 +77,20 @@ function FarmerDashboard() {
       <div className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <div className="bg-blue-600 p-2.5 rounded-xl shadow-lg shadow-blue-200">
+            <div className="bg-emerald-600 p-2.5 rounded-xl shadow-lg shadow-emerald-200">
               <Package className="text-white w-6 h-6" />
             </div>
             <div>
               <h1 className="text-2xl font-black text-slate-900 tracking-tight">Farmer Console</h1>
               <div className="flex items-center text-slate-500 text-xs font-bold uppercase tracking-widest mt-0.5">
-                <span className="text-blue-600 mr-2">●</span> {user?.firstName} {user?.lastName} Dashboard
+                <span className="text-emerald-600 mr-2">●</span> {user?.firstName} {user?.lastName} Dashboard
               </div>
             </div>
           </div>
           <div className="flex gap-2">
             <button
               onClick={() => navigate('/farmer/batches/new')}
-              className="flex items-center px-6 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition transform hover:scale-105 shadow-xl shadow-blue-200"
+              className="flex items-center px-6 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition transform hover:scale-105 shadow-xl shadow-emerald-200"
             >
               <Plus className="w-4 h-4 mr-2" />
               <span className="font-bold text-xs uppercase tracking-widest">Log Harvest</span>
@@ -103,9 +103,9 @@ function FarmerDashboard() {
         {/* Organic Stats Hub */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {/* Total Batches Card */}
-          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 hover:shadow-xl hover:border-blue-200 hover:bg-blue-50/30 transition-all duration-300 group">
+          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 hover:shadow-xl hover:border-emerald-200 hover:bg-emerald-50/30 transition-all duration-300 group">
             <div className="flex items-center gap-5">
-              <div className="p-4 bg-blue-50 border border-blue-100 rounded-2xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-inner">
+              <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500 shadow-inner">
                 <Package className="w-6 h-6" />
               </div>
               <div>
@@ -133,7 +133,7 @@ function FarmerDashboard() {
           </div>
 
           {/* Volume Card */}
-          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 hover:shadow-xl hover:border-blue-200 hover:bg-blue-50/30 transition-all duration-300 group">
+          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 hover:shadow-xl hover:border-emerald-200 hover:bg-emerald-50/30 transition-all duration-300 group">
             <div className="flex items-center gap-5">
               <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl text-slate-600 group-hover:bg-slate-900 group-hover:text-white transition-all duration-500 shadow-inner">
                 <Plus className="w-6 h-6" />
@@ -170,17 +170,17 @@ function FarmerDashboard() {
         <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden transition-all duration-500 hover:shadow-2xl">
           <div className="px-8 py-8 border-b border-slate-100 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="bg-blue-50 p-2.5 rounded-2xl shadow-sm border border-blue-100">
-                <Package className="w-5 h-5 text-blue-600" />
+              <div className="bg-emerald-50 p-2.5 rounded-2xl shadow-sm border border-emerald-100">
+                <Package className="w-5 h-5 text-emerald-600" />
               </div>
               <div>
                 <h2 className="text-xl font-black text-slate-900 tracking-tight text-shadow-sm">Managed Harvest Units</h2>
-                <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-0.5 opacity-70">Supply Chain Traceability Intel</p>
+                <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-0.5 opacity-70">Supply Chain Traceability Intel</p>
               </div>
             </div>
-            <div className="flex items-center bg-blue-50/50 px-4 py-2 rounded-xl border border-blue-100 shadow-sm">
-               <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse mr-2"></span>
-               <span className="text-[10px] font-black text-blue-700 uppercase tracking-widest">Active Tracking</span>
+            <div className="flex items-center bg-emerald-50/50 px-4 py-2 rounded-xl border border-emerald-100 shadow-sm">
+               <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse mr-2"></span>
+               <span className="text-[10px] font-black text-emerald-700 uppercase tracking-widest">Active Tracking</span>
             </div>
           </div>
           <div className="p-4">

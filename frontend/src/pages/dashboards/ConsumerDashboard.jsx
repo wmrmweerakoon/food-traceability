@@ -58,13 +58,13 @@ function ConsumerDashboard() {
       <div className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <div className="bg-blue-600 p-2.5 rounded-xl shadow-lg shadow-blue-200">
+            <div className="bg-emerald-600 p-2.5 rounded-xl shadow-lg shadow-emerald-200">
               <Package className="text-white w-6 h-6" />
             </div>
             <div>
               <h1 className="text-2xl font-black text-slate-900 tracking-tight">Consumer Hub</h1>
               <div className="flex items-center text-slate-500 text-[10px] font-black uppercase tracking-widest mt-0.5">
-                <span className="text-blue-600 mr-2">●</span> {user?.firstName} {user?.lastName} Dashboard
+                <span className="text-emerald-600 mr-2">●</span> {user?.firstName} {user?.lastName} Dashboard
               </div>
             </div>
           </div>
@@ -84,7 +84,7 @@ function ConsumerDashboard() {
         
         {/* 🕵️‍♂️ Trace Center - Search Hero */}
         <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm p-10 relative overflow-hidden">
-           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-full blur-3xl -mr-20 -mt-20"></div>
+           <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50/50 rounded-full blur-3xl -mr-20 -mt-20"></div>
            
            <div className="relative z-10 max-w-2xl mx-auto text-center space-y-6">
               <div>
@@ -96,7 +96,7 @@ function ConsumerDashboard() {
                  <div className="relative flex-grow">
                    <input
                       type="text"
-                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-5 pl-14 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition font-bold text-slate-900 placeholder:text-slate-300"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-5 pl-14 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 outline-none transition font-bold text-slate-900 placeholder:text-slate-300"
                       placeholder="e.g. BATCH-17758..."
                       value={batchId}
                       onChange={(e) => setBatchId(e.target.value)}
@@ -106,7 +106,7 @@ function ConsumerDashboard() {
                  <button 
                    type="submit"
                    disabled={loading}
-                   className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-blue-200 hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+                   className="bg-emerald-600 text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-emerald-200 hover:bg-emerald-700 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
                  >
                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Trace Origin'}
                  </button>
@@ -131,7 +131,7 @@ function ConsumerDashboard() {
               {/* 📊 High-Fidelity Stats Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
-                  <Calendar className="w-5 h-5 text-blue-600 mb-3" />
+                  <Calendar className="w-5 h-5 text-emerald-600 mb-3" />
                   <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Harvested</p>
                   <p className="text-sm font-black text-slate-900 mt-1">
                     {new Date(traceabilityData.farm.harvestDate).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -143,7 +143,7 @@ function ConsumerDashboard() {
                   <p className="text-sm font-black text-slate-900 mt-1">{traceabilityData.farm.storageConditions?.temperature || '4°C Verified'}</p>
                 </div>
                 <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
-                  <Droplets className="w-5 h-5 text-blue-400 mb-3" />
+                  <Droplets className="w-5 h-5 text-emerald-400 mb-3" />
                   <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Humidity</p>
                   <p className="text-sm font-black text-slate-900 mt-1">{traceabilityData.farm.storageConditions?.humidity || '65% Optimal'}</p>
                 </div>
@@ -184,7 +184,7 @@ function ConsumerDashboard() {
                 <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 shadow-sm">
                   <div className="flex items-center space-x-3 mb-8">
                       <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center">
-                        <MapPin className="w-5 h-5 text-blue-600" />
+                        <MapPin className="w-5 h-5 text-emerald-600" />
                       </div>
                       <h3 className="text-xl font-black text-slate-900">Origin Verification</h3>
                   </div>
@@ -212,7 +212,7 @@ function ConsumerDashboard() {
                         <p className="text-sm font-bold text-slate-600 mb-4 italic leading-relaxed">
                             "Our farm implements regenerative agriculture protocols to ensure soil health and maximum nutrient density in every harvest."
                         </p>
-                        <div className="flex items-center text-xs font-black text-blue-600 uppercase tracking-widest">
+                        <div className="flex items-center text-xs font-black text-emerald-600 uppercase tracking-widest">
                             <CheckCircle className="w-3 h-3 mr-2" />
                             Inspector Verified
                         </div>

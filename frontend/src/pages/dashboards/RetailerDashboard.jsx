@@ -278,7 +278,7 @@ function RetailerDashboard() {
   if (loading && inventory.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-emerald-600 border-t-transparent"></div>
         <p className="mt-4 text-slate-500 font-medium animate-pulse">Initializing Inventory Hub...</p>
       </div>
     );
@@ -290,13 +290,13 @@ function RetailerDashboard() {
       <div className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <div className="bg-blue-600 p-2.5 rounded-xl shadow-lg shadow-blue-200">
+            <div className="bg-emerald-600 p-2.5 rounded-xl shadow-lg shadow-emerald-200">
               <Store className="text-white w-6 h-6" />
             </div>
             <div>
               <h1 className="text-2xl font-black text-slate-900 tracking-tight">Retailer Hub</h1>
               <div className="flex items-center text-slate-500 text-xs font-bold uppercase tracking-widest mt-0.5">
-                <span className="text-blue-600 mr-2">●</span> {user?.firstName} {user?.lastName} Dashboard
+                <span className="text-emerald-600 mr-2">●</span> {user?.firstName} {user?.lastName} Dashboard
               </div>
             </div>
           </div>
@@ -305,7 +305,7 @@ function RetailerDashboard() {
               onClick={() => { setStoreFormData({ shopName: '', location: '' }); setSelectedStore(null); setIsStoreModalOpen(true); }}
               className="flex items-center px-5 py-2.5 bg-white border-2 border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition transform hover:scale-105 shadow-sm"
             >
-              <Building className="w-4 h-4 mr-2 text-blue-600" />
+              <Building className="w-4 h-4 mr-2 text-emerald-600" />
               <span className="font-bold">Register Store</span>
             </button>
             <button
@@ -325,10 +325,10 @@ function RetailerDashboard() {
         <section>
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-2">
-              <Truck className="w-6 h-6 text-blue-600" />
+              <Truck className="w-6 h-6 text-emerald-600" />
               <h2 className="text-xl font-black text-slate-900">The Loading Dock</h2>
             </div>
-            <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-black uppercase tracking-widest">
+            <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-black uppercase tracking-widest">
               {incomingShipments.length} Arrived
             </span>
           </div>
@@ -361,7 +361,7 @@ function RetailerDashboard() {
                     
                     <div className="space-y-3 mb-6">
                       <div className="flex items-center text-sm text-slate-600">
-                        <Thermometer className="w-4 h-4 mr-2 text-blue-500" />
+                        <Thermometer className="w-4 h-4 mr-2 text-emerald-500" />
                         <span>Last Temp: <span className="font-bold">{shipment.storageTemperature}°C</span></span>
                       </div>
                       <div className="flex items-center text-sm text-slate-600">
@@ -380,7 +380,7 @@ function RetailerDashboard() {
                     </button>
                     <button 
                       onClick={() => handleAcceptShipment(shipment)}
-                      className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 text-xs font-black uppercase tracking-widest transition shadow-lg shadow-blue-100"
+                      className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 text-xs font-black uppercase tracking-widest transition shadow-lg shadow-emerald-100"
                     >
                       Accept & Stock
                     </button>
@@ -395,19 +395,19 @@ function RetailerDashboard() {
         <section>
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-2">
-              <Building className="w-6 h-6 text-blue-600" />
+              <Building className="w-6 h-6 text-emerald-600" />
               <h2 className="text-xl font-black text-slate-900">My Store Locations</h2>
             </div>
           </div>
 
           {stores.length === 0 ? (
-            <div className="bg-blue-50/50 rounded-2xl border-2 border-dashed border-blue-200 p-8 flex flex-col items-center text-center">
-              <MapPin className="w-8 h-8 text-blue-300 mb-3" />
-              <p className="text-blue-900 font-bold text-sm mb-1">No store locations registered yet</p>
-              <p className="text-blue-600/60 text-xs mb-4">You need at least one store location to manage inventory.</p>
+            <div className="bg-emerald-50/50 rounded-2xl border-2 border-dashed border-emerald-200 p-8 flex flex-col items-center text-center">
+              <MapPin className="w-8 h-8 text-emerald-300 mb-3" />
+              <p className="text-emerald-900 font-bold text-sm mb-1">No store locations registered yet</p>
+              <p className="text-emerald-600/60 text-xs mb-4">You need at least one store location to manage inventory.</p>
               <button 
                 onClick={() => { setStoreFormData({ shopName: '', location: '' }); setSelectedStore(null); setIsStoreModalOpen(true); }}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg text-xs font-black uppercase tracking-widest shadow-lg shadow-blue-100"
+                className="px-6 py-2 bg-emerald-600 text-white rounded-lg text-xs font-black uppercase tracking-widest shadow-lg shadow-emerald-100"
               >
                 Register First Store
               </button>
@@ -417,7 +417,7 @@ function RetailerDashboard() {
               {stores.map(store => (
                 <div key={store._id} className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex items-center justify-between group">
                   <div className="flex items-center space-x-3">
-                    <div className="bg-slate-100 p-2 rounded-lg text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-600 transition">
+                    <div className="bg-slate-100 p-2 rounded-lg text-slate-400 group-hover:bg-emerald-100 group-hover:text-emerald-600 transition">
                       <Building className="w-4 h-4" />
                     </div>
                     <div>
@@ -427,7 +427,7 @@ function RetailerDashboard() {
                   </div>
                   <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition">
                     <button onClick={() => { setSelectedStore(store); setStoreFormData({ shopName: store.shopName, location: store.location }); setIsStoreModalOpen(true); }} className="p-1.5 hover:bg-slate-100 rounded-lg transition">
-                      <Edit2 className="w-3 h-3 text-slate-400 hover:text-blue-600" />
+                      <Edit2 className="w-3 h-3 text-slate-400 hover:text-emerald-600" />
                     </button>
                     <button onClick={() => handleDeleteStore(store._id)} className="p-1.5 hover:bg-slate-100 rounded-lg transition">
                       <Trash2 className="w-3 h-3 text-slate-400 hover:text-rose-600" />
@@ -496,7 +496,7 @@ function RetailerDashboard() {
                         {new Date(item.expiryDate) < new Date() ? 'EXPIRED' : (item.status?.replace('-', ' ') || 'AVAILABLE')}
                       </span>
                       <div className="flex space-x-1">
-                        <button onClick={() => { setSelectedInventoryItem(item); setIsEditModalOpen(true); }} className="p-2 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition">
+                        <button onClick={() => { setSelectedInventoryItem(item); setIsEditModalOpen(true); }} className="p-2 bg-slate-50 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition">
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button onClick={() => handleDeleteItem(item._id)} className="p-2 bg-slate-50 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition">
@@ -511,7 +511,7 @@ function RetailerDashboard() {
                         <Tag className="w-3 h-3 mr-1" /> {item.batchId}
                       </div>
                       <span className="text-[10px] text-slate-300">•</span>
-                      <div className="flex items-center text-[10px] text-blue-500 font-black uppercase tracking-tight bg-blue-50 px-2 py-0.5 rounded-md">
+                      <div className="flex items-center text-[10px] text-emerald-500 font-black uppercase tracking-tight bg-emerald-50 px-2 py-0.5 rounded-md">
                         Produced by: {item.productId?.farmerId?.firstName || 'Farmer'}
                       </div>
                     </div>
@@ -559,7 +559,7 @@ function RetailerDashboard() {
         <section className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-2">
-              <ClipboardList className="w-6 h-6 text-blue-600" />
+              <ClipboardList className="w-6 h-6 text-emerald-600" />
               <h2 className="text-xl font-black text-slate-900">Recent Activity</h2>
             </div>
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Global Sales Feed</span>
@@ -676,7 +676,7 @@ function RetailerDashboard() {
                         </div>
                         <div className="text-center">
                           <p className="text-[8px] text-slate-500 font-black uppercase">Integrity</p>
-                          <p className="text-sm font-black text-blue-400">Verifying</p>
+                          <p className="text-sm font-black text-emerald-400">Verifying</p>
                         </div>
                       </div>
                       <div className="bg-white/10 px-3 py-1 rounded-full flex items-center text-[10px] font-bold">
@@ -715,7 +715,7 @@ function RetailerDashboard() {
                   <Building className="absolute left-4 top-4 w-5 h-5 text-slate-300" />
                   <input
                     type="text"
-                    className="w-full border-2 border-slate-100 rounded-2xl p-4 pl-12 bg-slate-50 focus:border-blue-500 focus:bg-white outline-none transition font-bold text-sm h-14"
+                    className="w-full border-2 border-slate-100 rounded-2xl p-4 pl-12 bg-slate-50 focus:border-emerald-500 focus:bg-white outline-none transition font-bold text-sm h-14"
                     value={storeFormData.shopName}
                     onChange={(e) => setStoreFormData({ ...storeFormData, shopName: e.target.value })}
                     placeholder="e.g. City Center Branch"
@@ -729,7 +729,7 @@ function RetailerDashboard() {
                   <button 
                     type="button" 
                     onClick={() => setIsPickerOpen(true)}
-                    className="text-blue-600 hover:text-blue-800 text-[10px] font-black uppercase flex items-center"
+                    className="text-emerald-600 hover:text-emerald-800 text-[10px] font-black uppercase flex items-center"
                   >
                     <Navigation className="w-3 h-3 mr-1" /> Pick on Map
                   </button>
@@ -738,7 +738,7 @@ function RetailerDashboard() {
                   <MapPin className="absolute left-4 top-4 w-5 h-5 text-slate-300" />
                   <input
                     type="text"
-                    className="w-full border-2 border-slate-100 rounded-2xl p-4 pl-12 bg-slate-50 focus:border-blue-500 focus:bg-white outline-none transition font-bold text-sm h-14"
+                    className="w-full border-2 border-slate-100 rounded-2xl p-4 pl-12 bg-slate-50 focus:border-emerald-500 focus:bg-white outline-none transition font-bold text-sm h-14"
                     value={storeFormData.location}
                     onChange={(e) => setStoreFormData({ ...storeFormData, location: e.target.value })}
                     placeholder="e.g. 123 Metro Plaza, Colombo"
@@ -749,7 +749,7 @@ function RetailerDashboard() {
             </div>
             <div className="flex justify-end gap-3 pt-4">
               <button type="button" onClick={() => setIsStoreModalOpen(false)} className="px-8 py-3 text-slate-500 font-bold hover:bg-slate-50 rounded-2xl transition">Cancel</button>
-              <button type="submit" className="px-10 py-3 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition shadow-xl shadow-blue-200">
+              <button type="submit" className="px-10 py-3 bg-emerald-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-700 transition shadow-xl shadow-emerald-200">
                 {selectedStore ? 'Update Location' : 'Register Location'}
               </button>
             </div>
@@ -769,7 +769,7 @@ function RetailerDashboard() {
               <div className="md:col-span-2">
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Arrival Batch</label>
                 <select
-                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-blue-500 focus:bg-white outline-none transition font-bold text-sm h-14 text-slate-700"
+                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-emerald-500 focus:bg-white outline-none transition font-bold text-sm h-14 text-slate-700"
                   required
                   value={formData.productId}
                   onChange={(e) => {
@@ -794,7 +794,7 @@ function RetailerDashboard() {
               <div className="md:col-span-2">
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Store Destination</label>
                 <select
-                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-blue-500 focus:bg-white outline-none transition font-bold text-sm h-14 text-slate-700"
+                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-emerald-500 focus:bg-white outline-none transition font-bold text-sm h-14 text-slate-700"
                   required
                   value={formData.storeId}
                   onChange={(e) => setFormData({ ...formData, storeId: e.target.value })}
@@ -814,7 +814,7 @@ function RetailerDashboard() {
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Internal SKU</label>
                 <input
                   type="text"
-                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-blue-500 focus:bg-white outline-none transition font-bold text-sm h-14"
+                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-emerald-500 focus:bg-white outline-none transition font-bold text-sm h-14"
                   value={formData.sku}
                   onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
                   placeholder="e.g. SKU-12345"
@@ -825,7 +825,7 @@ function RetailerDashboard() {
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Category</label>
                 <input
                   type="text"
-                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-blue-500 focus:bg-white outline-none transition font-bold text-sm h-14"
+                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-emerald-500 focus:bg-white outline-none transition font-bold text-sm h-14"
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   placeholder="e.g. Dairy"
@@ -836,7 +836,7 @@ function RetailerDashboard() {
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Inbound Quantity</label>
                 <input
                   type="number"
-                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-blue-500 focus:bg-white outline-none transition font-bold text-sm h-14"
+                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-emerald-500 focus:bg-white outline-none transition font-bold text-sm h-14"
                   value={formData.quantityAvailable}
                   onChange={(e) => setFormData({ ...formData, quantityAvailable: parseInt(e.target.value) })}
                   required
@@ -847,7 +847,7 @@ function RetailerDashboard() {
                 <input
                   type="number"
                   step="0.01"
-                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-blue-500 focus:bg-white outline-none transition font-bold text-sm h-14"
+                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-emerald-500 focus:bg-white outline-none transition font-bold text-sm h-14"
                   value={formData.unitPrice}
                   onChange={(e) => setFormData({ ...formData, unitPrice: parseFloat(e.target.value) })}
                   required
@@ -857,7 +857,7 @@ function RetailerDashboard() {
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Final Expiry</label>
                 <input
                   type="date"
-                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-blue-500 focus:bg-white outline-none transition font-bold text-sm h-14"
+                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-emerald-500 focus:bg-white outline-none transition font-bold text-sm h-14"
                   value={formData.manualExpiry}
                   onChange={(e) => setFormData({ ...formData, manualExpiry: e.target.value })}
                   required
@@ -866,7 +866,7 @@ function RetailerDashboard() {
             </div>
             <div className="flex justify-end gap-3 pt-4">
               <button type="button" onClick={() => { setIsAddModalOpen(false); resetForm(); }} className="px-8 py-3 text-slate-500 font-bold hover:bg-slate-50 rounded-2xl transition">Discard</button>
-              <button type="submit" disabled={stores.length === 0} className="px-10 py-3 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition shadow-xl shadow-blue-200 disabled:opacity-50">Commit to Stock</button>
+              <button type="submit" disabled={stores.length === 0} className="px-10 py-3 bg-emerald-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-700 transition shadow-xl shadow-emerald-200 disabled:opacity-50">Commit to Stock</button>
             </div>
           </form>
         </Modal>
@@ -881,11 +881,11 @@ function RetailerDashboard() {
         >
           <form onSubmit={handleUpdateItem} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="bg-blue-900 rounded-3xl p-6 md:col-span-2 flex items-center shadow-xl shadow-blue-100">
+              <div className="bg-emerald-900 rounded-3xl p-6 md:col-span-2 flex items-center shadow-xl shadow-emerald-100">
                 <div className="bg-white/10 p-2 rounded-xl mr-4">
                   <ShieldCheck className="text-white w-6 h-6" />
                 </div>
-                <p className="text-[10px] text-blue-100 font-bold leading-relaxed tracking-wide">
+                <p className="text-[10px] text-emerald-100 font-bold leading-relaxed tracking-wide">
                   Internal stock levels and status are editable. Environmental traceability logs from the delivery journey remain immutable for audit integrity.
                 </p>
               </div>
@@ -893,7 +893,7 @@ function RetailerDashboard() {
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Adjust Quantity</label>
                 <input
                   type="number"
-                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-blue-500 focus:bg-white outline-none transition font-bold text-sm h-14"
+                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-emerald-500 focus:bg-white outline-none transition font-bold text-sm h-14"
                   value={selectedInventoryItem.quantityAvailable}
                   onChange={(e) => setSelectedInventoryItem({ ...selectedInventoryItem, quantityAvailable: parseInt(e.target.value) })}
                   required
@@ -902,7 +902,7 @@ function RetailerDashboard() {
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Current Status</label>
                 <select
-                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-blue-500 focus:bg-white outline-none transition font-bold text-sm h-14 text-slate-700"
+                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-emerald-500 focus:bg-white outline-none transition font-bold text-sm h-14 text-slate-700"
                   value={selectedInventoryItem.status || 'available'}
                   onChange={(e) => setSelectedInventoryItem({ ...selectedInventoryItem, status: e.target.value })}
                 >
@@ -917,7 +917,7 @@ function RetailerDashboard() {
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Retail Category</label>
                 <input
                   type="text"
-                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-blue-500 focus:bg-white outline-none transition font-bold text-sm h-14"
+                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-emerald-500 focus:bg-white outline-none transition font-bold text-sm h-14"
                   value={selectedInventoryItem.category}
                   onChange={(e) => setSelectedInventoryItem({ ...selectedInventoryItem, category: e.target.value })}
                   required
@@ -928,7 +928,7 @@ function RetailerDashboard() {
                 <input
                   type="number"
                   step="0.01"
-                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-blue-500 focus:bg-white outline-none transition font-bold text-sm h-14"
+                  className="w-full border-2 border-slate-100 rounded-2xl p-4 bg-slate-50 focus:border-emerald-500 focus:bg-white outline-none transition font-bold text-sm h-14"
                   value={selectedInventoryItem.unitPrice}
                   onChange={(e) => setSelectedInventoryItem({ ...selectedInventoryItem, unitPrice: parseFloat(e.target.value) })}
                   required
@@ -937,7 +937,7 @@ function RetailerDashboard() {
             </div>
             <div className="flex justify-end gap-3 pt-4">
               <button type="button" onClick={() => setIsEditModalOpen(false)} className="px-8 py-3 text-slate-500 font-bold hover:bg-slate-50 rounded-2xl transition">Cancel</button>
-              <button type="submit" className="px-10 py-3 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition shadow-xl shadow-slate-200">Save Changes</button>
+              <button type="submit" className="px-10 py-3 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition shadow-xl shadow-slate-200">Save Changes</button>
             </div>
           </form>
         </Modal>
@@ -952,7 +952,7 @@ function RetailerDashboard() {
         >
           <div className="space-y-8">
             <div className="flex items-center space-x-6 p-6 bg-slate-50 rounded-[2rem] border border-slate-100">
-              <div className="bg-blue-600 p-4 rounded-2xl shadow-lg shadow-blue-100">
+              <div className="bg-emerald-600 p-4 rounded-2xl shadow-lg shadow-emerald-100">
                 <Package className="text-white w-8 h-8" />
               </div>
               <div>
@@ -961,7 +961,7 @@ function RetailerDashboard() {
               </div>
               <div className="ml-auto text-right">
                 <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Price Per Unit</p>
-                <p className="text-xl font-black text-blue-600">{selectedSaleItem.currency} {selectedSaleItem.unitPrice.toFixed(2)}</p>
+                <p className="text-xl font-black text-emerald-600">{selectedSaleItem.currency} {selectedSaleItem.unitPrice.toFixed(2)}</p>
               </div>
             </div>
 
@@ -979,7 +979,7 @@ function RetailerDashboard() {
                   type="number" 
                   value={saleQuantity} 
                   onChange={(e) => setSaleQuantity(Math.min(selectedSaleItem.quantityAvailable, Math.max(1, parseInt(e.target.value) || 1)))}
-                  className="flex-1 h-14 rounded-2xl border-2 border-slate-100 text-center font-black text-xl focus:border-blue-500 outline-none"
+                  className="flex-1 h-14 rounded-2xl border-2 border-slate-100 text-center font-black text-xl focus:border-emerald-500 outline-none"
                 />
                 <button 
                   onClick={() => setSaleQuantity(Math.min(selectedSaleItem.quantityAvailable, saleQuantity + 1))}
@@ -997,7 +997,7 @@ function RetailerDashboard() {
                 </div>
                 <button 
                   onClick={handleConfirmSale}
-                  className="bg-white text-slate-900 px-8 py-4 rounded-3xl font-black text-sm uppercase tracking-widest hover:bg-blue-400 hover:text-white transition-all transform hover:scale-105"
+                  className="bg-white text-slate-900 px-8 py-4 rounded-3xl font-black text-sm uppercase tracking-widest hover:bg-emerald-400 hover:text-white transition-all transform hover:scale-105"
                 >
                   Commit Sale
                 </button>
@@ -1035,7 +1035,7 @@ function RetailerDashboard() {
               </div>
               <div className="flex justify-between pt-4 border-t border-slate-100">
                 <span className="text-slate-400 font-bold uppercase">Total Charged</span>
-                <span className="font-black text-blue-600 text-lg">{lastTransaction.currency} {lastTransaction.totalAmount.toFixed(2)}</span>
+                <span className="font-black text-emerald-600 text-lg">{lastTransaction.currency} {lastTransaction.totalAmount.toFixed(2)}</span>
               </div>
             </div>
 
@@ -1068,7 +1068,7 @@ function Modal({ title, subtitle, children, onClose }) {
           <div>
             <h3 className="text-3xl font-black text-slate-900 leading-tight tracking-tight">{title}</h3>
             {subtitle && <p className="text-slate-400 text-[10px] font-black mt-2 uppercase tracking-widest flex items-center">
-              <ClipboardList className="w-3 h-3 mr-2 text-blue-500" /> {subtitle}
+              <ClipboardList className="w-3 h-3 mr-2 text-emerald-500" /> {subtitle}
             </p>}
           </div>
           <button onClick={onClose} className="p-4 hover:bg-slate-100 rounded-3xl transition-all duration-300 group">

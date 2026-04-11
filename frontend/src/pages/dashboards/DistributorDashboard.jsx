@@ -300,7 +300,7 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
 
   const statusColors = {
     'pending': 'bg-slate-100 text-slate-600',
-    'in-transit': 'bg-blue-600 text-white',
+    'in-transit': 'bg-emerald-600 text-white',
     'delivered': 'bg-emerald-500 text-white',
     'cancelled': 'bg-rose-500 text-white',
   };
@@ -310,19 +310,19 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
       onClick={() => onClick(transport)}
       className={`cursor-pointer transition-all duration-200 rounded-xl border-2 p-5 ${
         isSelected 
-        ? 'border-blue-500 bg-blue-50/50 ring-4 ring-blue-500/10' 
+        ? 'border-emerald-500 bg-emerald-50/50 ring-4 ring-emerald-500/10' 
         : 'border-white bg-white hover:border-slate-200 shadow-sm'
       }`}
     >
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-start gap-3">
-          <div className={`p-2 rounded-lg ${isSelected ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-400'}`}>
+          <div className={`p-2 rounded-lg ${isSelected ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
             <Package className="w-5 h-5" />
           </div>
           <div>
             <h4 className="text-base font-black text-slate-900 leading-tight">{productName}</h4>
             <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
                 {batchIdStr}
               </span>
               <span className="text-[10px] text-slate-400 font-medium whitespace-nowrap">
@@ -379,7 +379,7 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
           </div>
           <button 
             onClick={openAddModal}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-sm"
+            className="flex items-center px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition shadow-sm"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Transport
@@ -395,10 +395,10 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
             <div className="p-6 border-b border-slate-100 bg-white">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-black text-slate-800 flex items-center uppercase tracking-tight">
-                  <Truck className="w-5 h-5 mr-3 text-blue-600"/> 
+                  <Truck className="w-5 h-5 mr-3 text-emerald-600"/> 
                   Live Deliveries
                 </h2>
-                <span className="bg-blue-100 text-blue-600 text-[10px] font-black px-2 py-1 rounded-lg uppercase">
+                <span className="bg-emerald-100 text-emerald-600 text-[10px] font-black px-2 py-1 rounded-lg uppercase">
                   {getStatusCount(activeTab)} {activeTab}
                 </span>
               </div>
@@ -408,7 +408,7 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
                 <input 
                   type="text" 
                   placeholder="Search by product name, batch, or ID..." 
-                  className="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-100 rounded-xl text-xs font-medium transition-all outline-none"
+                  className="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent focus:bg-white focus:ring-2 focus:ring-emerald-100 rounded-xl text-xs font-medium transition-all outline-none"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -423,13 +423,13 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
                   onClick={() => setActiveTab(tab)}
                   className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap flex items-center gap-2 ${
                     activeTab === tab
-                      ? 'bg-white text-blue-600 shadow-sm ring-1 ring-slate-200'
+                      ? 'bg-white text-emerald-600 shadow-sm ring-1 ring-slate-200'
                       : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
                   }`}
                 >
                   {tab}
                   <span className={`px-1.5 py-0.5 rounded-md text-[8px] ${
-                    activeTab === tab ? 'bg-blue-50 text-blue-600' : 'bg-slate-200 text-slate-500'
+                    activeTab === tab ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-200 text-slate-500'
                   }`}>
                     {getStatusCount(tab)}
                   </span>
@@ -514,7 +514,7 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium text-slate-600 mb-1">Status Override</label>
-                        <select className="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none transition" value={updateForm.status} onChange={e => setUpdateForm({...updateForm, status: e.target.value})}>
+                        <select className="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none transition" value={updateForm.status} onChange={e => setUpdateForm({...updateForm, status: e.target.value})}>
                           <option value="Pending">Pending</option>
                           <option value="In-Transit">In Transit</option>
                           <option value="Delivered">Delivered</option>
@@ -523,22 +523,22 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-slate-600 mb-1">Temperature Logger (°C)</label>
-                        <input type="number" step="0.1" placeholder="e.g. 4.5" className="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none transition" value={updateForm.temperature} onChange={e => setUpdateForm({...updateForm, temperature: e.target.value})} />
+                        <input type="number" step="0.1" placeholder="e.g. 4.5" className="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none transition" value={updateForm.temperature} onChange={e => setUpdateForm({...updateForm, temperature: e.target.value})} />
                       </div>
                       <div className="col-span-1 md:col-span-2 pt-2 border-t border-slate-100 mt-2 flex justify-between items-center">
                          <span className="text-xs text-slate-400 font-medium uppercase tracking-wider">Device Sensors</span>
-                         <button type="button" onClick={handleGetLocation} className="text-sm bg-blue-50 text-blue-600 hover:bg-blue-100 flex items-center px-4 py-2 border border-blue-100 rounded-lg transition font-medium">
+                         <button type="button" onClick={handleGetLocation} className="text-sm bg-emerald-50 text-emerald-600 hover:bg-emerald-100 flex items-center px-4 py-2 border border-emerald-100 rounded-lg transition font-medium">
                             <MapPin className="w-4 h-4 mr-2" />
                             Auto-Fill Current GPS Location
                          </button>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-slate-600 mb-1">GPS Latitude</label>
-                        <input type="number" step="any" placeholder="e.g. 6.9271" className="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none transition" value={updateForm.latitude} onChange={e => setUpdateForm({...updateForm, latitude: e.target.value})} />
+                        <input type="number" step="any" placeholder="e.g. 6.9271" className="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none transition" value={updateForm.latitude} onChange={e => setUpdateForm({...updateForm, latitude: e.target.value})} />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-slate-600 mb-1">GPS Longitude</label>
-                        <input type="number" step="any" placeholder="e.g. 79.8612" className="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none transition" value={updateForm.longitude} onChange={e => setUpdateForm({...updateForm, longitude: e.target.value})} />
+                        <input type="number" step="any" placeholder="e.g. 79.8612" className="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none transition" value={updateForm.longitude} onChange={e => setUpdateForm({...updateForm, longitude: e.target.value})} />
                       </div>
                     </div>
                     
@@ -573,7 +573,7 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1 flex justify-between">
                       Origin Facility
-                      <button type="button" onClick={() => openLocationPicker('edit', 'origin')} className="text-blue-600 hover:text-blue-800 flex items-center text-xs font-bold">
+                      <button type="button" onClick={() => openLocationPicker('edit', 'origin')} className="text-emerald-600 hover:text-emerald-800 flex items-center text-xs font-bold">
                         <Navigation className="w-3 h-3 mr-1" /> Pick on Map
                       </button>
                     </label>
@@ -582,7 +582,7 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1 flex justify-between">
                       Destination Facility
-                      <button type="button" onClick={() => openLocationPicker('edit', 'destination')} className="text-blue-600 hover:text-blue-800 flex items-center text-xs font-bold">
+                      <button type="button" onClick={() => openLocationPicker('edit', 'destination')} className="text-emerald-600 hover:text-emerald-800 flex items-center text-xs font-bold">
                         <Navigation className="w-3 h-3 mr-1" /> Pick on Map
                       </button>
                     </label>
@@ -616,7 +616,7 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
               </button>
               <button 
                  type="submit" 
-                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+                 className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition"
               >
                  Save Changes
               </button>
@@ -658,7 +658,7 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1 flex justify-between">
                       Origin Facility
-                      <button type="button" onClick={() => openLocationPicker('add', 'origin')} className="text-blue-600 hover:text-blue-800 flex items-center text-xs font-bold">
+                      <button type="button" onClick={() => openLocationPicker('add', 'origin')} className="text-emerald-600 hover:text-emerald-800 flex items-center text-xs font-bold">
                         <Navigation className="w-3 h-3 mr-1" /> Pick on Map
                       </button>
                     </label>
@@ -667,7 +667,7 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1 flex justify-between">
                       Destination Facility
-                      <button type="button" onClick={() => openLocationPicker('add', 'destination')} className="text-blue-600 hover:text-blue-800 flex items-center text-xs font-bold">
+                      <button type="button" onClick={() => openLocationPicker('add', 'destination')} className="text-emerald-600 hover:text-emerald-800 flex items-center text-xs font-bold">
                         <Navigation className="w-3 h-3 mr-1" /> Pick on Map
                       </button>
                     </label>
@@ -683,7 +683,7 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
                   <div className="col-span-2">
                     <label className="block text-sm font-medium text-slate-700 mb-1 flex justify-between">
                       Initial Location
-                      <button type="button" onClick={() => openLocationPicker('add', 'currentLocation')} className="text-blue-600 hover:text-blue-800 flex items-center text-xs font-bold">
+                      <button type="button" onClick={() => openLocationPicker('add', 'currentLocation')} className="text-emerald-600 hover:text-emerald-800 flex items-center text-xs font-bold">
                         <Navigation className="w-3 h-3 mr-1" /> Pick on Map
                       </button>
                     </label>
@@ -711,7 +711,7 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
               <button 
                  type="submit" 
                  disabled={availableBatches.length === 0}
-                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition"
+                 className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition"
               >
                  Create Transport
               </button>
