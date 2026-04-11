@@ -63,8 +63,8 @@ const LocationPickerModal = ({ isOpen, onClose, onConfirm, title = "Pick Locatio
         {/* Header */}
         <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
           <div className="flex items-center">
-            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-              <MapPin className="text-blue-600 w-5 h-5" />
+            <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center mr-3">
+              <MapPin className="text-emerald-600 w-5 h-5" />
             </div>
             <div>
               <h2 className="text-lg font-bold text-slate-800">{title}</h2>
@@ -97,7 +97,7 @@ const LocationPickerModal = ({ isOpen, onClose, onConfirm, title = "Pick Locatio
              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Selected Location</label>
              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 min-h-[60px] flex items-center">
                 {isLoading ? (
-                  <div className="flex items-center text-blue-600 font-medium animate-pulse">
+                  <div className="flex items-center text-emerald-600 font-medium animate-pulse">
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Analyzing geography...
                   </div>
@@ -119,9 +119,9 @@ const LocationPickerModal = ({ isOpen, onClose, onConfirm, title = "Pick Locatio
              <button 
                 disabled={!position || isLoading}
                 onClick={handleConfirm}
-                className={`flex-[2] py-3 px-4 rounded-xl font-bold flex items-center justify-center transition shadow-lg shadow-blue-200 ${
+                className={`flex-[2] py-3 px-4 rounded-xl font-bold flex items-center justify-center transition shadow-lg shadow-emerald-200 ${
                   position && !isLoading 
-                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                  ? 'bg-emerald-600 text-white hover:bg-emerald-700' 
                   : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                 }`}
              >

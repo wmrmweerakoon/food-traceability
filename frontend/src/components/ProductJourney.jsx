@@ -34,8 +34,8 @@ function ProductJourney({ traceabilityData }) {
     <div className="bg-white rounded-[2.5rem] p-10 lg:p-14 border border-slate-100 shadow-sm relative overflow-hidden font-['Outfit',sans-serif]">
       {/* Structural Branding */}
       <div className="flex items-center space-x-2 mb-12 px-2">
-        <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-        <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest leading-none">Verified Integrity Chain</p>
+        <div className="w-2 h-2 bg-emerald-600 rounded-full"></div>
+        <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none">Verified Integrity Chain</p>
       </div>
 
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-20 px-2">
@@ -43,7 +43,7 @@ function ProductJourney({ traceabilityData }) {
         
         <div className="bg-slate-50 border border-slate-200 p-4 rounded-3xl flex items-center space-x-6">
            <div className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100">
-             <QrCodeIcon className="w-6 h-6 text-blue-600" />
+             <QrCodeIcon className="w-6 h-6 text-emerald-600" />
            </div>
            <div>
               <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-0.5">Tracking ID</p>
@@ -66,7 +66,7 @@ function ProductJourney({ traceabilityData }) {
                 <div className="flex items-start">
                   {/* Point Indicator */}
                   <div className={`relative z-10 w-[4.5rem] h-[4.5rem] rounded-2xl flex items-center justify-center transition-all duration-700 shadow-xl ${
-                    isCompleted ? 'bg-blue-600 text-white shadow-blue-200' : 'bg-slate-50 text-slate-300 shadow-transparent'
+                    isCompleted ? 'bg-emerald-600 text-white shadow-emerald-200' : 'bg-slate-50 text-slate-300 shadow-transparent'
                   }`}>
                     <Icon className="w-8 h-8" />
                     {isCompleted && (
@@ -89,7 +89,7 @@ function ProductJourney({ traceabilityData }) {
 
                     <div className="transition-all duration-700">
                       {isCompleted ? (
-                        <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-500">
+                        <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 shadow-sm hover:shadow-xl hover:shadow-emerald-900/5 transition-all duration-500">
                           {stage.id === 'harvest' && (
                             <div className="space-y-10">
                               <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 pb-8 border-b border-slate-100">
@@ -104,7 +104,7 @@ function ProductJourney({ traceabilityData }) {
                                  <div className="space-y-1 text-right">
                                   <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Registry Entry</p>
                                   <div className="flex items-center justify-end text-sm font-bold text-slate-800">
-                                    <Calendar className="w-4 h-4 mr-2 text-blue-600" />
+                                    <Calendar className="w-4 h-4 mr-2 text-emerald-600" />
                                     {new Date(stage.date).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                   </div>
                                 </div>
@@ -113,7 +113,7 @@ function ProductJourney({ traceabilityData }) {
                               {/* 🕵️‍♂️ Production Intel - Expanded Details */}
                               <div className="bg-slate-50/50 rounded-2xl border border-slate-100 p-8 space-y-8">
                                 <div className="flex items-center space-x-2 pb-4 border-b border-slate-200">
-                                   <ShieldCheck className="w-5 h-5 text-blue-600" />
+                                   <ShieldCheck className="w-5 h-5 text-emerald-600" />
                                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest leading-none">Production Intel & Compliance</h4>
                                 </div>
                                 
@@ -175,7 +175,7 @@ function ProductJourney({ traceabilityData }) {
                               <div className="space-y-1">
                                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Destination</p>
                                 <div className="flex items-start">
-                                  <MapPin className="w-5 h-5 mr-3 mt-0.5 text-blue-600" />
+                                  <MapPin className="w-5 h-5 mr-3 mt-0.5 text-emerald-600" />
                                   <p className="text-sm font-bold text-slate-800 leading-relaxed">{stage.data.destination?.locationName || 'Retail Hub'}</p>
                                 </div>
                               </div>
@@ -184,8 +184,8 @@ function ProductJourney({ traceabilityData }) {
 
                           {stage.id === 'retail' && (
                             <div className="flex items-center space-x-6">
-                              <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100">
-                                <Store className="w-7 h-7 text-blue-600" />
+                              <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center border border-emerald-100">
+                                <Store className="w-7 h-7 text-emerald-600" />
                               </div>
                               <div>
                                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Store Branch</p>

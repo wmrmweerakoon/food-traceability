@@ -43,7 +43,7 @@ function BatchDetail() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 font-['Outfit',sans-serif]">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-emerald-600 border-t-transparent"></div>
         <p className="mt-4 text-slate-500 font-bold uppercase tracking-widest text-[10px]">Registry Sync in progress...</p>
       </div>
     );
@@ -68,23 +68,23 @@ function BatchDetail() {
       <div className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
           <div className="flex items-center space-x-3">
-             <button onClick={() => navigate('/farmer/dashboard')} className="p-2 hover:bg-slate-50 rounded-xl transition-colors text-slate-400 hover:text-blue-600 mr-2">
+             <button onClick={() => navigate('/farmer/dashboard')} className="p-2 hover:bg-slate-50 rounded-xl transition-colors text-slate-400 hover:text-emerald-600 mr-2">
                 <ArrowLeft className="w-5 h-5" />
              </button>
-            <div className="bg-blue-600 p-2.5 rounded-xl shadow-lg shadow-blue-200">
+            <div className="bg-emerald-600 p-2.5 rounded-xl shadow-lg shadow-emerald-200">
               <Package className="text-white w-6 h-6" />
             </div>
             <div>
               <h1 className="text-2xl font-black text-slate-900 tracking-tight">Batch Intel</h1>
               <div className="flex items-center text-slate-500 text-[10px] font-black uppercase tracking-widest mt-0.5">
-                <span className="text-blue-600 mr-2">●</span> {batch.batchId}
+                <span className="text-emerald-600 mr-2">●</span> {batch.batchId}
               </div>
             </div>
           </div>
           <div className="flex gap-3">
             <button
               onClick={() => navigate(`/farmer/batches/${id}/edit`)}
-              className="flex items-center px-6 py-2.5 bg-white border-2 border-slate-200 text-slate-600 rounded-xl hover:border-blue-600 hover:text-blue-600 transition shadow-sm"
+              className="flex items-center px-6 py-2.5 bg-white border-2 border-slate-200 text-slate-600 rounded-xl hover:border-emerald-600 hover:text-emerald-600 transition shadow-sm"
             >
               <Edit3 className="w-4 h-4 mr-2" />
               <span className="font-bold text-xs uppercase tracking-widest">Edit Entry</span>
@@ -102,7 +102,7 @@ function BatchDetail() {
               <div className="flex items-center justify-between mb-10 pb-6 border-b border-slate-100">
                  <div>
                     <h2 className="text-3xl font-black text-slate-900 tracking-tight">{batch.productName}</h2>
-                    <p className="text-blue-600 text-[10px] font-black uppercase tracking-widest mt-1 italic">Verified Commodity Record</p>
+                    <p className="text-emerald-600 text-[10px] font-black uppercase tracking-widest mt-1 italic">Verified Commodity Record</p>
                  </div>
                  <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${
                     batch.status === 'active' || !batch.status ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-slate-100 text-slate-600 border border-slate-200'
@@ -115,7 +115,7 @@ function BatchDetail() {
                  <div className="space-y-8">
                     <div className="flex items-start">
                        <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center mr-4 mt-1 border border-slate-100">
-                          <Plus className="w-5 h-5 text-blue-600" />
+                          <Plus className="w-5 h-5 text-emerald-600" />
                        </div>
                        <div>
                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Volume</p>
@@ -161,7 +161,7 @@ function BatchDetail() {
 
                  <div className="space-y-8 bg-slate-50/50 p-8 rounded-[2rem] border border-slate-100">
                     <div>
-                       <div className="flex items-center text-blue-600 mb-2">
+                       <div className="flex items-center text-emerald-600 mb-2">
                           <Thermometer className="w-4 h-4 mr-2" />
                           <p className="text-[10px] font-black uppercase tracking-widest">Storage Environment</p>
                        </div>
@@ -223,8 +223,8 @@ function BatchDetail() {
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-white rounded-[2.5rem] border border-slate-200 p-10 shadow-sm sticky top-24">
               <div className="text-center mb-10">
-                 <div className="w-16 h-16 bg-blue-50 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 shadow-inner border border-blue-100">
-                    <QrCode className="w-8 h-8 text-blue-600" />
+                 <div className="w-16 h-16 bg-emerald-50 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 shadow-inner border border-emerald-100">
+                    <QrCode className="w-8 h-8 text-emerald-600" />
                  </div>
                  <h3 className="text-xl font-black text-slate-900 tracking-tight">Identity & Trace</h3>
                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-2">Public Distribution Gate</p>
@@ -233,23 +233,23 @@ function BatchDetail() {
               {!showQR ? (
                 <button
                   onClick={handleGenerateQRCode}
-                  className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-slate-200 hover:bg-blue-600 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center group"
+                  className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-slate-200 hover:bg-emerald-600 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center group"
                 >
                   <QrCode className="w-4 h-4 mr-3 group-hover:rotate-12 transition-transform" />
                   Generate Public QR
                 </button>
               ) : (
                 <div className="space-y-6 animate-in zoom-in-95 duration-500">
-                   <div className="relative group overflow-hidden rounded-[2rem] border-2 border-blue-100 p-4 bg-slate-50 transition-all hover:bg-white hover:border-blue-500">
-                      <div className="absolute inset-0 bg-blue-600 opacity-0 group-hover:opacity-5 transition-opacity"></div>
+                   <div className="relative group overflow-hidden rounded-[2rem] border-2 border-emerald-100 p-4 bg-slate-50 transition-all hover:bg-white hover:border-emerald-500">
+                      <div className="absolute inset-0 bg-emerald-600 opacity-0 group-hover:opacity-5 transition-opacity"></div>
                       <img src={qrCode} alt="Batch QR" className="w-full aspect-square object-contain mix-blend-multiply" />
                    </div>
-                   <div className="bg-blue-50 border border-blue-100 p-6 rounded-2xl">
-                      <p className="text-xs font-black text-blue-700 uppercase tracking-widest mb-3 flex items-center">
+                   <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-2xl">
+                      <p className="text-xs font-black text-emerald-700 uppercase tracking-widest mb-3 flex items-center">
                          <Info className="w-3.5 h-3.5 mr-2" />
                          Public Gateway Info
                       </p>
-                      <p className="text-[11px] text-blue-600 font-bold leading-relaxed">
+                      <p className="text-[11px] text-emerald-600 font-bold leading-relaxed">
                          Scan this code to instantly access the public traceability portal for this batch. 
                          Verified by the AgriTrace Enterprise Protocol.
                       </p>

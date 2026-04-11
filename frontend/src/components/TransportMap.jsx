@@ -206,7 +206,7 @@ function TransportMap({
           >
             <Popup>
               <div>
-                <strong className="text-blue-600">Current Live Position</strong>
+                <strong className="text-emerald-600">Current Live Position</strong>
                 {activeLocation.timestamp && (
                   <p className="text-xs text-gray-600 mt-1">
                     Last Seen: {new Date(activeLocation.timestamp).toLocaleString()}
@@ -237,7 +237,7 @@ function TransportMap({
                   <Popup>
                     <div className="text-xs">
                       <p className="font-bold text-slate-500 uppercase tracking-tighter">History Checkpoint #{index + 1}</p>
-                      {entry.temperature && <p className="text-blue-600 font-bold">Temp: {entry.temperature}°C</p>}
+                      {entry.temperature && <p className="text-emerald-600 font-bold">Temp: {entry.temperature}°C</p>}
                       {entry.timestamp && (
                         <p className="text-gray-400 mt-1">
                           {new Date(entry.timestamp).toLocaleString()}

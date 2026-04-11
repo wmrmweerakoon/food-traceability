@@ -59,12 +59,12 @@ function QRScannerModal({ onScanSuccess, onClose }) {
         {/* Terminal Header */}
         <div className="bg-slate-900 border-b border-slate-800 p-8 flex items-center justify-between">
            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+              <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
                  <QrCode className="text-white w-5 h-5" />
               </div>
               <div>
                  <h2 className="text-white text-lg font-black tracking-tight">Identity Scan Terminal</h2>
-                 <p className="text-blue-400 text-[9px] font-black uppercase tracking-[2px] mt-0.5">AgriTrace Enterprise Protocol</p>
+                 <p className="text-emerald-400 text-[9px] font-black uppercase tracking-[2px] mt-0.5">AgriTrace Enterprise Protocol</p>
               </div>
            </div>
            <button onClick={onClose} className="p-3 bg-white/5 hover:bg-white/10 rounded-2xl transition-all text-slate-400 hover:text-white">
@@ -82,15 +82,15 @@ function QRScannerModal({ onScanSuccess, onClose }) {
               {/* Laser Target Effect */}
               {cameraPermission === 'granted' && (
                 <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                   <div className="w-[250px] h-[250px] border-2 border-blue-500/40 rounded-[2rem] relative">
+                   <div className="w-[250px] h-[250px] border-2 border-emerald-500/40 rounded-[2rem] relative">
                       {/* Corner Accents */}
-                      <div className="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-blue-500 rounded-tl-xl shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
-                      <div className="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4 border-blue-500 rounded-tr-xl shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
-                      <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-blue-500 rounded-bl-xl shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
-                      <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4 border-blue-500 rounded-br-xl shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
+                      <div className="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-emerald-500 rounded-tl-xl shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
+                      <div className="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4 border-emerald-500 rounded-tr-xl shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
+                      <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-emerald-500 rounded-bl-xl shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
+                      <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4 border-emerald-500 rounded-br-xl shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
                       
                       {/* Scanning Animated Line */}
-                      <div className="absolute w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent top-0 animate-scan-line"></div>
+                      <div className="absolute w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent top-0 animate-scan-line"></div>
                    </div>
                 </div>
               )}
@@ -98,7 +98,7 @@ function QRScannerModal({ onScanSuccess, onClose }) {
               {/* Permission States */}
               {cameraPermission === 'pending' && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 text-white p-8 text-center">
-                   <Camera className="w-12 h-12 text-blue-500 animate-pulse mb-4" />
+                   <Camera className="w-12 h-12 text-emerald-500 animate-pulse mb-4" />
                    <p className="text-sm font-black uppercase tracking-widest text-slate-300">Requesting Camera Access...</p>
                 </div>
               )}
@@ -116,11 +116,11 @@ function QRScannerModal({ onScanSuccess, onClose }) {
         {/* Footer Info */}
         <div className="bg-slate-50 p-8 border-t border-slate-100">
            <div className="flex items-start space-x-3 text-slate-500">
-              <Info className="w-4 h-4 mt-0.5 text-blue-600" />
+              <Info className="w-4 h-4 mt-0.5 text-emerald-600" />
               <p className="text-[11px] font-medium leading-relaxed">
                  Center the product QR code within the target frame. Ensure the environment is well-lit for rapid cryptographic decoding. 
                  <br />
-                 <span className="font-black text-blue-600 uppercase tracking-widest mt-2 block">Enterprise Encryption Enabled</span>
+                 <span className="font-black text-emerald-600 uppercase tracking-widest mt-2 block">Enterprise Encryption Enabled</span>
               </p>
            </div>
         </div>

@@ -69,16 +69,16 @@ function CreateBatch() {
       <div className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
           <div className="flex items-center space-x-3">
-             <button onClick={() => navigate('/farmer/dashboard')} className="p-2 hover:bg-slate-50 rounded-xl transition-colors text-slate-400 hover:text-blue-600 mr-2">
+             <button onClick={() => navigate('/farmer/dashboard')} className="p-2 hover:bg-slate-50 rounded-xl transition-colors text-slate-400 hover:text-emerald-600 mr-2">
                 <ArrowLeft className="w-5 h-5" />
              </button>
-            <div className="bg-blue-600 p-2.5 rounded-xl shadow-lg shadow-blue-200">
+            <div className="bg-emerald-600 p-2.5 rounded-xl shadow-lg shadow-emerald-200">
               <Plus className="text-white w-6 h-6" />
             </div>
             <div>
               <h1 className="text-2xl font-black text-slate-900 tracking-tight">Log New Harvest</h1>
               <div className="flex items-center text-slate-500 text-[10px] font-black uppercase tracking-widest mt-0.5">
-                <span className="text-blue-600 mr-2">●</span> Agriculture Production Node
+                <span className="text-emerald-600 mr-2">●</span> Agriculture Production Node
               </div>
             </div>
           </div>
@@ -91,8 +91,8 @@ function CreateBatch() {
           {/* 📦 Core Logistics Card */}
           <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden p-10">
             <div className="flex items-center space-x-3 mb-10 pb-6 border-b border-slate-100">
-               <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
-                  <Package className="w-5 h-5 text-blue-600" />
+               <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
+                  <Package className="w-5 h-5 text-emerald-600" />
                </div>
                <h2 className="text-xl font-black text-slate-900 tracking-tight">Product Specifications</h2>
             </div>
@@ -105,7 +105,7 @@ function CreateBatch() {
                     value={formData.productName}
                     onChange={handleChange}
                     placeholder="e.g. Organic Cavendish Bananas"
-                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition font-bold text-slate-900"
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 transition font-bold text-slate-900"
                     required
                   />
                </div>
@@ -119,7 +119,7 @@ function CreateBatch() {
                       value={formData.quantity}
                       onChange={handleChange}
                       placeholder="500"
-                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition font-bold text-slate-900"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 transition font-bold text-slate-900"
                       required
                     />
                   </div>
@@ -129,7 +129,7 @@ function CreateBatch() {
                       name="unit"
                       value={formData.unit}
                       onChange={handleChange}
-                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition font-bold text-slate-900"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 transition font-bold text-slate-900"
                     >
                       <option value="kg">kilograms (kg)</option>
                       <option value="liters">liters (L)</option>
@@ -149,7 +149,7 @@ function CreateBatch() {
                         type="date"
                         value={formData.harvestDate}
                         onChange={handleChange}
-                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 pl-12 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition font-bold text-slate-900"
+                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 pl-12 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 transition font-bold text-slate-900"
                         required
                      />
                   </div>
@@ -164,7 +164,7 @@ function CreateBatch() {
                         type="date"
                         value={formData.expiryDate}
                         onChange={handleChange}
-                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 pl-12 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition font-bold text-slate-900"
+                        className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 pl-12 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 transition font-bold text-slate-900"
                         required
                      />
                   </div>
@@ -287,7 +287,7 @@ function CreateBatch() {
                <button
                   type="submit"
                   disabled={loading || success}
-                  className="bg-blue-600 text-white px-12 py-4 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-blue-200 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 flex items-center"
+                  className="bg-emerald-600 text-white px-12 py-4 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-emerald-200 hover:bg-emerald-700 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 flex items-center"
                >
                   {loading ? 'Initializing Blockchain Entry...' : (
                     <>

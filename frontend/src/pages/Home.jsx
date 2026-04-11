@@ -177,8 +177,8 @@ function Home() {
 
             {/* Step 2 */}
             <div className="relative z-10 p-8 bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition duration-300">
-              <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
-                <Truck className="w-8 h-8 text-blue-600" />
+              <div className="w-14 h-14 bg-teal-100 rounded-2xl flex items-center justify-center mb-6">
+                <Truck className="w-8 h-8 text-teal-600" />
               </div>
               <h4 className="text-xl font-bold mb-4">Logistics</h4>
               <p className="text-slate-600 mb-6">Every transport leg is recorded with temperature logs and time-stamped location updates.</p>
@@ -201,7 +201,7 @@ function Home() {
       {/* Features Grid */}
       <section id="features" className="py-24 bg-slate-900 text-white rounded-[3rem] mx-4 lg:mx-8 mb-8 overflow-hidden relative">
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px]"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px]"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-teal-500/10 rounded-full blur-[100px]"></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
@@ -221,7 +221,7 @@ function Home() {
                   </div>
                 </div>
                 <div className="flex items-start">
-                  <div className="mr-4 p-2 bg-blue-500/10 rounded-lg"><Clock className="w-6 h-6 text-blue-400" /></div>
+                  <div className="mr-4 p-2 bg-teal-500/10 rounded-lg"><Clock className="w-6 h-6 text-teal-400" /></div>
                   <div>
                     <h5 className="font-bold text-lg mb-1">Real-time Visibility</h5>
                     <p className="text-slate-500">Know exactly where your product is, at any time.</p>
@@ -243,7 +243,7 @@ function Home() {
                   <div className="text-slate-200">Instant generation for batches.</div>
                 </div>
                 <div className="bg-slate-800 p-8 rounded-3xl border border-slate-700">
-                  <div className="text-blue-400 font-bold mb-2">Maps API</div>
+                  <div className="text-teal-400 font-bold mb-2">Maps API</div>
                   <div className="text-slate-200">Interactive journey visualization.</div>
                 </div>
               </div>

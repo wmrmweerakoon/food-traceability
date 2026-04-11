@@ -81,8 +81,8 @@ function ConsumerProfile() {
       <div className="bg-white shadow-sm border-b border-slate-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100">
-              <User className="w-8 h-8 text-blue-600" />
+            <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-100">
+              <User className="w-8 h-8 text-emerald-600" />
             </div>
             <div>
               <h1 className="text-3xl font-black text-slate-900 tracking-tight">My Profile</h1>
@@ -97,7 +97,7 @@ function ConsumerProfile() {
         {/* Read-Only Identity (Username/Email) */}
         <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-200 mb-6 flex flex-wrap gap-6 items-center">
           <div className="flex items-center text-slate-600">
-            <ShieldCheck className="w-5 h-5 text-blue-500 mr-2" />
+            <ShieldCheck className="w-5 h-5 text-emerald-500 mr-2" />
             <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Username:</span>
             <span className="ml-2 bg-slate-50 border border-slate-100 px-3 py-1 rounded-lg text-sm font-black text-slate-900">{user?.username}</span>
           </div>
@@ -111,7 +111,7 @@ function ConsumerProfile() {
         <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden">
           <div className="p-8 border-b border-slate-100 bg-slate-50/50">
             <h2 className="text-xl font-black text-slate-900 tracking-tight">Personal Information</h2>
-            <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1">Verified Identity Record</p>
+            <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-1">Verified Identity Record</p>
           </div>
           <form onSubmit={handleSubmit} className="p-8 space-y-8">
             {message && (
@@ -134,7 +134,7 @@ function ConsumerProfile() {
                     type="text"
                     value={formData.firstName}
                     onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                    className="pl-12 w-full rounded-2xl border border-slate-200 p-4 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 bg-slate-50 transition font-bold text-slate-900"
+                    className="pl-12 w-full rounded-2xl border border-slate-200 p-4 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 bg-slate-50 transition font-bold text-slate-900"
                     required
                   />
                 </div>
@@ -150,7 +150,7 @@ function ConsumerProfile() {
                     type="text"
                     value={formData.lastName}
                     onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                    className="pl-12 w-full rounded-2xl border border-slate-200 p-4 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 bg-slate-50 transition font-bold text-slate-900"
+                    className="pl-12 w-full rounded-2xl border border-slate-200 p-4 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 bg-slate-50 transition font-bold text-slate-900"
                     required
                   />
                 </div>
@@ -166,7 +166,7 @@ function ConsumerProfile() {
                     type="tel"
                     value={formData.contactNumber}
                     onChange={(e) => setFormData({...formData, contactNumber: e.target.value})}
-                    className="pl-12 w-full rounded-2xl border border-slate-200 p-4 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 bg-slate-50 transition font-bold text-slate-900"
+                    className="pl-12 w-full rounded-2xl border border-slate-200 p-4 focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 bg-slate-50 transition font-bold text-slate-900"
                   />
                 </div>
               </div>
@@ -176,7 +176,7 @@ function ConsumerProfile() {
               <button
                 type="submit"
                 disabled={saving}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition shadow-xl shadow-blue-200 hover:scale-105 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition shadow-xl shadow-emerald-200 hover:scale-105 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {saving ? 'Saving Changes...' : 'Save Profile'}
               </button>

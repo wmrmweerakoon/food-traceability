@@ -42,9 +42,9 @@ function TraceView() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
         <div className="relative">
-          <Loader2 className="w-16 h-16 text-blue-600 animate-spin" />
+          <Loader2 className="w-16 h-16 text-emerald-600 animate-spin" />
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+            <div className="w-2 h-2 bg-emerald-600 rounded-full"></div>
           </div>
         </div>
         <p className="mt-6 text-slate-500 font-bold uppercase tracking-[0.3em] text-[10px]">
@@ -112,7 +112,7 @@ function TraceView() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
-                <div className="bg-blue-600 px-3 py-1 rounded-full flex items-center">
+                <div className="bg-emerald-600 px-3 py-1 rounded-full flex items-center">
                   <ShieldCheck className="w-3 h-3 text-white mr-2" />
                   <span className="text-[10px] font-black text-white uppercase tracking-widest">AgriTrace Verified</span>
                 </div>
@@ -128,7 +128,7 @@ function TraceView() {
                 {farm.productName}
               </h1>
               <div className="flex items-center font-mono text-sm text-slate-400 bg-slate-50 px-4 py-2 rounded-xl w-fit">
-                Batch: <span className="text-blue-600 font-black ml-2">{farm.batchId}</span>
+                Batch: <span className="text-emerald-600 font-black ml-2">{farm.batchId}</span>
               </div>
             </div>
 
@@ -137,7 +137,7 @@ function TraceView() {
                <p className="text-xl font-black text-slate-900">
                  {typeof farm.location === 'object' && farm.location !== null ? (farm.location.locationName || farm.location.type || 'Verified Origin') : (farm.location || 'Verified Origin')}
                </p>
-               <p className="text-sm font-bold text-blue-600 mt-1">Authenticity Guaranteed</p>
+               <p className="text-sm font-bold text-emerald-600 mt-1">Authenticity Guaranteed</p>
             </div>
           </div>
         </div>
@@ -147,7 +147,7 @@ function TraceView() {
         {/* 📊 High-Fidelity Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
           <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
-            <Calendar className="w-5 h-5 text-blue-600 mb-3" />
+            <Calendar className="w-5 h-5 text-emerald-600 mb-3" />
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Harvested</p>
             <p className="text-sm font-black text-slate-900 mt-1">
               {new Date(farm.harvestDate).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -159,7 +159,7 @@ function TraceView() {
             <p className="text-sm font-black text-slate-900 mt-1">{farm.storageConditions?.temperature || '4°C Verified'}</p>
           </div>
           <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
-            <Droplets className="w-5 h-5 text-blue-400 mb-3" />
+            <Droplets className="w-5 h-5 text-emerald-400 mb-3" />
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Humidity</p>
             <p className="text-sm font-black text-slate-900 mt-1">{farm.storageConditions?.humidity || '65% Optimal'}</p>
           </div>
@@ -174,7 +174,7 @@ function TraceView() {
         <div className="space-y-10">
           <div className="flex items-center justify-between px-2">
             <h2 className="text-2xl font-black text-slate-900 tracking-tight">Full Lifecycle History</h2>
-            <Link to="/register" className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline flex items-center">
+            <Link to="/register" className="text-[10px] font-black text-emerald-600 uppercase tracking-widest hover:underline flex items-center">
               Claim Ownership <ChevronRight className="w-3 h-3 ml-1" />
             </Link>
           </div>
@@ -185,7 +185,7 @@ function TraceView() {
           <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 shadow-sm">
              <div className="flex items-center space-x-3 mb-8">
                 <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center">
-                   <MapPin className="w-5 h-5 text-blue-600" />
+                   <MapPin className="w-5 h-5 text-emerald-600" />
                 </div>
                 <h3 className="text-xl font-black text-slate-900">Origin Verification</h3>
              </div>
@@ -213,7 +213,7 @@ function TraceView() {
                    <p className="text-sm font-bold text-slate-600 mb-4 italic leading-relaxed">
                       "Our farm implements regenerative agriculture protocols to ensure soil health and maximum nutrient density in every harvest."
                    </p>
-                   <div className="flex items-center text-xs font-black text-blue-600 uppercase tracking-widest">
+                   <div className="flex items-center text-xs font-black text-emerald-600 uppercase tracking-widest">
                       <CheckCircle className="w-3 h-3 mr-2" />
                       Inspector Verified
                    </div>
@@ -225,7 +225,7 @@ function TraceView() {
         {/* 💬 Feedback & Reviews Section */}
         <section className="mt-20">
             <div className="flex items-center space-x-2 mb-8 px-2">
-                <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                <div className="w-2 h-2 bg-emerald-600 rounded-full"></div>
                 <h2 className="text-2xl font-black text-slate-900 tracking-tight">Community Verification</h2>
             </div>
             <FeedbackSection batchId={batchId} />
