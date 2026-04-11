@@ -27,6 +27,13 @@ function RetailerDashboard() {
   const [selectedShipment, setSelectedShipment] = useState(null);
   const [validationData, setValidationData] = useState(null);
   
+  // Sales flow states
+  const [isSaleModalOpen, setIsSaleModalOpen] = useState(false);
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
+  const [selectedSaleItem, setSelectedSaleItem] = useState(null);
+  const [saleQuantity, setSaleQuantity] = useState(1);
+  const [lastTransaction, setLastTransaction] = useState(null);
+  
   // Store management modal states
   const [isStoreModalOpen, setIsStoreModalOpen] = useState(false);
   const [selectedStore, setSelectedStore] = useState(null);
@@ -121,10 +128,30 @@ function RetailerDashboard() {
     }
   };
 
-  const handleSellItem = async (batchId) => {
+  const handleSellItem = (item) => {
+    setSelectedSaleItem(item);
+    setSaleQuantity(1);
+    setIsSaleModalOpen(true);
+  };
+
+  const handleConfirmSale = async () => {
+    if (saleQuantity <= 0 || saleQuantity > selectedSaleItem.quantityAvailable) {
+      alert('Invalid quantity selected');
+      return;
+    }
+
     try {
-      const response = await retailerAPI.sellProduct(batchId, 1);
+      const response = await retailerAPI.sellProduct(selectedSaleItem.batchId, saleQuantity);
       if (response.success) {
+        setLastTransaction({
+          ...selectedSaleItem,
+          quantitySold: saleQuantity,
+          totalAmount: saleQuantity * selectedSaleItem.unitPrice,
+          transactionDate: new Date(),
+          receiptId: `REC-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
+        });
+        setIsSaleModalOpen(false);
+        setIsReceiptModalOpen(true);
         loadDashboardData();
       }
     } catch (error) {
@@ -233,6 +260,20 @@ function RetailerDashboard() {
     if (status === 'discontinued') return 'bg-slate-400 text-white';
     return 'bg-emerald-500 text-white';
   };
+
+  const allSales = inventory.reduce((acc, item) => {
+    if (item.salesHistory) {
+      const sales = item.salesHistory.map(sale => ({
+        ...sale,
+        productName: item.productId?.productName || item.productName,
+        batchId: item.batchId,
+        unitPrice: item.unitPrice,
+        currency: item.currency
+      }));
+      return [...acc, ...sales];
+    }
+    return acc;
+  }, []).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
 
   if (loading && inventory.length === 0) {
     return (
@@ -507,15 +548,45 @@ function RetailerDashboard() {
                         </span>
                       </div>
                     </div>
-                    
-                    <button 
-                      onClick={() => handleSellItem(item.batchId)}
-                      disabled={item.quantityAvailable === 0}
-                      className="w-full py-3 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:bg-slate-200"
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      <span>Process Sale</span>
-                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Sales Activity Feed */}
+        <section className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-2">
+              <ClipboardList className="w-6 h-6 text-blue-600" />
+              <h2 className="text-xl font-black text-slate-900">Recent Activity</h2>
+            </div>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Global Sales Feed</span>
+          </div>
+
+          {allSales.length === 0 ? (
+            <div className="bg-white rounded-3xl border border-slate-100 p-8 text-center">
+              <p className="text-slate-400 text-sm font-bold">No recent sales activity detected.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {allSales.map((sale, idx) => (
+                <div key={idx} className="bg-white border border-slate-100 rounded-[2rem] p-5 flex items-center justify-between shadow-sm hover:shadow-md transition group">
+                  <div className="flex items-center space-x-4">
+                    <div className="bg-emerald-50 p-3 rounded-2xl text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-500">
+                      <ShoppingCart className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-black text-slate-900 text-sm">{sale.productName}</h4>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase mt-0.5">
+                        {new Date(sale.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • Batch: {sale.batchId}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-black text-slate-900">+{sale.currency} {sale.revenue.toFixed(2)}</p>
+                    <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-tight">Qty: {sale.quantitySold}</p>
                   </div>
                 </div>
               ))}
@@ -866,9 +937,115 @@ function RetailerDashboard() {
             </div>
             <div className="flex justify-end gap-3 pt-4">
               <button type="button" onClick={() => setIsEditModalOpen(false)} className="px-8 py-3 text-slate-500 font-bold hover:bg-slate-50 rounded-2xl transition">Cancel</button>
-              <button type="submit" className="px-10 py-3 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition shadow-xl shadow-slate-200">Notify Changes</button>
+              <button type="submit" className="px-10 py-3 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition shadow-xl shadow-slate-200">Save Changes</button>
             </div>
           </form>
+        </Modal>
+      )}
+
+      {/* Sale Configuration Modal */}
+      {isSaleModalOpen && selectedSaleItem && (
+        <Modal 
+          title="Finalize Sale" 
+          onClose={() => setIsSaleModalOpen(false)}
+          subtitle={`Batch ID: ${selectedSaleItem.batchId}`}
+        >
+          <div className="space-y-8">
+            <div className="flex items-center space-x-6 p-6 bg-slate-50 rounded-[2rem] border border-slate-100">
+              <div className="bg-blue-600 p-4 rounded-2xl shadow-lg shadow-blue-100">
+                <Package className="text-white w-8 h-8" />
+              </div>
+              <div>
+                <h4 className="text-lg font-black text-slate-900">{selectedSaleItem.productName}</h4>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{selectedSaleItem.category}</p>
+              </div>
+              <div className="ml-auto text-right">
+                <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Price Per Unit</p>
+                <p className="text-xl font-black text-blue-600">{selectedSaleItem.currency} {selectedSaleItem.unitPrice.toFixed(2)}</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Transaction Quantity</label>
+                <span className="text-[10px] font-bold text-slate-400 uppercase">Available: {selectedSaleItem.quantityAvailable}</span>
+              </div>
+              <div className="flex items-center space-x-4">
+                <button 
+                  onClick={() => setSaleQuantity(Math.max(1, saleQuantity - 1))}
+                  className="w-14 h-14 rounded-2xl border-2 border-slate-100 flex items-center justify-center hover:bg-slate-50 transition font-black text-xl"
+                >-</button>
+                <input 
+                  type="number" 
+                  value={saleQuantity} 
+                  onChange={(e) => setSaleQuantity(Math.min(selectedSaleItem.quantityAvailable, Math.max(1, parseInt(e.target.value) || 1)))}
+                  className="flex-1 h-14 rounded-2xl border-2 border-slate-100 text-center font-black text-xl focus:border-blue-500 outline-none"
+                />
+                <button 
+                  onClick={() => setSaleQuantity(Math.min(selectedSaleItem.quantityAvailable, saleQuantity + 1))}
+                  className="w-14 h-14 rounded-2xl border-2 border-slate-100 flex items-center justify-center hover:bg-slate-50 transition font-black text-xl"
+                >+</button>
+              </div>
+            </div>
+
+            <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16"></div>
+              <div className="relative z-10 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-2">Total Amount</p>
+                  <p className="text-4xl font-black">{selectedSaleItem.currency} {(selectedSaleItem.unitPrice * saleQuantity).toFixed(2)}</p>
+                </div>
+                <button 
+                  onClick={handleConfirmSale}
+                  className="bg-white text-slate-900 px-8 py-4 rounded-3xl font-black text-sm uppercase tracking-widest hover:bg-blue-400 hover:text-white transition-all transform hover:scale-105"
+                >
+                  Commit Sale
+                </button>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* Transaction Receipt Modal */}
+      {isReceiptModalOpen && lastTransaction && (
+        <Modal 
+          title="Sale Confirmed" 
+          onClose={() => setIsReceiptModalOpen(false)}
+        >
+          <div className="flex flex-col items-center py-4">
+            <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mb-6 animate-bounce">
+              <CheckCircle className="w-10 h-10 text-emerald-500" />
+            </div>
+            <h4 className="text-2xl font-black text-slate-900 mb-2 text-center uppercase tracking-tighter">Digital Receipt Generated</h4>
+            <p className="text-slate-400 text-xs font-bold mb-8">Ref: {lastTransaction.receiptId}</p>
+
+            <div className="w-full border-t border-b border-dashed border-slate-200 py-6 space-y-4 mb-8 font-mono text-sm">
+              <div className="flex justify-between">
+                <span className="text-slate-400 uppercase">Product</span>
+                <span className="font-bold text-slate-900">{lastTransaction.productName}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400 uppercase">Quantity</span>
+                <span className="font-bold text-slate-900">x{lastTransaction.quantitySold}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400 uppercase">Unit Price</span>
+                <span className="font-bold text-slate-900">{lastTransaction.currency} {lastTransaction.unitPrice.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between pt-4 border-t border-slate-100">
+                <span className="text-slate-400 font-bold uppercase">Total Charged</span>
+                <span className="font-black text-blue-600 text-lg">{lastTransaction.currency} {lastTransaction.totalAmount.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <button 
+              onClick={() => setIsReceiptModalOpen(false)}
+              className="w-full py-4 bg-slate-100 text-slate-500 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition"
+            >
+              Close Receipt
+            </button>
+          </div>
         </Modal>
       )}
 
