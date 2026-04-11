@@ -43,8 +43,15 @@ function Register() {
       return;
     }
 
+    // Email Pattern Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Invalid Email Pattern: Please include an @ and a valid domain (e.g. name@example.com).');
+      return;
+    }
+
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError('Registration Failed: Password is too short! It must be at least 6 characters long.');
       return;
     }
 

@@ -24,6 +24,19 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    // Form Validation 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Invalid email format. Please use a valid pattern (e.g., name@domain.com)');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Security Alert: Password must be at least 6 characters long');
+      return;
+    }
+
     setLoading(true);
 
     const result = await login(formData);
