@@ -8,7 +8,7 @@ import {
   Truck, Plus, X, Edit2, CheckCircle, MapPin, 
   Activity, Trash2, Navigation, ArrowRight,
   Clock, Thermometer, ShieldCheck, AlertTriangle,
-  ChevronRight
+  ChevronRight, Search, Package, Calendar, AlertCircle, CheckCircle2, XCircle
 } from 'lucide-react';
 
 function DistributorDashboard() {
@@ -17,6 +17,8 @@ function DistributorDashboard() {
   const [availableBatches, setAvailableBatches] = useState([]);
   const [selectedTransport, setSelectedTransport] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -270,11 +272,31 @@ function DistributorDashboard() {
     }
   };
 
+  const filteredTransports = transports.filter(t => {
+    const matchesTab = activeTab === 'All' || (t.deliveryStatus || 'Pending').toLowerCase() === activeTab.toLowerCase();
+    
+    const query = searchQuery.toLowerCase();
+    const productName = (t.batchId?.productName || '').toLowerCase();
+    const batchId = (t.batchId?.batchId || '').toLowerCase();
+    const transportId = (t.transportId || '').toLowerCase();
+    
+    const matchesSearch = productName.includes(query) || batchId.includes(query) || transportId.includes(query);
+    
+    return matchesTab && matchesSearch;
+  });
+
+  const getStatusCount = (status) => {
+    if (status === 'All') return transports.length;
+    return transports.filter(t => (t.deliveryStatus || 'Pending').toLowerCase() === status.toLowerCase()).length;
+  };
+
 // Modern Shipment Card Component
 const ShipmentCard = ({ transport, isSelected, onClick }) => {
   const batchIdStr = typeof transport.batchId === 'object' && transport.batchId !== null 
     ? transport.batchId.batchId 
     : transport.batchId;
+
+  const productName = transport.batchId?.productName || 'Harvest Product';
 
   const statusColors = {
     'pending': 'bg-slate-100 text-slate-600',
@@ -293,9 +315,21 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
       }`}
     >
       <div className="flex justify-between items-start mb-4">
-        <div>
-          <h4 className="text-lg font-bold text-slate-900">{batchIdStr}</h4>
-          <p className="text-xs text-slate-500 font-medium">Internal ID: {transport.transportId}</p>
+        <div className="flex items-start gap-3">
+          <div className={`p-2 rounded-lg ${isSelected ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-400'}`}>
+            <Package className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="text-base font-black text-slate-900 leading-tight">{productName}</h4>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                {batchIdStr}
+              </span>
+              <span className="text-[10px] text-slate-400 font-medium whitespace-nowrap">
+                 • Producer: {transport.batchId?.farmerId?.firstName || 'Farmer'}
+              </span>
+            </div>
+          </div>
         </div>
         <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${statusColors[transport.deliveryStatus?.toLowerCase()] || 'bg-slate-100 text-slate-600'}`}>
           {transport.deliveryStatus || 'Pending'}
@@ -359,20 +393,53 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
           {/* Active Deliveries */}
           <div className="bg-white/50 rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col h-[750px]">
             <div className="p-6 border-b border-slate-100 bg-white">
-              <div className="flex justify-between items-center mb-1">
+              <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-black text-slate-800 flex items-center uppercase tracking-tight">
                   <Truck className="w-5 h-5 mr-3 text-blue-600"/> 
                   Live Deliveries
                 </h2>
                 <span className="bg-blue-100 text-blue-600 text-[10px] font-black px-2 py-1 rounded-lg uppercase">
-                  {transports.length} Active
+                  {getStatusCount(activeTab)} {activeTab}
                 </span>
               </div>
-              <p className="text-xs text-slate-400 font-medium">Monitoring real-time telemetry from transport nodes</p>
+              
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input 
+                  type="text" 
+                  placeholder="Search by product name, batch, or ID..." 
+                  className="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-100 rounded-xl text-xs font-medium transition-all outline-none"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
             </div>
+
+            {/* Status Tabs */}
+            <div className="bg-slate-50 p-2 border-b border-slate-100 flex gap-1 overflow-x-auto no-scrollbar">
+              {['All', 'Pending', 'In-Transit', 'Delivered', 'Cancelled'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap flex items-center gap-2 ${
+                    activeTab === tab
+                      ? 'bg-white text-blue-600 shadow-sm ring-1 ring-slate-200'
+                      : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  {tab}
+                  <span className={`px-1.5 py-0.5 rounded-md text-[8px] ${
+                    activeTab === tab ? 'bg-blue-50 text-blue-600' : 'bg-slate-200 text-slate-500'
+                  }`}>
+                    {getStatusCount(tab)}
+                  </span>
+                </button>
+              ))}
+            </div>
+
             <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
-              {transports.length > 0 ? (
-                transports.map((transport) => (
+              {filteredTransports.length > 0 ? (
+                filteredTransports.map((transport) => (
                   <ShipmentCard 
                     key={transport._id} 
                     transport={transport} 
@@ -381,12 +448,20 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
                   />
                 ))
               ) : (
-                <div className="h-full flex flex-col items-center justify-center text-center p-10">
+                <div className="h-full flex flex-col items-center justify-center text-center p-10 mt-10">
                   <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-4">
                     <Truck className="w-10 h-10 text-slate-300" />
                   </div>
-                  <h3 className="text-slate-800 font-bold">No Shipments Found</h3>
-                  <p className="text-slate-400 text-sm mt-1 max-w-[200px]">Start a new transport leg to begin monitoring logistics.</p>
+                  <h3 className="text-slate-800 font-bold">
+                    {searchQuery ? "No Matches Found" : `No ${activeTab !== 'All' ? activeTab : ''} Shipments`}
+                  </h3>
+                  <p className="text-slate-400 text-sm mt-1 max-w-[200px]">
+                    {searchQuery 
+                      ? "Try a different product name or keyword." 
+                      : (activeTab === 'All' 
+                          ? 'Start a new transport leg to begin monitoring logistics.'
+                          : `Currently no deliveries marked as ${activeTab}.`)}
+                  </p>
                 </div>
               )}
             </div>
@@ -563,7 +638,7 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
                     {availableBatches.length > 0 ? (
                       availableBatches.map(batch => (
                         <option key={batch._id} value={batch.batchId}>
-                          {batch.productName} ({batch.batchId})
+                          {batch.productName} ({batch.batchId}) - Farmer: {batch.farmerId?.firstName || 'Unknown'}
                         </option>
                       ))
                     ) : (

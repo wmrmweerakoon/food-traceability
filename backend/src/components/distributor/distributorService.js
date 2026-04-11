@@ -433,7 +433,14 @@ const deleteTransport = async (batchIdInput, userId) => {
  */
 const getAllTransports = async (userId) => {
     const transports = await TransportDetails.find({ transporterId: userId })
-        .populate('batchId', 'batchId productName harvestDate expiryDate')
+        .populate({
+            path: 'batchId',
+            select: 'batchId productName harvestDate expiryDate farmerId',
+            populate: {
+                path: 'farmerId',
+                select: 'firstName lastName username'
+            }
+        })
         .populate('transporterId', 'username email firstName lastName');
 
     return transports;
@@ -447,7 +454,8 @@ const getAvailableBatches = async () => {
     const assignedBatchIds = transports.map(t => t.batchId);
     
     return await ProductBatch.find({ _id: { $nin: assignedBatchIds } })
-                             .select('batchId productName harvestDate expiryDate quantity');
+                             .populate('farmerId', 'firstName lastName username')
+                             .select('batchId productName harvestDate expiryDate quantity farmerId');
 };
 
 module.exports = {

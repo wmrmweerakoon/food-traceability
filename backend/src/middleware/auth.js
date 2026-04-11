@@ -16,6 +16,7 @@ const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
   if (!token) {
+    console.log('[AUTH] No token found in authorization header');
     return res.status(401).json({ 
       success: false, 
       message: 'Access token is required' 
@@ -24,12 +25,14 @@ const authenticateToken = (req, res, next) => {
 
   jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', (err, decoded) => {
     if (err) {
+      console.log('[AUTH] Token verification failed:', err.message);
       return res.status(403).json({ 
         success: false, 
         message: 'Invalid or expired token' 
       });
     }
     
+    console.log(`[AUTH] User authenticated: ${decoded.id} (Role: ${decoded.role})`);
     req.user = decoded;
     next();
   });
@@ -46,12 +49,14 @@ const authorizeRoles = (...roles) => {
     }
 
     if (!roles.includes(req.user.role)) {
+      console.log(`[AUTH] Access Denied. User role "${req.user.role}" not in required roles: [${roles.join(', ')}]`);
       return res.status(403).json({ 
         success: false, 
         message: `Access denied. Required roles: ${roles.join(', ')}` 
       });
     }
 
+    console.log(`[AUTH] Role verified: ${req.user.role}`);
     next();
   };
 };

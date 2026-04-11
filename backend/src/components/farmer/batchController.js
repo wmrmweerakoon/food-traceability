@@ -34,18 +34,10 @@ const createBatch = async (req, res) => {
       });
     }
 
-    // Check if user is authenticated and is a farmer
-    if (!req.user || !req.user.id || !req.user.role) {
+    if (!req.user || !req.user.id) {
       return res.status(401).json({
         success: false,
         message: 'User not authenticated properly',
-      });
-    }
-
-    if (req.user.role !== 'ROLE_FARMER') {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied. Farmers only.',
       });
     }
 
@@ -96,12 +88,7 @@ const createBatch = async (req, res) => {
 // Get all batches for a farmer
 const getBatches = async (req, res) => {
   try {
-    if (!req.user || req.user.role !== 'ROLE_FARMER') {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied. Farmers only.',
-      });
-    }
+    // Role already checked by middleware
 
     const batches = await ProductBatch.find({ farmerId: req.user.id }).populate(
       'farmerId',

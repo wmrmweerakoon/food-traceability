@@ -67,78 +67,128 @@ function FarmerDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-slate-50 font-['Outfit',sans-serif]">
+      {/* Premium Forest Header */}
+      <div className="bg-white border-b border-green-100 sticky top-0 z-10 backdrop-blur-md bg-white/80">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Farmer Dashboard</h1>
-              <p className="text-gray-600 mt-1">Welcome back, {user?.firstName}!</p>
+              <p className="text-emerald-600 font-bold uppercase tracking-widest text-[10px] mb-2 flex items-center">
+                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-2 animate-pulse"></span>
+                Farmer Console
+              </p>
+              <h1 className="text-4xl font-black text-green-950 tracking-tight">Agri-Producer Portal</h1>
+              <p className="text-slate-500 font-medium mt-1 inline-flex items-center">
+                Reviewing harvest logs for 
+                <span className="ml-2 px-3 py-1 bg-green-900 text-white rounded-full text-[11px] font-black uppercase tracking-wider shadow-lg shadow-green-900/20">
+                  {user?.firstName || 'Partner'}
+                </span>
+              </p>
             </div>
             <button
               onClick={() => navigate('/farmer/batches/new')}
-              className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              className="group flex items-center px-8 py-4 bg-green-950 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl shadow-green-950/20 hover:bg-green-900 hover:scale-[1.02] active:scale-[0.98] transition-all"
             >
-              <Plus className="w-5 h-5 mr-2" />
-              Create Batch
+              <Plus className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform duration-300" />
+              Log New Harvest
             </button>
           </div>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-3 bg-green-100 rounded-lg">
-                <Package className="w-6 h-6 text-green-600" />
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
+        {/* Organic Stats Hub */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {/* Total Batches Card */}
+          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 hover:shadow-xl hover:border-emerald-200 hover:bg-emerald-50/30 transition-all duration-300 group">
+            <div className="flex items-center gap-5">
+              <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500 shadow-inner">
+                <Package className="w-6 h-6" />
               </div>
-              <div className="ml-4">
-                <p className="text-sm text-gray-600">Total Batches</p>
-                <p className="text-2xl font-bold text-gray-900">{batches.length}</p>
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Batches</p>
+                <p className="text-3xl font-black text-green-950">
+                  {batches.length} <span className="text-xs text-slate-300 font-bold ml-1 uppercase">units</span>
+                </p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <QrCode className="w-6 h-6 text-blue-600" />
+
+          {/* Active Batches Card */}
+          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 hover:shadow-xl hover:border-teal-200 hover:bg-teal-50/30 transition-all duration-300 group">
+            <div className="flex items-center gap-5">
+              <div className="p-4 bg-teal-50 border border-teal-100 rounded-2xl text-teal-600 group-hover:bg-teal-600 group-hover:text-white transition-all duration-500 shadow-inner">
+                <QrCode className="w-6 h-6" />
               </div>
-              <div className="ml-4">
-                <p className="text-sm text-gray-600">Active Batches</p>
-                <p className="text-2xl font-bold text-gray-900">
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">In Circulation</p>
+                <p className="text-3xl font-black text-green-950">
                   {batches.filter(b => b.status === 'active').length}
                 </p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-3 bg-purple-100 rounded-lg">
-                <Package className="w-6 h-6 text-purple-600" />
+
+          {/* Volume Card */}
+          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 hover:shadow-xl hover:border-amber-200 hover:bg-amber-50/30 transition-all duration-300 group">
+            <div className="flex items-center gap-5">
+              <div className="p-4 bg-amber-50 border border-amber-100 rounded-2xl text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-all duration-500 shadow-inner">
+                <Package className="w-6 h-6" />
               </div>
-              <div className="ml-4">
-                <p className="text-sm text-gray-600">Total Products</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {batches.reduce((sum, b) => sum + (b.quantity || 0), 0)}
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Harvest Volume</p>
+                <div className="flex items-baseline gap-1">
+                  <p className="text-3xl font-black text-green-950">
+                    {batches.reduce((sum, b) => sum + (Number(b.quantity) || 0), 0).toLocaleString()}
+                  </p>
+                  <span className="text-xs font-bold text-amber-600/70 tracking-tighter uppercase">Net kg</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Varieties Card */}
+          <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 hover:shadow-xl hover:border-lime-200 hover:bg-lime-50/30 transition-all duration-300 group">
+            <div className="flex items-center gap-5">
+              <div className="p-4 bg-lime-50 border border-lime-100 rounded-2xl text-lime-600 group-hover:bg-lime-600 group-hover:text-white transition-all duration-500 shadow-inner">
+                <Plus className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Cultivations</p>
+                <p className="text-3xl font-black text-green-950">
+                  {new Set(batches.map(b => b.productName?.toLowerCase().trim())).size}
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Batches Table */}
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Product Batches</h2>
-          <DataTable
-            data={batches}
-            columns={columns}
-            searchable
-            pagination
-            onRowClick={(row) => navigate(`/farmer/batches/${row._id}`)}
-          />
+        {/* Traceability Table Container */}
+        <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
+          <div className="px-8 py-8 border-b border-slate-100 flex items-center justify-between bg-green-50/30">
+            <div className="flex items-center gap-3">
+              <div className="bg-white p-2.5 rounded-2xl shadow-sm border border-emerald-100">
+                <Package className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-black text-green-950 tracking-tight text-shadow-sm">Managed Harvest Units</h2>
+                <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-0.5 opacity-70">Supply Chain Traceability Intel</p>
+              </div>
+            </div>
+            <div className="flex items-center bg-white px-4 py-2 rounded-xl border border-emerald-100 shadow-sm">
+               <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse mr-2"></span>
+               <span className="text-[10px] font-black text-emerald-700 uppercase tracking-widest">Active Tracking</span>
+            </div>
+          </div>
+          <div className="p-4">
+            <DataTable
+              data={batches}
+              columns={columns}
+              searchable
+              pagination
+              onRowClick={(row) => navigate(`/farmer/batches/${row._id}`)}
+            />
+          </div>
         </div>
       </div>
     </div>

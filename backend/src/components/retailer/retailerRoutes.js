@@ -11,7 +11,15 @@ const {
     deleteInventoryItem,
     validateProductExpiry,
     getRetailerStores,
-    getAvailableBatches
+    getAvailableBatches,
+    getIncomingShipments,
+    getItemByBatchId,
+    updateItemByBatchId,
+    deleteItemByBatchId,
+    sellProductByBatchId,
+    createStore,
+    updateStore,
+    deleteStore
 } = require('./inventoryController');
 
 
@@ -19,41 +27,33 @@ const {
 router.use(authenticateToken, retailerOnly);
 
 
-// Add product to inventory
-// POST api/retailer/inventory
+// --- Standard Inventory Routes (UI Compatibility) ---
 router.post('/inventory', addProductToInventory);
-
-
-// Get all inventory items for logged-in retailer
-// GET api/retailer/inventory
 router.get('/inventory', getInventoryItems);
-
-
-// Get single inventory item by ID
-// GET api/retailer/inventory/:id
 router.get('/inventory/:id', getInventoryItemById);
-
-
-// Update inventory item
-// PUT api/retailer/inventory/:id
 router.put('/inventory/:id', updateInventoryItem);
-
-
-// Delete inventory item
-// DELETE api/retailer/inventory/:id
 router.delete('/inventory/:id', deleteInventoryItem);
 
+// --- Strict Functional Requirements (Matching Project Spec) ---
+// POST /store Add Product to Store
+router.post('/store', addProductToInventory);
+// GET /store/:batchId View Store Product
+router.get('/store/:batchId', getItemByBatchId);
+// PUT /store/:batchId Update Store Details
+router.put('/store/:batchId', updateItemByBatchId);
+// DELETE /store/:batchId Remove Product
+router.delete('/store/:batchId', deleteItemByBatchId);
+// POST /store/:batchId/sell Sell Product
+router.post('/store/:batchId/sell', sellProductByBatchId);
 
-// Validate product expiry using OpenFoodFacts API
-// POST api/retailer/validate-expiry
+
+// --- Additional Utility Routes ---
+router.get('/incoming-shipments', getIncomingShipments);
 router.post('/validate-expiry', validateProductExpiry);
-
-
-// Get retailer's stores
 router.get('/stores', getRetailerStores);
-
-
-// Get available product batches
+router.post('/stores', createStore);
+router.put('/stores/:id', updateStore);
+router.delete('/stores/:id', deleteStore);
 router.get('/batches', getAvailableBatches);
 
 

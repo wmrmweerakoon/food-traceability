@@ -41,5 +41,30 @@ export const retailerAPI = {
     const response = await api.get('/api/retailer/batches');
     return response.data;
   },
+
+  getIncomingShipments: async () => {
+    const response = await api.get('/api/retailer/incoming-shipments');
+    return response.data;
+  },
+
+  sellProduct: async (batchId, quantity = 1) => {
+    const response = await api.post(`/api/retailer/store/${batchId}/sell`, { quantity });
+    return response.data;
+  },
+
+  createRetailerStore: async (storeData) => {
+    const response = await api.post('/api/retailer/stores', storeData);
+    return response.data;
+  },
+
+  updateRetailerStore: async (id, storeData) => {
+    const response = await api.put(`/api/retailer/stores/${id}`, storeData);
+    return response.data;
+  },
+
+  deleteRetailerStore: async (id) => {
+    const response = await api.delete(`/api/retailer/stores/${id}`);
+    return response.data;
+  },
 };
 
