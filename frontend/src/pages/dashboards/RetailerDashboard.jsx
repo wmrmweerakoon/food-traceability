@@ -18,6 +18,7 @@ function RetailerDashboard() {
   const [availableBatches, setAvailableBatches] = useState([]);
   const [incomingShipments, setIncomingShipments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [exchangeRates, setExchangeRates] = useState({ USD: 0.0033, EUR: 0.0031 });
 
   // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -75,6 +76,9 @@ function RetailerDashboard() {
       if (storeRes.success) setStores(storeRes.data || []);
       if (batchRes.success) setAvailableBatches(batchRes.data || []);
       if (shipRes.success) setIncomingShipments(shipRes.data || []);
+      
+      const ratesRes = await retailerAPI.getGlobalPricing();
+      if (ratesRes.success) setExchangeRates(ratesRes.rates);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     } finally {
@@ -541,6 +545,22 @@ function RetailerDashboard() {
                           {new Date(item.expiryDate).toLocaleDateString()}
                         </span>
                       </div>
+                      
+                      {/* Global Pricing Tooltip Component */}
+                      <div className="flex items-center justify-between pt-2 border-t border-slate-100 mt-2">
+                        <span className="text-[9px] text-slate-400 font-black uppercase flex items-center">
+                          <Globe className="w-2.5 h-2.5 mr-1 text-indigo-400" /> Export Potential
+                        </span>
+                        <div className="flex space-x-2">
+                          <span className="text-[10px] bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded-md font-black">
+                            ${(item.unitPrice * (exchangeRates.USD || 0.0033)).toFixed(2)}
+                          </span>
+                          <span className="text-[10px] bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-md font-black">
+                            €{(item.unitPrice * (exchangeRates.EUR || 0.0031)).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+
                       <div className="flex items-center justify-between pt-1 border-t border-slate-200 mt-1">
                         <span className="text-slate-400 font-bold uppercase">Location</span>
                         <span className="text-slate-900 font-medium truncate w-24 text-right">

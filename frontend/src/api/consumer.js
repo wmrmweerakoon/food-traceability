@@ -42,6 +42,11 @@ export const consumerAPI = {
   getFeedback: async (batchId) => {
     const response = await api.get(`/api/consumer/feedback/${batchId}`);
     return response.data;
+  },
+
+  getDailyHealthTip: async () => {
+    const response = await api.get('/api/consumer/health-tip');
+    return response.data;
   }
 };
 

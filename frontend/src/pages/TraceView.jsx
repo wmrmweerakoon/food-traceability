@@ -3,13 +3,14 @@ import { useParams, Link } from 'react-router-dom';
 import { consumerAPI } from '../api/consumer';
 import ProductJourney from '../components/ProductJourney';
 import FeedbackSection from '../components/FeedbackSection';
-import { ShieldCheck, Calendar, MapPin, Thermometer, Droplets, CheckCircle, AlertCircle, Loader2, ChevronRight } from 'lucide-react';
+import { ShieldCheck, Calendar, MapPin, Thermometer, Droplets, CheckCircle, AlertCircle, Loader2, ChevronRight, Globe } from 'lucide-react';
 
 function TraceView() {
   const { batchId } = useParams();
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [healthTip, setHealthTip] = useState('');
 
   useEffect(() => {
     const loadReport = async () => {
@@ -33,8 +34,23 @@ function TraceView() {
       }
     };
 
+    const loadHealthTip = async () => {
+      try {
+        const response = await consumerAPI.getDailyHealthTip();
+        if (response.success) {
+          setHealthTip(response.tip);
+        }
+      } catch (err) {
+        console.error('Error loading health tip:', err);
+        console.error('Get Feedback Error:', err);
+        const statusCode = err.message === 'Product not found' ? 404 : 400;
+        console.log('Status Code:', statusCode);
+      }
+    };
+
     if (batchId) {
       loadReport();
+      loadHealthTip();
     }
   }, [batchId]);
 
@@ -230,6 +246,32 @@ function TraceView() {
             </div>
             <FeedbackSection batchId={batchId} />
         </section>
+
+        {/* 🌿 Healthy Tip of the Day (3rd Party API Integration) */}
+        {healthTip && (
+          <div className="mt-16 animate-in slide-in-from-bottom-5 duration-1000">
+             <div className="bg-emerald-900 rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl">
+                <div className="absolute top-0 right-0 p-8 opacity-10">
+                   <ShieldCheck className="w-32 h-32" />
+                </div>
+                <div className="relative z-10">
+                   <div className="flex items-center space-x-3 mb-6">
+                      <div className="bg-white/10 p-2 rounded-xl">
+                         <CheckCircle className="w-5 h-5 text-emerald-400" />
+                      </div>
+                      <span className="text-xs font-black uppercase tracking-[0.3em] text-emerald-400">Pro-Health Insight</span>
+                   </div>
+                   <h3 className="text-2xl font-black mb-4 leading-tight">Daily Nutritional Insight</h3>
+                   <p className="text-lg text-emerald-100 font-medium italic">
+                      "{healthTip}"
+                   </p>
+                   <div className="mt-8 flex items-center text-[10px] font-black text-emerald-500 uppercase tracking-widest">
+                      <Globe className="w-3 h-3 mr-2" /> Global Health Archive v1.0
+                   </div>
+                </div>
+             </div>
+          </div>
+        )}
       </div>
 
       {/* 🏛️ Institutional Footer */}

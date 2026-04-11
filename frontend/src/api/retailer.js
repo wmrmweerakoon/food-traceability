@@ -66,5 +66,10 @@ export const retailerAPI = {
     const response = await api.delete(`/api/retailer/stores/${id}`);
     return response.data;
   },
+  
+  getGlobalPricing: async () => {
+    const response = await api.get('/api/retailer/global-pricing');
+    return response.data;
+  },
 };
 

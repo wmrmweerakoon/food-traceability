@@ -141,7 +141,7 @@ const getFeedbackByBatch = async (batchId) => {
 
   const Feedback = require('../../models/Feedback');
   const feedbacks = await Feedback.find({ batchId: productBatch._id })
-    .populate('consumerId', 'name')
+    .populate('consumerId', 'firstName lastName')
     .sort({ createdAt: -1 });
 
   // Calculate average rating
@@ -155,8 +155,40 @@ const getFeedbackByBatch = async (batchId) => {
   };
 };
 
+const getDailyHealthTip = async () => {
+    try {
+        const axios = require('axios');
+        // Switching to Fruityvice API for actual food-related data
+        const response = await axios.get('https://www.fruityvice.com/api/fruit/all');
+        
+        if (response.data && Array.isArray(response.data)) {
+            // Pick a random fruit from the list
+            const index = Math.floor(Math.random() * response.data.length);
+            const fruit = response.data[index];
+            const fact = `${fruit.name}s are a healthy choice with approx. ${fruit.nutritions.calories} calories and ${fruit.nutritions.sugar}g of natural sugar per 100g!`;
+            
+            return {
+                success: true,
+                tip: fact,
+                fruitName: fruit.name,
+                nutritions: fruit.nutritions
+            };
+        } else {
+            throw new Error('Failed to fetch nutritional data');
+        }
+    } catch (error) {
+        console.error('Nutrition API Error:', error.message);
+        return {
+            success: true,
+            tip: "Stay hydrated and eat fresh fruits for better energy throughout the day!",
+            isFallback: true
+        };
+    }
+};
+
 module.exports = {
   getProductHistory,
   saveFeedback,
-  getFeedbackByBatch
+  getFeedbackByBatch,
+  getDailyHealthTip
 };

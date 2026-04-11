@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { consumerAPI } from '../../api/consumer';
 import ProductJourney from '../../components/ProductJourney';
@@ -6,7 +6,7 @@ import QRScannerModal from '../../components/QRScannerModal';
 import FeedbackSection from '../../components/FeedbackSection';
 import { 
   Search, QrCode, Clock, Package, Loader2, Info, 
-  ShieldCheck, Calendar, MapPin, Thermometer, Droplets, CheckCircle, ChevronRight 
+  ShieldCheck, Calendar, MapPin, Thermometer, Droplets, CheckCircle, ChevronRight, Globe 
 } from 'lucide-react';
 
 function ConsumerDashboard() {
@@ -16,6 +16,21 @@ function ConsumerDashboard() {
   const [traceabilityData, setTraceabilityData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [healthTip, setHealthTip] = useState('');
+
+  useEffect(() => {
+    const loadHealthTip = async () => {
+      try {
+        const response = await consumerAPI.getDailyHealthTip();
+        if (response.success) {
+          setHealthTip(response.tip);
+        }
+      } catch (err) {
+        console.error('Error loading health tip:', err);
+      }
+    };
+    loadHealthTip();
+  }, []);
 
   const handleSearch = async (e, id = batchId) => {
     if (e) e.preventDefault();
@@ -238,11 +253,34 @@ function ConsumerDashboard() {
         </div>
       </div>
 
-      {/* Footer Branding */}
-      <div className="max-w-7xl mx-auto px-6 pb-20 text-center">
-        <p className="text-slate-400 font-black uppercase tracking-[0.6em] text-[10px] opacity-30">
-          AgriTrace Global Intelligence Network
-        </p>
+      {/* Footer Branding & Global Health Tip */}
+      <div className="max-w-7xl mx-auto px-6 pb-20 space-y-12">
+        {healthTip && (
+          <div className="animate-in slide-in-from-bottom-5 duration-1000 max-w-2xl mx-auto">
+             <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 shadow-sm relative overflow-hidden group hover:shadow-2xl hover:border-emerald-200 transition-all duration-500">
+                <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-10 transition-opacity">
+                   <ShieldCheck className="w-24 h-24 text-emerald-600" />
+                </div>
+                <div className="relative z-10">
+                   <div className="flex items-center space-x-2 mb-4">
+                      <div className="bg-emerald-50 p-1.5 rounded-lg">
+                         <CheckCircle className="w-4 h-4 text-emerald-600" />
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600">Daily Health Insight</span>
+                   </div>
+                   <p className="text-base text-slate-700 font-bold italic">
+                      "{healthTip}"
+                   </p>
+                </div>
+             </div>
+          </div>
+        )}
+
+        <div className="text-center">
+          <p className="text-slate-400 font-black uppercase tracking-[0.6em] text-[10px] opacity-30">
+            AgriTrace Global Intelligence Network
+          </p>
+        </div>
       </div>
 
       {/* 📸 Live Scan Terminal Overlay */}

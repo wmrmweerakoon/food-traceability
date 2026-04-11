@@ -61,10 +61,10 @@ const createBatch = async (req, res) => {
     });
 
     const savedBatch = await newBatch.save();
-
-    // Generate QR code that links to the public traceability page
-    const qrData = `${frontendBaseUrl}/trace/${savedBatch.batchId}`;
-    const qrCodeUrl = await QRCode.toDataURL(qrData);
+    
+    // Use 3rd Party API (QR Server) instead of local library
+    const qrData = encodeURIComponent(`${frontendBaseUrl}/trace/${savedBatch.batchId}`);
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${qrData}&size=300x300&bgcolor=FFFFFF`;
 
     savedBatch.qrCode = qrCodeUrl;
     await savedBatch.save();
@@ -262,11 +262,9 @@ const generateQRCode = async (req, res) => {
       });
     }
 
-    const frontendBaseUrl =
-      process.env.FRONTEND_BASE_URL || 'http://localhost:5173';
-
-    const qrData = `${frontendBaseUrl}/trace/${batch.batchId}`;
-    const qrCodeUrl = await QRCode.toDataURL(qrData);
+    const frontendBaseUrl = process.env.FRONTEND_BASE_URL || 'http://localhost:5173';
+    const qrData = encodeURIComponent(`${frontendBaseUrl}/trace/${batch.batchId}`);
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${qrData}&size=300x300&bgcolor=FFFFFF`;
 
     return res.status(200).json({
       success: true,

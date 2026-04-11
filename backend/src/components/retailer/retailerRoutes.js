@@ -19,7 +19,8 @@ const {
     sellProductByBatchId,
     createStore,
     updateStore,
-    deleteStore
+    deleteStore,
+    getGlobalPricing
 } = require('./inventoryController');
 
 
@@ -55,6 +56,7 @@ router.post('/stores', createStore);
 router.put('/stores/:id', updateStore);
 router.delete('/stores/:id', deleteStore);
 router.get('/batches', getAvailableBatches);
+router.get('/global-pricing', getGlobalPricing);
 
 
 module.exports = router;

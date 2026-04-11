@@ -195,7 +195,7 @@ function FeedbackSection({ batchId }) {
                     </div>
                     <div>
                       <p className="font-black text-slate-900">
-                        {review.consumerId?.name || 'Verified Consumer'}
+                        {review.consumerId ? `${review.consumerId.firstName} ${review.consumerId.lastName}` : 'Verified Consumer'}
                       </p>
                       <div className="flex items-center text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">
                         <Calendar className="w-3 h-3 mr-1.5" />

@@ -332,6 +332,41 @@ const deleteStore = async(req, res) => {
     }
 };
 
+// Fetch global exchange rates for LKR (or base currency)
+const getGlobalPricing = async (req, res) => {
+    try {
+        // Using open.er-api.com which is free and requires no key for latest rates
+        const response = await axios.get('https://open.er-api.com/v6/latest/LKR');
+        
+        if (response.data && response.data.result === 'success') {
+            const rates = {
+                USD: response.data.rates.USD,
+                EUR: response.data.rates.EUR,
+                GBP: response.data.rates.GBP,
+                INR: response.data.rates.INR
+            };
+            
+            res.status(200).json({
+                success: true,
+                base: 'LKR',
+                rates,
+                updatedAt: response.data.time_last_update_utc
+            });
+        } else {
+            throw new Error('Failed to fetch exchange rates');
+        }
+    } catch (error) {
+        console.error('Currency API Error:', error.message);
+        // Fallback rates if API fails
+        res.status(200).json({
+            success: true,
+            base: 'LKR',
+            rates: { USD: 0.0033, EUR: 0.0031, GBP: 0.0026, INR: 0.28 },
+            isFallback: true
+        });
+    }
+};
+
 module.exports = {
     addProductToInventory,
     getInventoryItems,
@@ -348,5 +383,6 @@ module.exports = {
     sellProductByBatchId,
     createStore,
     updateStore,
-    deleteStore
+    deleteStore,
+    getGlobalPricing
 };

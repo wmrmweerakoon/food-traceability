@@ -6,7 +6,8 @@ const {
   generateQRCode,
   submitFeedback,
   getFeedback,
-  generateFeedbackQRCode
+  generateFeedbackQRCode,
+  getDailyHealthTip
 } = require('./traceabilityController');
 const consumerController = require('./consumerController');
 
@@ -25,6 +26,7 @@ router.get('/trace/:batchId', getTraceabilityReport);
 router.post('/feedback/:batchId', submitFeedback);
 router.get('/feedback/:batchId', getFeedback);
 router.get('/qrcode-feedback/:batchId', generateFeedbackQRCode);
+router.get('/health-tip', getDailyHealthTip);
 
 // ===== Protected Routes (consumer login required) =====
 router.use(authenticateToken, consumerOnly);

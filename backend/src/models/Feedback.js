@@ -8,7 +8,7 @@ const feedbackSchema = new mongoose.Schema({
   },
   consumerId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Consumer',
+    ref: 'User',
     required: false // Optional, so consumers can leave anonymous feedback
   },
   rating: {
