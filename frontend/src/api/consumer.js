@@ -23,6 +23,11 @@ export const consumerAPI = {
     return response.data;
   },
 
+  updateProfile: async (userId, data) => {
+    const response = await api.put(`/api/consumer/${userId}`, data);
+    return response.data;
+  },
+
   deleteAccount: async (userId) => {
     const response = await api.delete(`/api/consumer/${userId}`);
     return response.data;

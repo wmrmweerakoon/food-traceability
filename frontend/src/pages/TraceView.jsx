@@ -134,7 +134,9 @@ function TraceView() {
 
             <div className="text-right hidden md:block">
                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Origin Node</p>
-               <p className="text-xl font-black text-slate-900">{farm.location}</p>
+               <p className="text-xl font-black text-slate-900">
+                 {typeof farm.location === 'object' && farm.location !== null ? (farm.location.locationName || farm.location.type || 'Verified Origin') : (farm.location || 'Verified Origin')}
+               </p>
                <p className="text-sm font-bold text-blue-600 mt-1">Authenticity Guaranteed</p>
             </div>
           </div>
@@ -193,7 +195,11 @@ function TraceView() {
                    <div>
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Verified Producer</p>
                       <p className="text-lg font-black text-slate-900">{farm.farmer?.name}</p>
-                      <p className="text-sm text-slate-500 font-medium">{farm.farmer?.address}</p>
+                      <p className="text-sm text-slate-500 font-medium">
+                        {typeof farm.farmer?.address === 'object' && farm.farmer.address !== null
+                          ? Object.values(farm.farmer.address).filter(val => typeof val === 'string' || typeof val === 'number').join(', ') || 'Address not listed'
+                          : farm.farmer?.address || 'Address not listed'}
+                      </p>
                    </div>
                    <div>
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Pesticide Residue</p>

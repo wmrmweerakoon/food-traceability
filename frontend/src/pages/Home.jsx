@@ -9,17 +9,31 @@ import {
   CheckCircle, 
   ShieldCheck, 
   Clock,
-  ArrowRight
+  ArrowRight,
+  QrCode
 } from 'lucide-react';
+import QRScannerModal from '../components/QRScannerModal';
 
 function Home() {
   const [batchId, setBatchId] = useState('');
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleTrace = (e) => {
     e.preventDefault();
     if (batchId.trim()) {
       navigate(`/trace/${batchId.trim()}`);
+    }
+  };
+
+  const handleScanSuccess = (decodedText) => {
+    setIsScannerOpen(false);
+    // QR data might be a full URL, extract the BATCH-ID part
+    const parts = decodedText.split('/');
+    const cleanId = parts[parts.length - 1];
+
+    if (cleanId) {
+      navigate(`/trace/${cleanId}`);
     }
   };
 
@@ -72,12 +86,20 @@ function Home() {
                     <Search className="w-5 h-5 text-slate-400 mr-3" />
                     <input 
                       type="text" 
-                      placeholder="Enter Batch ID to Trace..."
+                      placeholder="Enter Batch ID..."
                       className="w-full bg-transparent border-none focus:ring-0 text-slate-700 placeholder-slate-400"
                       value={batchId}
                       onChange={(e) => setBatchId(e.target.value)}
                     />
                   </div>
+                  <button 
+                    type="button"
+                    onClick={() => setIsScannerOpen(true)}
+                    className="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-3 rounded-lg transition border border-slate-200 mr-2 flex items-center justify-center"
+                    title="Scan QR Code"
+                  >
+                    <QrCode className="w-5 h-5" />
+                  </button>
                   <button 
                     type="submit"
                     className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-bold transition flex items-center shadow-lg shadow-emerald-200"
@@ -250,6 +272,14 @@ function Home() {
           <p className="text-slate-500 text-sm">© 2026 AgriTrace Project. Built for agricultural transparency.</p>
         </div>
       </footer>
+
+      {/* 🕋 QR Scanner Modal */}
+      {isScannerOpen && (
+        <QRScannerModal 
+          onScanSuccess={handleScanSuccess} 
+          onClose={() => setIsScannerOpen(false)} 
+        />
+      )}
     </div>
   );
 }

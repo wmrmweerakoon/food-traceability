@@ -21,6 +21,11 @@ router.post('/register', consumerController.register);
 // @access  Public (QR code scan - no login required)
 router.get('/trace/:batchId', getTraceabilityReport);
 
+// Consumer Feedback Routes
+router.post('/feedback/:batchId', submitFeedback);
+router.get('/feedback/:batchId', getFeedback);
+router.get('/qrcode-feedback/:batchId', generateFeedbackQRCode);
+
 // ===== Protected Routes (consumer login required) =====
 router.use(authenticateToken, consumerOnly);
 
@@ -31,10 +36,5 @@ router.delete('/:id', consumerController.deleteAccount);
 
 // Generate QR Code for a batch
 router.get('/qrcode/:batchId', generateQRCode);
-
-// Consumer Feedback Routes
-router.post('/feedback/:batchId', submitFeedback);
-router.get('/feedback/:batchId', getFeedback);
-router.get('/qrcode-feedback/:batchId', generateFeedbackQRCode);
 
 module.exports = router;

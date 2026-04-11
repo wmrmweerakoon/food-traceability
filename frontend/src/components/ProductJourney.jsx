@@ -1,4 +1,4 @@
-import { ShieldCheck, MapPin, Store, Calendar, Package, ArrowRight, CornerRightDown } from 'lucide-react';
+import { ShieldCheck, MapPin, Store, Calendar, Package, ArrowRight, CornerRightDown, Truck } from 'lucide-react';
 
 function ProductJourney({ traceabilityData }) {
   if (!traceabilityData) return null;
@@ -16,7 +16,7 @@ function ProductJourney({ traceabilityData }) {
       id: 'transport',
       title: 'Secure Transport',
       subtitle: 'MOVING THROUGH THE LOGISTICS NETWORK',
-      icon: CornerRightDown,
+      icon: Truck,
       data: traceabilityData.transport,
       date: traceabilityData.transport?.departureDate,
     },
@@ -46,8 +46,8 @@ function ProductJourney({ traceabilityData }) {
              <QrCodeIcon className="w-6 h-6 text-blue-600" />
            </div>
            <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Tracking ID</p>
-              <p className="text-sm font-black text-slate-900 tracking-tight">{traceabilityData.batch?.batchId || 'N/A'}</p>
+              <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-0.5">Tracking ID</p>
+              <p className="text-base font-black text-slate-900 tracking-tight">{traceabilityData.batch?.batchId || 'N/A'}</p>
            </div>
         </div>
       </div>
@@ -80,10 +80,10 @@ function ProductJourney({ traceabilityData }) {
                           <h3 className={`text-2xl font-black tracking-tight leading-none ${isCompleted ? 'text-slate-900' : 'text-slate-300'}`}>
                             {stage.title}
                           </h3>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] mt-2 italic">{stage.subtitle}</p>
+                          <p className="text-xs font-black text-slate-500 uppercase tracking-[2px] mt-2 italic">{stage.subtitle}</p>
                        </div>
                        {isCompleted && (
-                          <div className="bg-emerald-500 text-white px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-lg shadow-emerald-200">Completed</div>
+                          <div className="bg-emerald-500 text-white px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest shadow-lg shadow-emerald-200">Completed</div>
                        )}
                     </div>
 
@@ -94,16 +94,16 @@ function ProductJourney({ traceabilityData }) {
                             <div className="space-y-10">
                               <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 pb-8 border-b border-slate-100">
                                 <div className="space-y-1">
-                                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Product</p>
-                                  <p className="text-sm font-black text-slate-900">{stage.data.productName}</p>
+                                  <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Product</p>
+                                  <p className="text-base font-black text-slate-900">{stage.data.productName}</p>
                                 </div>
                                 <div className="space-y-1">
-                                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Quantity</p>
-                                  <p className="text-sm font-black text-slate-900">{stage.data.quantity} {stage.data.unit}</p>
+                                  <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Quantity</p>
+                                  <p className="text-base font-black text-slate-900">{stage.data.quantity} {stage.data.unit}</p>
                                 </div>
                                  <div className="space-y-1 text-right">
-                                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Registry Entry</p>
-                                  <div className="flex items-center justify-end text-xs font-bold text-slate-800">
+                                  <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Registry Entry</p>
+                                  <div className="flex items-center justify-end text-sm font-bold text-slate-800">
                                     <Calendar className="w-4 h-4 mr-2 text-blue-600" />
                                     {new Date(stage.date).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                   </div>
@@ -112,35 +112,35 @@ function ProductJourney({ traceabilityData }) {
 
                               {/* 🕵️‍♂️ Production Intel - Expanded Details */}
                               <div className="bg-slate-50/50 rounded-2xl border border-slate-100 p-8 space-y-8">
-                                <div className="flex items-center space-x-2 pb-4 border-b border-white/50">
-                                   <ShieldCheck className="w-4 h-4 text-blue-600" />
-                                   <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest leading-none">Production Intel & Compliance</h4>
+                                <div className="flex items-center space-x-2 pb-4 border-b border-slate-200">
+                                   <ShieldCheck className="w-5 h-5 text-blue-600" />
+                                   <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest leading-none">Production Intel & Compliance</h4>
                                 </div>
                                 
                                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-8">
                                   <div className="space-y-1">
-                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Harvest Date</p>
-                                    <p className="text-xs font-black text-slate-900">
+                                    <p className="text-xs font-black text-slate-500 uppercase tracking-tighter">Harvest Date</p>
+                                    <p className="text-sm font-black text-slate-900">
                                       {stage.data.harvestDate ? new Date(stage.data.harvestDate).toLocaleDateString() : 'N/A'}
                                     </p>
                                   </div>
                                   <div className="space-y-1">
-                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Quality Rating</p>
-                                    <p className="text-xs font-black text-slate-900">{stage.data.qualityGrade || 'Verified Grade'}</p>
+                                    <p className="text-xs font-black text-slate-500 uppercase tracking-tighter">Quality Rating</p>
+                                    <p className="text-sm font-black text-slate-900">{stage.data.qualityGrade || 'Verified Grade'}</p>
                                   </div>
                                   <div className="space-y-1">
-                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Registry Expiry</p>
-                                    <p className="text-xs font-black text-slate-900">
+                                    <p className="text-xs font-black text-slate-500 uppercase tracking-tighter">Registry Expiry</p>
+                                    <p className="text-sm font-black text-slate-900">
                                       {stage.data.expiryDate ? new Date(stage.data.expiryDate).toLocaleDateString() : 'Active Batch'}
                                     </p>
                                   </div>
                                   <div className="space-y-1">
-                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Pesticide Analysis</p>
-                                    <p className="text-xs font-black text-emerald-600 uppercase tracking-tighter">{stage.data.pesticideResidue || 'None Detected'}</p>
+                                    <p className="text-xs font-black text-slate-500 uppercase tracking-tighter">Pesticide Analysis</p>
+                                    <p className="text-sm font-black text-emerald-600 uppercase tracking-tighter">{stage.data.pesticideResidue || 'None Detected'}</p>
                                   </div>
                                   <div className="space-y-1">
-                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Storage Strategy</p>
-                                    <p className="text-xs font-black text-slate-900">
+                                    <p className="text-xs font-black text-slate-500 uppercase tracking-tighter">Storage Strategy</p>
+                                    <p className="text-sm font-black text-slate-900">
                                       {stage.data.storageConditions?.temperature || '4°C'} | {stage.data.storageConditions?.humidity || '65% RH'}
                                     </p>
                                   </div>
@@ -148,15 +148,15 @@ function ProductJourney({ traceabilityData }) {
 
                                 {stage.data.organicCertified && (
                                    <div className="flex items-center space-x-2 text-emerald-600">
-                                      <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
-                                      <span className="text-[9px] font-black uppercase tracking-widest italic">Organic Certification Verified</span>
+                                      <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                                      <span className="text-xs font-black uppercase tracking-widest italic">Organic Certification Verified</span>
                                    </div>
                                 )}
 
                                 {stage.data.notes && (
-                                  <div className="pt-6 border-t border-white/50">
-                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Origin Notes</p>
-                                    <p className="text-xs font-medium text-slate-500 leading-relaxed italic">"{stage.data.notes}"</p>
+                                  <div className="pt-6 border-t border-slate-200">
+                                    <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Origin Notes</p>
+                                    <p className="text-sm font-medium text-slate-700 leading-relaxed italic">"{stage.data.notes}"</p>
                                   </div>
                                 )}
                               </div>
@@ -166,17 +166,17 @@ function ProductJourney({ traceabilityData }) {
                           {stage.id === 'transport' && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                               <div className="space-y-1">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Origin</p>
+                                <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Origin</p>
                                 <div className="flex items-start">
-                                  <MapPin className="w-4 h-4 mr-3 mt-1 text-slate-300" />
-                                  <p className="text-xs font-medium text-slate-600 leading-relaxed">{stage.data.origin?.locationName || 'Distribution Center'}</p>
+                                  <MapPin className="w-5 h-5 mr-3 mt-0.5 text-slate-400" />
+                                  <p className="text-sm font-bold text-slate-800 leading-relaxed">{stage.data.origin?.locationName || 'Distribution Center'}</p>
                                 </div>
                               </div>
                               <div className="space-y-1">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Destination</p>
+                                <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Destination</p>
                                 <div className="flex items-start">
-                                  <MapPin className="w-4 h-4 mr-3 mt-1 text-blue-600" />
-                                  <p className="text-xs font-medium text-slate-600 leading-relaxed">{stage.data.destination?.locationName || 'Retail Hub'}</p>
+                                  <MapPin className="w-5 h-5 mr-3 mt-0.5 text-blue-600" />
+                                  <p className="text-sm font-bold text-slate-800 leading-relaxed">{stage.data.destination?.locationName || 'Retail Hub'}</p>
                                 </div>
                               </div>
                             </div>
@@ -188,8 +188,8 @@ function ProductJourney({ traceabilityData }) {
                                 <Store className="w-7 h-7 text-blue-600" />
                               </div>
                               <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Store Branch</p>
-                                <p className="text-lg font-black text-slate-900">{stage.data.storeName || 'Verified Merchant'}</p>
+                                <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Store Branch</p>
+                                <p className="text-xl font-black text-slate-900">{stage.data.storeName || 'Verified Merchant'}</p>
                               </div>
                             </div>
                           )}
@@ -197,7 +197,7 @@ function ProductJourney({ traceabilityData }) {
                       ) : (
                         <div className="flex items-center space-x-3 text-slate-300 opacity-50 px-2">
                           <div className="w-12 h-px bg-slate-200"></div>
-                          <p className="text-[10px] font-black uppercase tracking-[0.2em] italic">Awaiting Verification Entry</p>
+                          <p className="text-xs font-black uppercase tracking-[0.2em] italic">Awaiting Verification Entry</p>
                         </div>
                       )}
                     </div>

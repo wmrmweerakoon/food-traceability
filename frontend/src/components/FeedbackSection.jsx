@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Star, MessageSquare, Send, CheckCircle, User, Calendar, Loader2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Star, MessageSquare, Send, CheckCircle, User, Calendar, Loader2, AlertCircle } from 'lucide-react';
 import { consumerAPI } from '../api/consumer';
 import { useAuth } from '../context/AuthContext';
 
