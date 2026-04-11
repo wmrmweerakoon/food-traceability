@@ -34,7 +34,7 @@ const transportDetailsSchema = new mongoose.Schema({
   },
   deliveryStatus: {
     type: String,
-    enum: ['Pending', 'In-Transit', 'Delivered'],
+    enum: ['Pending', 'In-Transit', 'Delivered', 'Cancelled'],
     default: 'Pending'
   },
   warehouseLocation: {

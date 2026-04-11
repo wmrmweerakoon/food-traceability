@@ -79,8 +79,10 @@ function DistributorDashboard() {
     if (pickerTarget.form === 'add') {
       if (pickerTarget.field === 'origin') {
         setAddForm(prev => ({ ...prev, originName: result.name }));
-      } else {
+      } else if (pickerTarget.field === 'destination') {
         setAddForm(prev => ({ ...prev, destinationName: result.name }));
+      } else if (pickerTarget.field === 'currentLocation') {
+        setAddForm(prev => ({ ...prev, currentLocation: result.name }));
       }
     } else {
       if (pickerTarget.field === 'origin') {
@@ -144,7 +146,7 @@ function DistributorDashboard() {
   const handleRowClick = (transport) => {
     setSelectedTransport(transport);
     setUpdateForm({
-      status: transport.status || 'in-transit',
+      status: transport.status || 'In-Transit',
       latitude: '',
       longitude: '',
       temperature: ''
@@ -213,7 +215,13 @@ function DistributorDashboard() {
       
       if (response.success) {
         alert("Logistics updated successfully!");
-        setUpdateForm({ status: '', latitude: '', longitude: '', temperature: '' });
+        setUpdateForm(prev => ({ 
+          ...prev, 
+          latitude: '', 
+          longitude: '', 
+          temperature: '' 
+          // status is preserved
+        }));
         await loadTransports();
         setSelectedTransport(response.data);
       }
@@ -289,8 +297,8 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
           <h4 className="text-lg font-bold text-slate-900">{batchIdStr}</h4>
           <p className="text-xs text-slate-500 font-medium">Internal ID: {transport.transportId}</p>
         </div>
-        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${statusColors[transport.status?.toLowerCase()] || 'bg-slate-100 text-slate-600'}`}>
-          {transport.status || 'Pending'}
+        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${statusColors[transport.deliveryStatus?.toLowerCase()] || 'bg-slate-100 text-slate-600'}`}>
+          {transport.deliveryStatus || 'Pending'}
         </span>
       </div>
 
@@ -432,10 +440,10 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
                       <div>
                         <label className="block text-sm font-medium text-slate-600 mb-1">Status Override</label>
                         <select className="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none transition" value={updateForm.status} onChange={e => setUpdateForm({...updateForm, status: e.target.value})}>
-                          <option value="pending">Pending</option>
-                          <option value="in-transit">In Transit</option>
-                          <option value="delivered">Delivered</option>
-                          <option value="cancelled">Cancelled</option>
+                          <option value="Pending">Pending</option>
+                          <option value="In-Transit">In Transit</option>
+                          <option value="Delivered">Delivered</option>
+                          <option value="Cancelled">Cancelled</option>
                         </select>
                       </div>
                       <div>
@@ -593,12 +601,17 @@ const ShipmentCard = ({ transport, isSelected, onClick }) => {
               </div>
 
               <div className="col-span-2 grid grid-cols-3 gap-4 border-t pt-4 border-slate-100">
-                  <div>
+                  <div className="col-span-1">
                     <label className="block text-sm font-medium text-slate-700 mb-1">Vehicle No.</label>
                     <input required type="text" className="w-full border rounded-lg p-2 bg-slate-50 border-slate-200" value={addForm.vehicleNumber} onChange={e => setAddForm({...addForm, vehicleNumber: e.target.value})} placeholder="WP NB-1234" />
                   </div>
                   <div className="col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Initial Location</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1 flex justify-between">
+                      Initial Location
+                      <button type="button" onClick={() => openLocationPicker('add', 'currentLocation')} className="text-blue-600 hover:text-blue-800 flex items-center text-xs font-bold">
+                        <Navigation className="w-3 h-3 mr-1" /> Pick on Map
+                      </button>
+                    </label>
                     <input required type="text" className="w-full border rounded-lg p-2 bg-slate-50 border-slate-200" value={addForm.currentLocation} onChange={e => setAddForm({...addForm, currentLocation: e.target.value})} placeholder="Current city/checkpoint" />
                   </div>
               </div>

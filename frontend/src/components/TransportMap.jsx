@@ -3,15 +3,20 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// Fix for default marker icon in React-Leaflet
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+// Fix for default Leaflet icons
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41]
 });
 
-// Custom icons
+L.Marker.prototype.options.icon = DefaultIcon;
+
+// Custom Icons
 const originIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
@@ -31,12 +36,19 @@ const destinationIcon = new L.Icon({
 });
 
 const currentLocationIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+  iconUrl: 'https://img.icons8.com/color/96/000000/truck.png', // Stable High-Resolution Truck
+  iconSize: [45, 45],
+  iconAnchor: [22, 22],
+  popupAnchor: [0, -20]
+});
+
+const historyIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
+  iconSize: [20, 32],
+  iconAnchor: [10, 32],
+  popupAnchor: [1, -28],
+  shadowSize: [32, 32]
 });
 
 function TransportMap({ 
@@ -57,8 +69,25 @@ function TransportMap({
            !isNaN(coords[1]);
   };
 
+  // Derive the actual GPS point for the "Live Truck"
+  // Priority: 1. currentLocation if it has coords, 2. Latest point in history
+  const getActiveLocation = () => {
+    if (currentLocation && isValidCoords(currentLocation.coordinates)) {
+      return currentLocation;
+    }
+    if (locationHistory && locationHistory.length > 0) {
+      const lastEntry = locationHistory[locationHistory.length - 1];
+      if (lastEntry.location && isValidCoords(lastEntry.location.coordinates)) {
+        return lastEntry.location;
+      }
+    }
+    return null;
+  };
+
+  const activeLocation = getActiveLocation();
+
   useEffect(() => {
-    if (mapRef.current && (origin || destination || currentLocation)) {
+    if (mapRef.current && (origin || destination || activeLocation)) {
       const map = mapRef.current;
       const bounds = [];
 
@@ -68,24 +97,24 @@ function TransportMap({
       if (destination && isValidCoords(destination.coordinates)) {
         bounds.push([destination.coordinates[1], destination.coordinates[0]]);
       }
-      if (currentLocation && isValidCoords(currentLocation.coordinates)) {
-        bounds.push([currentLocation.coordinates[1], currentLocation.coordinates[0]]);
+      if (activeLocation && isValidCoords(activeLocation.coordinates)) {
+        bounds.push([activeLocation.coordinates[1], activeLocation.coordinates[0]]);
       }
 
       if (bounds.length > 0) {
         map.fitBounds(bounds, { padding: [50, 50] });
       }
     }
-  }, [origin, destination, currentLocation]);
+  }, [origin, destination, activeLocation]);
 
   const getCenter = () => {
-    if (currentLocation && isValidCoords(currentLocation.coordinates)) {
-      return [currentLocation.coordinates[1], currentLocation.coordinates[0]];
+    if (activeLocation && isValidCoords(activeLocation.coordinates)) {
+      return [activeLocation.coordinates[1], activeLocation.coordinates[0]];
     }
     if (origin && isValidCoords(origin.coordinates)) {
       return [origin.coordinates[1], origin.coordinates[0]];
     }
-    return [6.9271, 79.8612]; // Default to Sri Lanka (Colombo)
+    return [6.9271, 79.8612]; 
   };
 
   const getRoutePolyline = () => {
@@ -93,13 +122,40 @@ function TransportMap({
     if (origin && isValidCoords(origin.coordinates)) {
       points.push([origin.coordinates[1], origin.coordinates[0]]);
     }
-    if (currentLocation && isValidCoords(currentLocation.coordinates)) {
-      points.push([currentLocation.coordinates[1], currentLocation.coordinates[0]]);
+    
+    // Add history points in sequence to polyline
+    if (locationHistory && locationHistory.length > 0) {
+      locationHistory.forEach(entry => {
+        if (entry.location && isValidCoords(entry.location.coordinates)) {
+          points.push([entry.location.coordinates[1], entry.location.coordinates[0]]);
+        }
+      });
     }
+
+    // Add current/active position if it's not already the last history point
+    if (activeLocation && isValidCoords(activeLocation.coordinates)) {
+      const lastHistoryPoint = locationHistory.length > 0 
+        ? locationHistory[locationHistory.length - 1].location?.coordinates 
+        : null;
+        
+      if (!lastHistoryPoint || 
+          lastHistoryPoint[0] !== activeLocation.coordinates[0] || 
+          lastHistoryPoint[1] !== activeLocation.coordinates[1]) {
+        points.push([activeLocation.coordinates[1], activeLocation.coordinates[0]]);
+      }
+    }
+
     if (destination && isValidCoords(destination.coordinates)) {
       points.push([destination.coordinates[1], destination.coordinates[0]]);
     }
-    return points.length > 1 ? points : null;
+    
+    // De-duplicate any points that are exactly the same
+    const uniquePoints = points.filter((p, i) => {
+      if (i === 0) return true;
+      return p[0] !== points[i-1][0] || p[1] !== points[i-1][1];
+    });
+
+    return uniquePoints.length > 1 ? uniquePoints : null;
   };
 
   return (
@@ -143,17 +199,17 @@ function TransportMap({
           </Marker>
         )}
 
-        {currentLocation && isValidCoords(currentLocation.coordinates) && (
+        {activeLocation && isValidCoords(activeLocation.coordinates) && (
           <Marker
-            position={[currentLocation.coordinates[1], currentLocation.coordinates[0]]}
+            position={[activeLocation.coordinates[1], activeLocation.coordinates[0]]}
             icon={currentLocationIcon}
           >
             <Popup>
               <div>
-                <strong className="text-blue-600">Current Location</strong>
-                {currentLocation.timestamp && (
+                <strong className="text-blue-600">Current Live Position</strong>
+                {activeLocation.timestamp && (
                   <p className="text-xs text-gray-600 mt-1">
-                    Updated: {new Date(currentLocation.timestamp).toLocaleString()}
+                    Last Seen: {new Date(activeLocation.timestamp).toLocaleString()}
                   </p>
                 )}
               </div>
@@ -165,17 +221,25 @@ function TransportMap({
           <>
             {locationHistory.map((entry, index) => {
               if (!entry.location || !isValidCoords(entry.location.coordinates)) return null;
+              
+              const isLatest = currentLocation && isValidCoords(currentLocation.coordinates) && 
+                               entry.location.coordinates[0] === currentLocation.coordinates[0] &&
+                               entry.location.coordinates[1] === currentLocation.coordinates[1];
+              
+              if (isLatest) return null;
+
               return (
                 <Marker
                   key={`history-${index}`}
                   position={[entry.location.coordinates[1], entry.location.coordinates[0]]}
+                  icon={historyIcon}
                 >
                   <Popup>
                     <div className="text-xs">
-                      <p className="font-bold">Checkpoint {index + 1}</p>
-                      {entry.temperature && <p>Temp: {entry.temperature}°C</p>}
+                      <p className="font-bold text-slate-500 uppercase tracking-tighter">History Checkpoint #{index + 1}</p>
+                      {entry.temperature && <p className="text-blue-600 font-bold">Temp: {entry.temperature}°C</p>}
                       {entry.timestamp && (
-                        <p className="text-gray-500 mt-1">
+                        <p className="text-gray-400 mt-1">
                           {new Date(entry.timestamp).toLocaleString()}
                         </p>
                       )}
@@ -192,7 +256,7 @@ function TransportMap({
             positions={getRoutePolyline()}
             color="#3b82f6"
             weight={3}
-            opacity={0.7}
+            opacity={0.6}
             dashArray="10, 10"
           />
         )}

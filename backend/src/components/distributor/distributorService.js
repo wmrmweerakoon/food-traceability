@@ -268,46 +268,42 @@ const updateLogistics = async (batchIdInput, updateData, userId) => {
             type: 'Point',
             coordinates: [parseFloat(longitude), parseFloat(latitude)]
         };
+    } else if (currentLocation) {
+        // Fallback: Geocode the currentLocation string if no lat/lng provided
+        try {
+            const geoResp = await axios.get(`https://nominatim.openstreetmap.org/search`, {
+                params: { format: 'json', q: currentLocation, limit: 1 },
+                headers: { 'User-Agent': 'Food-Traceability-App-Student-Project' }
+            });
+            if (geoResp.data[0]) {
+                currentPoint = {
+                    type: 'Point',
+                    coordinates: [parseFloat(geoResp.data[0].lon), parseFloat(geoResp.data[0].lat)]
+                };
+            }
+        } catch (e) { console.warn("Log geocode failed", e.message); }
     }
 
-    // Update temperature and re-evaluate risk
+    // Update risk assessment if temperature provided
     if (storageTemperature !== undefined) {
         update.storageTemperature = storageTemperature;
         update.riskFlag = evaluateRiskFlag(storageTemperature);
+    }
 
-        // Append to temperature logs
+    // Always create a log entry if we have EITHER a temperature OR a location update
+    if (storageTemperature !== undefined || currentPoint) {
         if (!update.$push) update.$push = {};
         update.$push.temperatureLogs = {
             timestamp: new Date(),
-            temperature: storageTemperature,
+            temperature: storageTemperature !== undefined ? storageTemperature : transport.storageTemperature,
             ...(currentPoint ? { location: currentPoint } : {})
         };
     }
 
-    // Update location name
+    // Update location name if provided
     if (currentLocation) {
         const validatedLocation = await validateLocationWithMaps(currentLocation);
         update.currentLocation = validatedLocation;
-
-        // If no explicit lat/lng but we have a new city name, geocode it for the log
-        if (!currentPoint) {
-           try {
-               const geoResp = await axios.get(`https://nominatim.openstreetmap.org/search`, {
-                   params: { format: 'json', q: currentLocation, limit: 1 },
-                   headers: { 'User-Agent': 'Food-Traceability-App-Student-Project' }
-               });
-               if (geoResp.data[0]) {
-                   currentPoint = {
-                       type: 'Point',
-                       coordinates: [parseFloat(geoResp.data[0].lon), parseFloat(geoResp.data[0].lat)]
-                   };
-                   if (!update.$push) update.$push = {};
-                   if (update.$push.temperatureLogs) {
-                       update.$push.temperatureLogs.location = currentPoint;
-                   }
-               }
-           } catch (e) { console.warn("Log geocode failed", e.message); }
-        }
     }
 
     // Update vehicle number
@@ -330,25 +326,25 @@ const updateLogistics = async (batchIdInput, updateData, userId) => {
         update.deliveryDate = deliveryDate;
     }
 
-    // 4. Status flow validation
+    // 4. Status flow validation & Normalization
     if (deliveryStatus) {
-        // Cannot mark "Delivered" without deliveryDate and warehouseLocation
-        if (deliveryStatus === 'Delivered') {
-            const effectiveDeliveryDate = deliveryDate || update.deliveryDate || transport.deliveryDate;
-            const effectiveWarehouse = warehouseLocation || update.warehouseLocation || transport.warehouseLocation;
+        // Normalize status to match Mongoose Enum (Pending, In-Transit, Delivered, Cancelled)
+        let normalizedStatus = deliveryStatus;
+        if (deliveryStatus.toLowerCase() === 'pending') normalizedStatus = 'Pending';
+        if (deliveryStatus.toLowerCase() === 'in-transit') normalizedStatus = 'In-Transit';
+        if (deliveryStatus.toLowerCase() === 'delivered') normalizedStatus = 'Delivered';
+        if (deliveryStatus.toLowerCase() === 'cancelled') normalizedStatus = 'Cancelled';
 
-            if (!effectiveDeliveryDate || !effectiveWarehouse) {
-                const error = new Error(
-                    'Cannot mark as "Delivered" without both deliveryDate and warehouseLocation. ' +
-                    'Please provide these fields.'
-                );
-                error.statusCode = 400;
-                throw error;
-            }
+        // Simplify "Delivered" flow: Auto-set dates/locations if missing
+        if (normalizedStatus === 'Delivered') {
+            const effectiveDeliveryDate = deliveryDate || update.deliveryDate || transport.deliveryDate || new Date();
+            const effectiveWarehouse = warehouseLocation || update.warehouseLocation || transport.warehouseLocation || transport.destination?.locationName;
 
             update.actualArrivalTime = effectiveDeliveryDate;
+            update.deliveryDate = effectiveDeliveryDate;
+            update.warehouseLocation = effectiveWarehouse;
         }
-        update.deliveryStatus = deliveryStatus;
+        update.deliveryStatus = normalizedStatus;
     }
 
     update.updatedAt = Date.now();
