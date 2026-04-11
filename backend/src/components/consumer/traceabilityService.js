@@ -30,7 +30,8 @@ const getProductHistory = async (batchId) => {
   const inventoryRecords = await StoreInventory.find({
     'batchDetails.batchId': productBatch._id
   })
-    .populate('retailerId', 'username email firstName lastName contactNumber storeName location')
+    .populate('retailerId', 'username email firstName lastName contactNumber')
+    .populate('storeId', 'shopName location')
     .populate('productId', 'productName batchId');
 
   // Step D: Merge into a unified JSON response
@@ -45,9 +46,14 @@ const getProductHistory = async (batchId) => {
       } : null,
       location: productBatch.farmLocation,
       harvestDate: productBatch.harvestDate,
-      fertilizer: productBatch.pesticideResidue, // Using pesticideResidue as proxy for fertilizer info based on schema
+      expiryDate: productBatch.expiryDate,
+      quantity: productBatch.quantity,
+      unit: productBatch.unit,
+      pesticideResidue: productBatch.pesticideResidue,
+      storageConditions: productBatch.storageConditions,
       organicCertified: productBatch.organicCertified,
       qualityGrade: productBatch.qualityGrade,
+      notes: productBatch.notes
     },
     transport: transportRecords.map(t => ({
       transportId: t.transportId,
@@ -67,8 +73,9 @@ const getProductHistory = async (batchId) => {
       sku: i.sku,
       retailer: i.retailerId ? {
           name: `${i.retailerId.firstName} ${i.retailerId.lastName}`,
-          storeName: i.location?.storeName || 'Unknown Store'
+          storeName: i.storeId?.shopName || 'Verified Merchant'
       } : null,
+      storeName: i.storeId?.shopName || 'Verified Merchant',
       shelfDate: i.createdAt,
       expiryDate: i.batchDetails?.expiryDate || productBatch.expiryDate,
       location: i.location,

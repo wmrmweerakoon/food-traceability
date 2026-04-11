@@ -79,23 +79,23 @@ function Register() {
             alt="Organic Texture"
             className="w-full h-full object-cover scale-110 rotate-180"
           />
-          <div className="absolute inset-0 bg-green-950/40 backdrop-blur-[2px]"></div>
-          <div className="absolute inset-0 bg-gradient-to-br from-green-900 via-transparent to-transparent opacity-80"></div>
+          <div className="absolute inset-0 bg-blue-950/60 backdrop-blur-[2px]"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-transparent to-transparent opacity-80"></div>
         </div>
 
         <div className="relative z-10">
           <Link to="/" className="flex items-center space-x-3 mb-12 group">
             <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
-              <LogIn className="w-6 h-6 text-green-900 rotate-180" />
+              <LogIn className="w-6 h-6 text-blue-900 rotate-180" />
             </div>
             <span className="text-2xl font-black tracking-tighter">AgriTrace.</span>
           </Link>
           
           <h2 className="text-6xl font-black tracking-tight leading-[1.1] mb-6">
             Global Food <br />
-            <span className="text-emerald-400 font-outline text-5xl">Integrity.</span>
+            <span className="text-blue-400 font-outline text-5xl">Integrity.</span>
           </h2>
-          <p className="max-w-md text-lg text-emerald-50 font-medium opacity-90 leading-relaxed">
+          <p className="max-w-md text-lg text-blue-50 font-medium opacity-90 leading-relaxed">
             Join thousands of producers and distributors in a secure, transparent food network powered by decentralized trust.
           </p>
         </div>
@@ -117,18 +117,18 @@ function Register() {
       {/* 📝 Right Column: Action Portal */}
       <div className="flex items-center justify-center relative p-8 bg-slate-50 lg:bg-white overflow-y-auto">
         {/* Faint Organic Pattern Overlay */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 0 C 20 10, 0 30, 20 40 S 40 20, 50 30 S 30 50, 60 60 S 80 40, 80 50' stroke='%23065f46' fill='none' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E")` }}></div>
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 0 C 20 10, 0 30, 20 40 S 40 20, 50 30 S 30 50, 60 60 S 80 40, 80 50' stroke='%232563eb' fill='none' stroke-width='0.5' opacity='0.5'/%3E%3C/svg%3E")` }}></div>
         
         <div className="max-w-xl w-full relative z-10 py-12">
           <div className="bg-white lg:bg-transparent rounded-[3rem] p-8 lg:p-0 shadow-2xl shadow-slate-200 lg:shadow-none border border-slate-100 lg:border-none">
             <div className="mb-10 lg:text-left text-center">
-              <h1 className="text-4xl font-black text-green-950 tracking-tight mb-2">Create Account.</h1>
+              <h1 className="text-4xl font-black text-slate-900 tracking-tight mb-2">Create Account.</h1>
               <p className="text-slate-600 font-bold">Create your AgriTrace account</p>
             </div>
   
             {error && (
-              <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-sm font-bold flex items-center animate-shake">
-                <span className="w-2 h-2 bg-red-500 rounded-full mr-3"></span>
+              <div className="mb-8 p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-700 text-sm font-bold flex items-center animate-shake">
+                <span className="w-2 h-2 bg-rose-500 rounded-full mr-3"></span>
                 {error}
               </div>
             )}
@@ -146,7 +146,7 @@ function Register() {
                     value={formData.firstName}
                     onChange={handleChange}
                     required
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-green-500/5 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 font-bold placeholder:text-slate-400 text-slate-900"
+                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 focus:bg-white outline-none transition-all duration-300 font-bold placeholder:text-slate-400 text-slate-900"
                     placeholder="Kasun"
                   />
                 </div>
@@ -161,7 +161,7 @@ function Register() {
                     value={formData.lastName}
                     onChange={handleChange}
                     required
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-green-500/5 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 font-bold placeholder:text-slate-400 text-slate-900"
+                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 focus:bg-white outline-none transition-all duration-300 font-bold placeholder:text-slate-400 text-slate-900"
                     placeholder="Perera"
                   />
                 </div>
@@ -179,7 +179,7 @@ function Register() {
                     value={formData.username}
                     onChange={handleChange}
                     required
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-green-500/5 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 font-bold placeholder:text-slate-400 text-slate-900"
+                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 focus:bg-white outline-none transition-all duration-300 font-bold placeholder:text-slate-400 text-slate-900"
                     placeholder="kasun_p"
                   />
                 </div>
@@ -193,8 +193,8 @@ function Register() {
                     name="contactNumber"
                     value={formData.contactNumber}
                     onChange={handleChange}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-green-500/5 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 font-bold placeholder:text-slate-400 text-slate-900"
-                    placeholder="+1 (555) 000-0000"
+                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 focus:bg-white outline-none transition-all duration-300 font-bold placeholder:text-slate-400 text-slate-900"
+                    placeholder="+94 77 123 4567"
                   />
                 </div>
               </div>
@@ -210,7 +210,7 @@ function Register() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-green-500/5 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 font-bold placeholder:text-slate-400 text-slate-900"
+                  className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 focus:bg-white outline-none transition-all duration-300 font-bold placeholder:text-slate-400 text-slate-900"
                   placeholder="kasun.perera@agritrace.lk"
                 />
               </div>
@@ -225,7 +225,7 @@ function Register() {
                     name="role"
                     value={formData.role}
                     onChange={handleChange}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-green-500/5 focus:border-green-500 outline-none transition appearance-none cursor-pointer font-bold text-slate-900"
+                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition appearance-none cursor-pointer font-bold text-slate-900"
                   >
                     <option value={ROLES.CONSUMER}>Citizens / Consumer</option>
                     <option value={ROLES.FARMER}>Producer / Farmer</option>
@@ -250,7 +250,7 @@ function Register() {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-green-500/5 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 font-bold placeholder:text-slate-400 text-slate-900"
+                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 focus:bg-white outline-none transition-all duration-300 font-bold placeholder:text-slate-400 text-slate-900"
                     placeholder="••••••••"
                   />
                 </div>
@@ -265,7 +265,7 @@ function Register() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-green-500/5 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 font-bold placeholder:text-slate-400 text-slate-900"
+                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 focus:bg-white outline-none transition-all duration-300 font-bold placeholder:text-slate-400 text-slate-900"
                     placeholder="••••••••"
                   />
                 </div>
@@ -275,7 +275,7 @@ function Register() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-green-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-green-900/20 hover:bg-green-800 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 disabled:opacity-50"
+                  className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-blue-200 hover:bg-blue-700 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 disabled:opacity-50"
                 >
                   {loading ? 'Creating account...' : 'Create Account'}
                 </button>
@@ -285,7 +285,7 @@ function Register() {
             <div className="mt-10 lg:text-left text-center">
               <p className="text-slate-600 font-bold uppercase tracking-widest text-[11px]">
                 Already have an account?{' '}
-                <Link to="/login" className="text-green-700 hover:text-green-800 transition-colors ml-1 font-black underline underline-offset-4 decoration-2">
+                <Link to="/login" className="text-blue-700 hover:text-blue-800 transition-colors ml-1 font-black underline underline-offset-4 decoration-2">
                   Sign in
                 </Link>
               </p>

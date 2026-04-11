@@ -1,175 +1,207 @@
-import { Package, Truck, Store, User, Calendar, MapPin } from 'lucide-react';
+import { ShieldCheck, MapPin, Store, Calendar, Package, ArrowRight, CornerRightDown } from 'lucide-react';
 
 function ProductJourney({ traceabilityData }) {
-  if (!traceabilityData) {
-    return (
-      <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
-        No journey data available
-      </div>
-    );
-  }
+  if (!traceabilityData) return null;
 
   const stages = [
     {
       id: 'harvest',
-      title: 'Harvest',
+      title: 'Harvest & Packing',
+      subtitle: 'THE JOURNEY BEGINS AT THE SOURCE',
       icon: Package,
-      color: 'green',
       data: traceabilityData.batch,
       date: traceabilityData.batch?.harvestDate,
     },
     {
       id: 'transport',
-      title: 'Transport',
-      icon: Truck,
-      color: 'blue',
+      title: 'Secure Transport',
+      subtitle: 'MOVING THROUGH THE LOGISTICS NETWORK',
+      icon: CornerRightDown,
       data: traceabilityData.transport,
-      date: traceabilityData.transport?.departureTime,
+      date: traceabilityData.transport?.departureDate,
     },
     {
       id: 'retail',
       title: 'Retail Store',
+      subtitle: 'ARRIVED AT YOUR LOCAL MERCHANT',
       icon: Store,
-      color: 'purple',
       data: traceabilityData.inventory,
       date: traceabilityData.inventory?.receivedDate,
-    },
-    {
-      id: 'consumer',
-      title: 'Consumer',
-      icon: User,
-      color: 'orange',
-      data: traceabilityData.consumer,
-      date: traceabilityData.consumer?.purchaseDate,
-    },
+    }
   ];
 
-  const getStatusColor = (status) => {
-    const colors = {
-      completed: 'bg-green-100 text-green-800',
-      in_progress: 'bg-blue-100 text-blue-800',
-      pending: 'bg-gray-100 text-gray-800',
-    };
-    return colors[status] || colors.pending;
-  };
-
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Product Journey</h2>
-      
-      <div className="relative">
-        {/* Timeline line */}
-        <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+    <div className="bg-white rounded-[2.5rem] p-10 lg:p-14 border border-slate-100 shadow-sm relative overflow-hidden font-['Outfit',sans-serif]">
+      {/* Structural Branding */}
+      <div className="flex items-center space-x-2 mb-12 px-2">
+        <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+        <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest leading-none">Verified Integrity Chain</p>
+      </div>
 
-        <div className="space-y-8">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-20 px-2">
+        <h2 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter">Product Timeline</h2>
+        
+        <div className="bg-slate-50 border border-slate-200 p-4 rounded-3xl flex items-center space-x-6">
+           <div className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100">
+             <QrCodeIcon className="w-6 h-6 text-blue-600" />
+           </div>
+           <div>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Tracking ID</p>
+              <p className="text-sm font-black text-slate-900 tracking-tight">{traceabilityData.batch?.batchId || 'N/A'}</p>
+           </div>
+        </div>
+      </div>
+
+      <div className="relative">
+        {/* The Hub-and-Spoke vertical line */}
+        <div className="absolute left-[2.25rem] top-0 bottom-0 w-[2px] bg-slate-50"></div>
+
+        <div className="space-y-16">
           {stages.map((stage, index) => {
             const Icon = stage.icon;
-            const isCompleted = stage.data && stage.date;
-            const isActive = index === stages.findIndex(s => s.data && !s.data.status?.includes('completed'));
-
+            const isCompleted = !!stage.data;
+            
             return (
-              <div key={stage.id} className="relative flex items-start">
-                {/* Icon */}
-                <div
-                  className={`relative z-10 flex items-center justify-center w-12 h-12 rounded-full ${
-                    isCompleted
-                      ? stage.color === 'green'
-                        ? 'bg-green-100 text-green-600'
-                        : stage.color === 'blue'
-                        ? 'bg-blue-100 text-blue-600'
-                        : stage.color === 'purple'
-                        ? 'bg-purple-100 text-purple-600'
-                        : 'bg-orange-100 text-orange-600'
-                      : 'bg-gray-100 text-gray-400'
-                  }`}
-                >
-                  <Icon className="w-6 h-6" />
-                </div>
-
-                {/* Content */}
-                <div className="ml-6 flex-1">
-                  <div className="flex items-center justify-between">
-                    <h3 className={`text-lg font-semibold ${isCompleted ? 'text-gray-900' : 'text-gray-400'}`}>
-                      {stage.title}
-                    </h3>
-                    {stage.data?.status && (
-                      <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(stage.data.status)}`}>
-                        {stage.data.status}
-                      </span>
+              <div key={stage.id} className="relative group">
+                <div className="flex items-start">
+                  {/* Point Indicator */}
+                  <div className={`relative z-10 w-[4.5rem] h-[4.5rem] rounded-2xl flex items-center justify-center transition-all duration-700 shadow-xl ${
+                    isCompleted ? 'bg-blue-600 text-white shadow-blue-200' : 'bg-slate-50 text-slate-300 shadow-transparent'
+                  }`}>
+                    <Icon className="w-8 h-8" />
+                    {isCompleted && (
+                       <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white"></div>
                     )}
                   </div>
 
-                  {isCompleted && stage.data && (
-                    <div className="mt-2 space-y-2">
-                      {stage.id === 'harvest' && (
-                        <>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Package className="w-4 h-4 mr-2" />
-                            <span>Batch: {stage.data.batchId}</span>
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <span>Product: {stage.data.productName}</span>
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <span>Quantity: {stage.data.quantity} {stage.data.unit}</span>
-                          </div>
-                        </>
-                      )}
+                  <div className="ml-10 pt-2 flex-grow">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                       <div>
+                          <h3 className={`text-2xl font-black tracking-tight leading-none ${isCompleted ? 'text-slate-900' : 'text-slate-300'}`}>
+                            {stage.title}
+                          </h3>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] mt-2 italic">{stage.subtitle}</p>
+                       </div>
+                       {isCompleted && (
+                          <div className="bg-emerald-500 text-white px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-lg shadow-emerald-200">Completed</div>
+                       )}
+                    </div>
 
-                      {stage.id === 'transport' && (
-                        <>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Truck className="w-4 h-4 mr-2" />
-                            <span>Transport ID: {stage.data.transportId}</span>
-                          </div>
-                          {stage.data.origin && (
-                            <div className="flex items-center text-sm text-gray-600">
-                              <MapPin className="w-4 h-4 mr-2" />
-                              <span>From: {stage.data.origin.locationName}</span>
+                    <div className="transition-all duration-700">
+                      {isCompleted ? (
+                        <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-500">
+                          {stage.id === 'harvest' && (
+                            <div className="space-y-10">
+                              <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 pb-8 border-b border-slate-100">
+                                <div className="space-y-1">
+                                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Product</p>
+                                  <p className="text-sm font-black text-slate-900">{stage.data.productName}</p>
+                                </div>
+                                <div className="space-y-1">
+                                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Quantity</p>
+                                  <p className="text-sm font-black text-slate-900">{stage.data.quantity} {stage.data.unit}</p>
+                                </div>
+                                 <div className="space-y-1 text-right">
+                                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Registry Entry</p>
+                                  <div className="flex items-center justify-end text-xs font-bold text-slate-800">
+                                    <Calendar className="w-4 h-4 mr-2 text-blue-600" />
+                                    {new Date(stage.date).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* 🕵️‍♂️ Production Intel - Expanded Details */}
+                              <div className="bg-slate-50/50 rounded-2xl border border-slate-100 p-8 space-y-8">
+                                <div className="flex items-center space-x-2 pb-4 border-b border-white/50">
+                                   <ShieldCheck className="w-4 h-4 text-blue-600" />
+                                   <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest leading-none">Production Intel & Compliance</h4>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 lg:grid-cols-5 gap-8">
+                                  <div className="space-y-1">
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Harvest Date</p>
+                                    <p className="text-xs font-black text-slate-900">
+                                      {stage.data.harvestDate ? new Date(stage.data.harvestDate).toLocaleDateString() : 'N/A'}
+                                    </p>
+                                  </div>
+                                  <div className="space-y-1">
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Quality Rating</p>
+                                    <p className="text-xs font-black text-slate-900">{stage.data.qualityGrade || 'Verified Grade'}</p>
+                                  </div>
+                                  <div className="space-y-1">
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Registry Expiry</p>
+                                    <p className="text-xs font-black text-slate-900">
+                                      {stage.data.expiryDate ? new Date(stage.data.expiryDate).toLocaleDateString() : 'Active Batch'}
+                                    </p>
+                                  </div>
+                                  <div className="space-y-1">
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Pesticide Analysis</p>
+                                    <p className="text-xs font-black text-emerald-600 uppercase tracking-tighter">{stage.data.pesticideResidue || 'None Detected'}</p>
+                                  </div>
+                                  <div className="space-y-1">
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Storage Strategy</p>
+                                    <p className="text-xs font-black text-slate-900">
+                                      {stage.data.storageConditions?.temperature || '4°C'} | {stage.data.storageConditions?.humidity || '65% RH'}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {stage.data.organicCertified && (
+                                   <div className="flex items-center space-x-2 text-emerald-600">
+                                      <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                                      <span className="text-[9px] font-black uppercase tracking-widest italic">Organic Certification Verified</span>
+                                   </div>
+                                )}
+
+                                {stage.data.notes && (
+                                  <div className="pt-6 border-t border-white/50">
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Origin Notes</p>
+                                    <p className="text-xs font-medium text-slate-500 leading-relaxed italic">"{stage.data.notes}"</p>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           )}
-                          {stage.data.destination && (
-                            <div className="flex items-center text-sm text-gray-600">
-                              <MapPin className="w-4 h-4 mr-2" />
-                              <span>To: {stage.data.destination.locationName}</span>
+
+                          {stage.id === 'transport' && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                              <div className="space-y-1">
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Origin</p>
+                                <div className="flex items-start">
+                                  <MapPin className="w-4 h-4 mr-3 mt-1 text-slate-300" />
+                                  <p className="text-xs font-medium text-slate-600 leading-relaxed">{stage.data.origin?.locationName || 'Distribution Center'}</p>
+                                </div>
+                              </div>
+                              <div className="space-y-1">
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Destination</p>
+                                <div className="flex items-start">
+                                  <MapPin className="w-4 h-4 mr-3 mt-1 text-blue-600" />
+                                  <p className="text-xs font-medium text-slate-600 leading-relaxed">{stage.data.destination?.locationName || 'Retail Hub'}</p>
+                                </div>
+                              </div>
                             </div>
                           )}
-                        </>
-                      )}
 
-                      {stage.id === 'retail' && (
-                        <>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Store className="w-4 h-4 mr-2" />
-                            <span>Store: {stage.data.storeName || 'N/A'}</span>
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <span>Stock: {stage.data.quantityInStock} {stage.data.unit}</span>
-                          </div>
-                        </>
-                      )}
-
-                      {stage.id === 'consumer' && (
-                        <>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <User className="w-4 h-4 mr-2" />
-                            <span>Purchased by consumer</span>
-                          </div>
-                        </>
-                      )}
-
-                      {stage.date && (
-                        <div className="flex items-center text-sm text-gray-500 mt-2">
-                          <Calendar className="w-4 h-4 mr-2" />
-                          <span>{new Date(stage.date).toLocaleString()}</span>
+                          {stage.id === 'retail' && (
+                            <div className="flex items-center space-x-6">
+                              <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100">
+                                <Store className="w-7 h-7 text-blue-600" />
+                              </div>
+                              <div>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Store Branch</p>
+                                <p className="text-lg font-black text-slate-900">{stage.data.storeName || 'Verified Merchant'}</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="flex items-center space-x-3 text-slate-300 opacity-50 px-2">
+                          <div className="w-12 h-px bg-slate-200"></div>
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] italic">Awaiting Verification Entry</p>
                         </div>
                       )}
                     </div>
-                  )}
-
-                  {!isCompleted && (
-                    <p className="mt-2 text-sm text-gray-400 italic">Pending...</p>
-                  )}
+                  </div>
                 </div>
               </div>
             );
@@ -180,5 +212,24 @@ function ProductJourney({ traceabilityData }) {
   );
 }
 
-export default ProductJourney;
+// Icon Helper for the Header
+function QrCodeIcon({ className }) {
+  return (
+    <svg 
+      className={className} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="3" width="7" height="7"></rect>
+      <rect x="14" y="3" width="7" height="7"></rect>
+      <rect x="14" y="14" width="7" height="7"></rect>
+      <rect x="3" y="14" width="7" height="7"></rect>
+    </svg>
+  );
+}
 
+export default ProductJourney;

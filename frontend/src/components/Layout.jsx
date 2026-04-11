@@ -47,7 +47,7 @@ function Layout({ children }) {
                 <span>
                   {user?.firstName} {user?.lastName}
                 </span>
-                <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                <span className="px-3 py-0.5 bg-blue-50 text-blue-700 border border-blue-100 rounded-full text-[10px] font-black uppercase tracking-widest">
                   {getRoleDisplayName(user?.role)}
                 </span>
               </div>
@@ -55,7 +55,7 @@ function Layout({ children }) {
               {user?.role === 'ROLE_CONSUMER' && (
                 <Link 
                   to="/consumer/profile"
-                  className="text-sm font-medium text-emerald-600 hover:text-emerald-700 transition px-3"
+                  className="text-xs font-black text-blue-600 hover:text-blue-700 transition px-3 uppercase tracking-widest"
                 >
                   My Profile
                 </Link>

@@ -2,18 +2,20 @@ import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { consumerAPI } from '../../api/consumer';
 import ProductJourney from '../../components/ProductJourney';
-import { Search, QrCode } from 'lucide-react';
+import QRScannerModal from '../../components/QRScannerModal';
+import { Search, QrCode, Clock, Package, Loader2, Info } from 'lucide-react';
 
 function ConsumerDashboard() {
   const { user } = useAuth();
   const [batchId, setBatchId] = useState('');
+  const [showScanner, setShowScanner] = useState(false);
   const [traceabilityData, setTraceabilityData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!batchId.trim()) {
+  const handleSearch = async (e, id = batchId) => {
+    if (e) e.preventDefault();
+    if (!id.trim()) {
       setError('Please enter a batch ID');
       return;
     }
@@ -23,82 +25,150 @@ function ConsumerDashboard() {
     setTraceabilityData(null);
 
     try {
-      const response = await consumerAPI.getTraceabilityReport(batchId.trim());
+      const response = await consumerAPI.getTraceabilityReport(id.trim());
       if (response.success) {
         setTraceabilityData(response.data);
       } else {
-        setError(response.message || 'No traceability data found');
+        setError(response.message || 'Batch record not detected in the integrity chain.');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Error fetching traceability data');
+      setError(err.response?.data?.message || 'Traceability query failed. Local connection interrupted.');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleScanSuccess = (decodedId) => {
+    // QR data might be a full URL, extract the BATCH-ID part
+    const parts = decodedId.split('/');
+    const cleanId = parts[parts.length - 1];
+    
+    setBatchId(cleanId);
+    setShowScanner(false);
+    handleSearch(null, cleanId); // Trigger search automatically
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-gray-900">Consumer Dashboard</h1>
-          <p className="text-gray-600 mt-1">Welcome back, {user?.firstName}!</p>
+    <div className="min-h-screen bg-slate-50 font-['Outfit',sans-serif] pb-20">
+      {/* 🏛️ Premium Sticky Header */}
+      <div className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
+          <div className="flex items-center space-x-3">
+            <div className="bg-blue-600 p-2.5 rounded-xl shadow-lg shadow-blue-200">
+              <Package className="text-white w-6 h-6" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-black text-slate-900 tracking-tight">Consumer Hub</h1>
+              <div className="flex items-center text-slate-500 text-[10px] font-black uppercase tracking-widest mt-0.5">
+                <span className="text-blue-600 mr-2">●</span> {user?.firstName} {user?.lastName} Dashboard
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button
+               onClick={() => setShowScanner(true)}
+               className="flex items-center px-6 py-2.5 bg-slate-900 text-white rounded-xl hover:bg-black transition-all transform hover:scale-105 shadow-xl shadow-slate-200"
+            >
+               <QrCode className="w-4 h-4 mr-2" />
+               <span className="font-bold text-[10px] uppercase tracking-widest">Scan Product</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search Section */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Track Product Journey
-          </h2>
-          <p className="text-gray-600 mb-4">
-            Enter a batch ID or scan a QR code to view the complete journey of a product from farm to store.
-          </p>
-          
-          <form onSubmit={handleSearch} className="flex gap-4">
-            <div className="flex-1 relative">
-              <QrCode className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                value={batchId}
-                onChange={(e) => setBatchId(e.target.value)}
-                placeholder="Enter Batch ID (e.g., BATCH-1234567890-ABC123)"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+        
+        {/* 🕵️‍♂️ Trace Center - Search Hero */}
+        <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm p-10 relative overflow-hidden">
+           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-full blur-3xl -mr-20 -mt-20"></div>
+           
+           <div className="relative z-10 max-w-2xl mx-auto text-center space-y-6">
+              <div>
+                <h2 className="text-3xl font-black text-slate-900 tracking-tight">Trace Your Food</h2>
+                <p className="text-slate-500 font-medium text-sm mt-1">Enter your tracking ID or use the scanner to verify the origin chain.</p>
+              </div>
+
+              <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
+                 <div className="relative flex-grow">
+                   <input
+                      type="text"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-5 pl-14 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition font-bold text-slate-900 placeholder:text-slate-300"
+                      placeholder="e.g. BATCH-17758..."
+                      value={batchId}
+                      onChange={(e) => setBatchId(e.target.value)}
+                   />
+                   <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+                 </div>
+                 <button 
+                   type="submit"
+                   disabled={loading}
+                   className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-blue-200 hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+                 >
+                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Trace Origin'}
+                 </button>
+              </form>
+           </div>
+        </div>
+
+        {/* 🆘 Error Display */}
+        {error && (
+          <div className="max-w-2xl mx-auto animate-in slide-in-from-top-4 duration-500">
+            <div className="bg-rose-50 border border-rose-100 text-rose-700 px-6 py-4 rounded-2xl flex items-center shadow-sm">
+              <Info className="w-5 h-5 mr-3 flex-shrink-0" />
+              <p className="text-xs font-black uppercase tracking-widest">{error}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Product Journey Result */}
+        <div className="transition-all duration-700">
+          {traceabilityData ? (
+            <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">
+              <ProductJourney 
+                traceabilityData={{
+                  batch: {
+                    ...traceabilityData.farm,
+                    batchId: traceabilityData.farm?.batchId,
+                    productName: traceabilityData.farm?.productName,
+                    harvestDate: traceabilityData.farm?.harvestDate,
+                    quantity: traceabilityData.farm?.quantity,
+                    unit: traceabilityData.farm?.unit,
+                    status: 'completed'
+                  },
+                  transport: traceabilityData.transport?.[traceabilityData.transport.length - 1] || null,
+                  inventory: traceabilityData.store?.[0] || null,
+                  consumer: null
+                }} 
               />
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex items-center px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Search className="w-5 h-5 mr-2" />
-              {loading ? 'Searching...' : 'Search'}
-            </button>
-          </form>
-
-          {error && (
-            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-              {error}
+          ) : !loading && (
+            <div className="bg-white rounded-[2.5rem] border-2 border-dashed border-slate-200 p-20 text-center">
+              <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Clock className="w-10 h-10 text-slate-200" />
+              </div>
+              <p className="text-slate-500 font-bold mb-1">Awaiting Trace Entry</p>
+              <p className="text-slate-400 text-sm">Input a batch ID in the Trace Center to begin verification.</p>
             </div>
           )}
         </div>
-
-        {/* Product Journey */}
-        {traceabilityData && (
-          <ProductJourney traceabilityData={traceabilityData} />
-        )}
-
-        {!traceabilityData && !loading && (
-          <div className="bg-white rounded-lg shadow p-12 text-center">
-            <QrCode className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600">Enter a batch ID above to view product traceability</p>
-          </div>
-        )}
       </div>
+
+      {/* Footer Branding */}
+      <div className="max-w-7xl mx-auto px-6 pb-20 text-center">
+        <p className="text-slate-400 font-black uppercase tracking-[0.6em] text-[10px] opacity-30">
+          AgriTrace Global Intelligence Network
+        </p>
+      </div>
+
+      {/* 📸 Live Scan Terminal Overlay */}
+      {showScanner && (
+        <QRScannerModal 
+          onScanSuccess={handleScanSuccess} 
+          onClose={() => setShowScanner(false)} 
+        />
+      )}
     </div>
   );
 }
 
 export default ConsumerDashboard;
-

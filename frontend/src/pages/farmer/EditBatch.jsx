@@ -1,360 +1,292 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { farmerAPI } from '../../api/farmer';
+import { Package, Calendar, ShieldCheck, Thermometer, Droplets, ArrowLeft, Save, AlertCircle, CheckCircle, Plus } from 'lucide-react';
 
 function EditBatch() {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+
+  const [formData, setFormData] = useState({
+    productName: '',
+    harvestDate: '',
+    expiryDate: '',
+    quantity: '',
+    unit: 'kg',
+    qualityGrade: 'Grade A',
+    organicCertified: false,
+    pesticideResidue: 'None Detected',
+    storageConditions: {
+      temperature: '',
+      humidity: '',
+      otherConditions: '',
+    },
+    notes: '',
+    status: 'active'
+  });
 
   useEffect(() => {
-    const loadBatch = async () => {
-      try {
-        const response = await farmerAPI.getBatchById(id);
-        if (response.success && response.data) {
-          const batch = response.data;
-          setFormData({
-            productName: batch.productName || '',
-            harvestDate: batch.harvestDate
-              ? new Date(batch.harvestDate).toISOString().slice(0, 10)
-              : '',
-            expiryDate: batch.expiryDate
-              ? new Date(batch.expiryDate).toISOString().slice(0, 10)
-              : '',
-            quantity: batch.quantity ?? '',
-            unit: batch.unit || 'kg',
-            qualityGrade: batch.qualityGrade || '',
-            organicCertified: !!batch.organicCertified,
-            pesticideResidue: batch.pesticideResidue || 'None',
-            storageConditions: {
-              temperature: batch.storageConditions?.temperature || '',
-              humidity: batch.storageConditions?.humidity || '',
-              otherConditions: batch.storageConditions?.otherConditions || '',
-            },
-            notes: batch.notes || '',
-          });
-        } else {
-          setError(response.message || 'Failed to load batch');
-        }
-      } catch (err) {
-        console.error('Error loading batch for edit:', err);
-        setError(
-          err.response?.data?.message ||
-            'An error occurred while loading the batch.'
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadBatch();
   }, [id]);
 
+  const loadBatch = async () => {
+    try {
+      const response = await farmerAPI.getBatchById(id);
+      if (response.success) {
+        const batch = response.data;
+        setFormData({
+          productName: batch.productName || '',
+          harvestDate: batch.harvestDate ? new Date(batch.harvestDate).toISOString().split('T')[0] : '',
+          expiryDate: batch.expiryDate ? new Date(batch.expiryDate).toISOString().split('T')[0] : '',
+          quantity: batch.quantity || '',
+          unit: batch.unit || 'kg',
+          qualityGrade: batch.qualityGrade || 'Grade A',
+          organicCertified: !!batch.organicCertified,
+          pesticideResidue: batch.pesticideResidue || 'None Detected',
+          storageConditions: {
+            temperature: batch.storageConditions?.temperature || '',
+            humidity: batch.storageConditions?.humidity || '',
+            otherConditions: batch.storageConditions?.otherConditions || '',
+          },
+          notes: batch.notes || '',
+          status: batch.status || 'active'
+        });
+      }
+    } catch (err) {
+      setError('Failed to load batch data.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-
-    setError('');
-
-    if (name.startsWith('storageConditions.')) {
+    if (name.startsWith('storage.')) {
       const field = name.split('.')[1];
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
         storageConditions: {
           ...prev.storageConditions,
-          [field]: value,
-        },
+          [field]: value
+        }
       }));
     } else {
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
-        [name]: type === 'checkbox' ? checked : value,
+        [name]: type === 'checkbox' ? checked : value
       }));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData) return;
-
     setSaving(true);
     setError('');
 
     try {
-      const payload = {
-        ...formData,
-        quantity: parseFloat(formData.quantity),
-      };
-
-      const response = await farmerAPI.updateBatch(id, payload);
-
+      const response = await farmerAPI.updateBatch(id, formData);
       if (response.success) {
-        alert('Batch updated successfully!');
-        navigate(`/farmer/batches/${id}`);
-      } else {
-        setError(response.message || 'Failed to update batch');
+        setSuccess(true);
+        setTimeout(() => navigate(`/farmer/batches/${id}`), 2000);
       }
     } catch (err) {
-      console.error('Error updating batch:', err);
-      setError(
-        err.response?.data?.message ||
-          'An error occurred while updating the batch'
-      );
+      setError(err.response?.data?.message || 'Failed to update batch. Please try again.');
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading || !formData) {
-    return <div className="p-8">Loading batch for editing...</div>;
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 font-['Outfit',sans-serif]">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+        <p className="mt-4 text-slate-500 font-bold uppercase tracking-widest text-[10px]">Syncing Record State...</p>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Edit Product Batch</h1>
-              <p className="text-gray-600">
-                Update details for batch <span className="font-mono">{id}</span>
-              </p>
+    <div className="min-h-screen bg-slate-50 font-['Outfit',sans-serif] pb-20">
+      {/* 🏛️ Premium Sticky Header */}
+      <div className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
+          <div className="flex items-center space-x-3">
+             <button onClick={() => navigate(`/farmer/batches/${id}`)} className="p-2 hover:bg-slate-50 rounded-xl transition-colors text-slate-400 hover:text-blue-600 mr-2">
+                <ArrowLeft className="w-5 h-5" />
+             </button>
+            <div className="bg-blue-600 p-2.5 rounded-xl shadow-lg shadow-blue-200">
+              <Package className="text-white w-6 h-6" />
             </div>
-            <button
-              type="button"
-              onClick={() => navigate(`/farmer/batches/${id}`)}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-            >
-              Back to Details
-            </button>
+            <div>
+              <h1 className="text-2xl font-black text-slate-900 tracking-tight">Edit Batch Entry</h1>
+              <div className="flex items-center text-slate-500 text-[10px] font-black uppercase tracking-widest mt-0.5">
+                <span className="text-blue-600 mr-2">●</span> Production Metadata Management
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-6 mt-10">
+        <form onSubmit={handleSubmit} className="space-y-10">
+          
+          {/* 📦 Specification Overhaul */}
+          <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden p-10">
+            <div className="flex items-center space-x-3 mb-10 pb-6 border-b border-slate-100">
+               <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                  <Package className="w-5 h-5 text-blue-600" />
+               </div>
+               <h2 className="text-xl font-black text-slate-900 tracking-tight">Product Specifications</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+               <div className="space-y-2">
+                  <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Product Identity</label>
+                  <input
+                    name="productName"
+                    value={formData.productName}
+                    onChange={handleChange}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition font-bold text-slate-900"
+                    required
+                  />
+               </div>
+
+               <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Volume</label>
+                    <input
+                      name="quantity"
+                      type="number"
+                      value={formData.quantity}
+                      onChange={handleChange}
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition font-bold text-slate-900"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Metric</label>
+                    <select
+                      name="unit"
+                      value={formData.unit}
+                      onChange={handleChange}
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition font-bold text-slate-900"
+                    >
+                      <option value="kg">kg</option>
+                      <option value="tons">tons</option>
+                      <option value="units">units</option>
+                    </select>
+                  </div>
+               </div>
+
+               <div className="space-y-2">
+                  <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Status Protocol</label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition font-bold text-slate-900"
+                  >
+                    <option value="active">Active Monitoring</option>
+                    <option value="archived">Archived Entry</option>
+                    <option value="on_hold">On Hold</option>
+                  </select>
+               </div>
+            </div>
           </div>
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-600">{error}</p>
+          {/* 🌡️ Logic & Environment */}
+          <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden p-10">
+            <div className="flex items-center space-x-3 mb-10 pb-6 border-b border-slate-100">
+               <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
+                  <Thermometer className="w-5 h-5 text-indigo-600" />
+               </div>
+               <h2 className="text-xl font-black text-slate-900 tracking-tight">Environmental Logs</h2>
             </div>
-          )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Product Name *
-                </label>
-                <input
-                  type="text"
-                  name="productName"
-                  value={formData.productName}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="Enter product name"
-                />
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+               <div className="grid grid-cols-2 gap-6">
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Temp Range</label>
+                    <input
+                       name="storage.temperature"
+                       value={formData.storageConditions.temperature}
+                       onChange={handleChange}
+                       className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500 transition font-bold text-slate-900 text-sm"
+                    />
+                 </div>
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Humidity %</label>
+                    <input
+                       name="storage.humidity"
+                       value={formData.storageConditions.humidity}
+                       onChange={handleChange}
+                       className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500 transition font-bold text-slate-900 text-sm"
+                    />
+                 </div>
+               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Harvest Date *
-                </label>
-                <input
-                  type="date"
-                  name="harvestDate"
-                  value={formData.harvestDate}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Expiry Date *
-                </label>
-                <input
-                  type="date"
-                  name="expiryDate"
-                  value={formData.expiryDate}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Quantity *
-                  </label>
-                  <input
-                    type="number"
-                    name="quantity"
-                    value={formData.quantity}
-                    onChange={handleChange}
-                    required
-                    min="0"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Enter quantity"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Unit *
-                  </label>
+               <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Quality Grade</label>
                   <select
-                    name="unit"
-                    value={formData.unit}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                     name="qualityGrade"
+                     value={formData.qualityGrade}
+                     onChange={handleChange}
+                     className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition font-bold text-slate-900"
                   >
-                    <option value="kg">kg</option>
-                    <option value="lbs">lbs</option>
-                    <option value="pieces">pieces</option>
-                    <option value="liters">liters</option>
-                    <option value="gallons">gallons</option>
+                     <option value="Grade A+">Grade A+ (Elite)</option>
+                     <option value="Grade A">Grade A (Premium)</option>
+                     <option value="Grade B">Grade B (Standard)</option>
                   </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Quality Grade
-                </label>
-                <select
-                  name="qualityGrade"
-                  value={formData.qualityGrade}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                  <option value="">Select grade</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="Premium">Premium</option>
-                  <option value="Standard">Standard</option>
-                  <option value="Substandard">Substandard</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Pesticide Residue
-                </label>
-                <select
-                  name="pesticideResidue"
-                  value={formData.pesticideResidue}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                  <option value="None">None</option>
-                  <option value="Low">Low</option>
-                  <option value="Moderate">Moderate</option>
-                  <option value="High">High</option>
-                </select>
-              </div>
-
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="organicCertified"
-                  checked={formData.organicCertified}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                />
-                <label className="ml-2 block text-sm text-gray-700">
-                  Organic Certified
-                </label>
-              </div>
+               </div>
             </div>
+          </div>
 
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Storage Conditions</h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Temperature
-                  </label>
-                  <input
-                    type="text"
-                    name="storageConditions.temperature"
-                    value={formData.storageConditions.temperature}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="e.g., 4°C"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Humidity
-                  </label>
-                  <input
-                    type="text"
-                    name="storageConditions.humidity"
-                    value={formData.storageConditions.humidity}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="e.g., 60%"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Other Conditions
-                  </label>
-                  <input
-                    type="text"
-                    name="storageConditions.otherConditions"
-                    value={formData.storageConditions.otherConditions}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Additional conditions"
-                  />
-                </div>
-              </div>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6">
+            <div className="text-center md:text-left">
+               {error && (
+                  <div className="flex items-center text-rose-600 font-bold text-xs animate-shake">
+                     <AlertCircle className="w-4 h-4 mr-2" />
+                     {error}
+                  </div>
+               )}
+               {success && (
+                  <div className="flex items-center text-emerald-600 font-bold text-xs">
+                     <CheckCircle className="w-4 h-4 mr-2" />
+                     Registry record updated successfully! Returning...
+                  </div>
+               )}
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Notes
-              </label>
-              <textarea
-                name="notes"
-                value={formData.notes}
-                onChange={handleChange}
-                rows="4"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                placeholder="Additional notes about the batch..."
-              />
+            
+            <div className="flex items-center space-x-4">
+               <button
+                  type="button"
+                  onClick={() => navigate(`/farmer/batches/${id}`)}
+                  className="px-8 py-4 text-slate-400 font-black uppercase tracking-widest text-[10px] hover:text-slate-600 transition"
+               >
+                  Cancel Edits
+               </button>
+               <button
+                  type="submit"
+                  disabled={saving || success}
+                  className="bg-blue-600 text-white px-12 py-4 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-blue-200 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 flex items-center"
+               >
+                  {saving ? 'Updating Ledger Record...' : (
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Metadata Changes
+                    </>
+                  )}
+               </button>
             </div>
-
-            <div className="flex items-center justify-end space-x-4 pt-4">
-              <button
-                type="button"
-                onClick={() => navigate(`/farmer/batches/${id}`)}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={saving}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
-              >
-                {saving ? 'Saving...' : 'Save Changes'}
-              </button>
-            </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   );
 }
 
 export default EditBatch;
-

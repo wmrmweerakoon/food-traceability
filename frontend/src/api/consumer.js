@@ -3,7 +3,7 @@ import api from './axios';
 export const consumerAPI = {
   // Traceability operations
   getTraceabilityReport: async (batchId) => {
-    const response = await api.get(`/api/consumer/traceability/${batchId}`);
+    const response = await api.get(`/api/consumer/trace/${batchId}`);
     return response.data;
   },
 
@@ -23,8 +23,19 @@ export const consumerAPI = {
     return response.data;
   },
 
-  updateProfile: async (userId, profileData) => {
-    const response = await api.put(`/api/consumer/${userId}`, profileData);
+  deleteAccount: async (userId) => {
+    const response = await api.delete(`/api/consumer/${userId}`);
+    return response.data;
+  },
+
+  // Feedback Operations
+  submitFeedback: async (batchId, feedbackData) => {
+    const response = await api.post(`/api/consumer/feedback/${batchId}`, feedbackData);
+    return response.data;
+  },
+
+  getFeedback: async (batchId) => {
+    const response = await api.get(`/api/consumer/feedback/${batchId}`);
     return response.data;
   }
 };
