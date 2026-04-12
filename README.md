@@ -1,4 +1,4 @@
-# 🌿 AgriTrace: Blockchain-Inspired Food Traceability System
+# 🌿 AgriTrace: Full-Stack Food Traceability Platform
 
 [![Testing Status](https://img.shields.io/badge/Tests-43%2B%20Passing-success)](https://github.com/wmrmweerakoon/food-traceability)
 [![Deployment](https://img.shields.io/badge/Deployment-Live-blue)](https://food-traceability-app.vercel.app)
@@ -7,19 +7,21 @@ AgriTrace is a high-fidelity food traceability platform designed to ensure trans
 
 ---
 
-## 🌐 Live Production Links
+## 🌐 Live Production Application
 
-*   **Frontend UI**: [https://food-traceability-app.vercel.app](https://food-traceability-app.vercel.app)
-*   **Backend API**: [https://food-traceability-backend.onrender.com](https://food-traceability-backend.onrender.com)
-*   **Database**: MongoDB Atlas (Cloud Cluster)
+> [!IMPORTANT]
+> **Production Links for Evaluation:**
+> *   **Frontend UI**: [https://food-traceability-app.vercel.app](https://food-traceability-app.vercel.app)
+> *   **Backend API**: [https://food-traceability-backend.onrender.com](https://food-traceability-backend.onrender.com)
+> *   **Database**: MongoDB Atlas (Cloud Cluster)
 
 ---
 
 ## 🏗️ Setup Instructions
 
 ### i. Prerequisites
-- **Node.js**: v18.x or higher
-- **NPM**: v9.x or higher
+- **Node.js**: v20.x or higher
+- **NPM**: v10.x or higher
 - **MongoDB**: Local installation or MongoDB Atlas account
 - **Git**: For version control
 
@@ -29,21 +31,14 @@ AgriTrace is a high-fidelity food traceability platform designed to ensure trans
     git clone https://github.com/wmrmweerakoon/food-traceability.git
     cd food-traceability
     ```
-2.  **Install Global Workspace Dependencies**:
+2.  **Install Application Dependencies**:
     ```bash
+    # install root workspace tools
     npm install
-    ```
-3.  **Setup Backend**:
-    ```bash
-    cd backend
-    npm install
-    # Create a .env file (see Configuration section)
-    ```
-4.  **Setup Frontend**:
-    ```bash
-    cd ../frontend
-    npm install
-    # Create a .env file (see Configuration section)
+    # install backend dependencies
+    cd backend && npm install
+    # install frontend dependencies
+    cd ../frontend && npm install
     ```
 
 ### iii. Environment Configuration
@@ -60,16 +55,16 @@ Create a `.env` file in the **`/frontend`** directory:
 VITE_API_BASE_URL=http://localhost:5000
 ```
 
-### iv. Running the Application
+### iv. Development Execution
 Open two terminal windows:
 
-**Terminal 1 (Backend)**:
+**Terminal 1 (Backend Server)**:
 ```bash
 cd backend
 npm run dev
 ```
 
-**Terminal 2 (Frontend)**:
+**Terminal 2 (Frontend Client)**:
 ```bash
 cd frontend
 npm run dev
@@ -79,21 +74,26 @@ npm run dev
 
 ## 📖 API Endpoint Documentation
 
-### Authentication Requirements
-- **Public**: No authentication needed.
-- **Private (User)**: Requires a valid JWT Bearer Token in the `Authorization` header.
-- **Role-Based**: Requires a JWT token and a specific user role (Farmer, Distributor, etc.).
+### Global Requirements
+- **Authentication**: JWT Bearer Token required in the `Authorization` header for all private routes.
+- **Content-Type**: `application/json`
 
 ---
 
-### 🔐 Authentication Service
+### 🔐 Authentication Service (Auth)
 
 #### 1. User Registration
 - **URL**: `/api/auth/register`
 - **Method**: `POST`
 - **Access**: Public
-- **Request Format**: `application/json`
-- **Payload Example**:
+- **Request Format**: 
+  - `username`, `email`, `password`, `firstName`, `lastName` (Required)
+  - `firstName`, `lastName`, `contactNumber`, `role`, `address` (Optional)
+- **Response Format (Success 201)**:
+  - `success`: Boolean
+  - `data.token`: JWT Access Token
+  - `data.user`: User profile object (excluding password)
+- **Example Request**:
 ```json
 {
   "username": "maleesha_farmer",
@@ -104,36 +104,22 @@ npm run dev
   "role": "ROLE_FARMER"
 }
 ```
-- **Success Response (201)**:
-```json
-{
-  "success": true,
-  "data": { "token": "eyJhbG...", "user": { "id": "...", "role": "ROLE_FARMER" } }
-}
-```
 
 #### 2. User Login
 - **URL**: `/api/auth/login`
 - **Method**: `POST`
-- **Access**: Public
-- **Payload Example**:
-```json
-{
-  "email": "farmer@example.com",
-  "password": "securePassword123"
-}
-```
-- **Success Response (200)**: returns JWT token and user profile.
+- **Request Format**: `email`, `password`.
+- **Response Format (Success 200)**: includes `token` and `user`.
 
 ---
 
-### 👨‍🌾 Farmer Service (Batch Management)
+### 👨‍🌾 Farmer Service (Producer)
 
 #### 1. Create Product Batch
 - **URL**: `/api/farmer/batches`
 - **Method**: `POST`
-- **Access**: Private (Role: `ROLE_FARMER`)
-- **Payload**:
+- **Auth**: Private (Requires `ROLE_FARMER`)
+- **Request Format**:
 ```json
 {
   "productName": "Organic Carrots",
@@ -144,114 +130,108 @@ npm run dev
   "qualityGrade": "A"
 }
 ```
-- **Response**: Returns the created batch with a unique `batchId` and a generated QR Code URL.
+- **Response Format**: Returns created batch with unique `batchId` and `qrCode` API URL.
 
 ---
 
 ### 🚛 Distributor Service (Logistics)
 
-#### 1. Initiate Transport
+#### 1. Add Transport Record
 - **URL**: `/api/distributor/transport`
 - **Method**: `POST`
-- **Access**: Private (Role: `ROLE_DISTRIBUTOR`)
-- **Payload**:
+- **Auth**: Private (`ROLE_DISTRIBUTOR`)
+- **Payload**: `batchId`, `origin`, `destination`, `temperature`.
+- **Response Example**:
 ```json
 {
-  "batchId": "BATCH-123456",
-  "origin": "Colombo Farm",
-  "destination": "Kandy Warehouse",
-  "temperature": 4.5
+  "success": true,
+  "message": "Transport record added",
+  "data": { "status": "Initiated", "currentLocation": "Origin Point" }
 }
 ```
 
-#### 2. Update Logistics Status
-- **URL**: `/api/distributor/transport/:batchId`
-- **Method**: `PUT`
-- **Payload**:
-```json
-{
-  "status": "In Transit",
-  "currentLocation": { "lat": 6.9271, "lng": 79.8612 }
-}
-```
+---
+
+### 🏪 Retailer Service (Store Management)
+
+#### 1. Add Product to Store
+- **URL**: `/api/retailer/inventory`
+- **Method**: `POST`
+- **Auth**: Private (`ROLE_RETAILER`)
+- **Payload**: `batchId`, `productName`, `quantity`, `pricePerUnit`.
 
 ---
 
 ### 🥗 Consumer Service (Traceability)
 
-#### 1. View Product Journey
+#### 1. Get Complete Traceability Report
 - **URL**: `/api/consumer/trace/:batchId`
 - **Method**: `GET`
-- **Access**: Public
-- **Response**:
-```json
-{
-  "success": true,
-  "data": {
-    "batch": { "productName": "...", "harvestDate": "..." },
-    "transport": [ { "status": "Delivered", "timestamp": "..." } ],
-    "retailer": { "shopName": "SuperMart", "saleDate": "..." }
-  }
-}
-```
+- **Access**: Public (QR Code Scan)
+- **Response Profile**:
+  - `batch`: Origin and harvest data (Farmer)
+  - `transport`: All logistics touchpoints (Distributor)
+  - `retailer`: Final stock and sale verification (Retailer)
 
 ---
 
-## 🚀 Deployment Report
+## 🚀 Deployment Report (Cloud Hosting)
 
-### Platforms & Infrastructure
-- **Backend Deployment**: Hosted on **Render** (Node.js Workspace).
-- **Frontend Deployment**: Hosted on **Vercel** (Vite Optimized).
-- **Database Architecture**: **MongoDB Atlas** (Global Cloud Cluster).
+### i. Backend Platform (Node.js)
+- **Platform**: **Render Cloud** (Web Service).
+- **Setup Steps**:
+  1. Link GitHub repository.
+  2. Direct Root Directory to `backend/`.
+  3. Commands: Build (`npm install`), Start (`node server.js`).
+  4. Environment Variables configured for MongoDB and JWT.
 
-### Setup & Evidence
-1.  **Source Control**: Unified GitHub repository with automated CI/CD triggers.
-2.  **Environment Sync**: Secrets managed via platform-native vault (Render Envs/Vercel Envs).
-3.  **Live Evidence**:
-    | Render Backend (Success) | Vercel Frontend (Success) |
-    | :--- | :--- |
-    | ![Render](./screenshots/render.png) | ![Vercel](./screenshots/vercel.png) |
+### ii. Frontend Hosting (React)
+- **Platform**: **Vercel** (Edge Optimization).
+- **Setup Steps**:
+  1. Import Project.
+  2. Root Directory: `frontend/`.
+  3. Inject `VITE_API_BASE_URL` pointing to Render's live URL.
+
+### iii. Active Deployment Evidence
+| Render Dashboard | Vercel Analytics |
+| :--- | :--- |
+| ![Render](./screenshots/render.png) | ![Vercel](./screenshots/vercel.png) |
 
 ---
 
 ## 🧪 Testing Instruction Report
 
-### i. Testing Architecture
-The project employs a three-tier testing strategy: **Unit**, **Integration**, and **Performance**.
+This project utilizes a robust automated testing infrastructure to ensure 100% endpoint stability.
 
-### ii. Local Test Execution
-To run the full suite (43+ cases) locally:
-```bash
-cd backend
-npm test
-```
+### i. Unit Testing
+Tests individual functions and logic isolation (Pricing, JWT validation).
+- **Command**: `npm test` inside `/backend`.
 
-### iii. Performance Testing Execution
-Managed via **Artillery.io**:
-1. **Setup**: `npm install -g artillery`
-2. **Execution**: `npm run test:load` (Simulates 250+ users)
-3. **Cloud Reporting**: `npm run test:load:cloud`
+### ii. Integration Testing (Setup and Execution)
+Validates the full API lifecycle between different services.
+- **Setup**: Tests automatically initialize an isolated environment using the `tests/setup.js` configuration.
+- **Execution**: `npm test` runs all integration suites across farmer, distributor, retailer, and consumer roles.
 
-### iv. Integration Testing Details
-Integration tests validate the end-to-end data flow between components (e.g., ensuring a batch created by a Farmer is visible to a Consumer).
-- **Tooling**: `supertest` + `jest`.
-- **Command**: `npm test tests/farmer/farmer.integration.test.js`
+### iii. Performance Testing (Setup and Execution)
+Simulates high concurrent traffic load using **Artillery.io**.
+- **Setup**: Install artillery (`npm install -g artillery`).
+- **Execution**: `npm run test:load`.
+- **Reporting**: `npm run test:load:cloud` (Visual performance dashboards).
 
-### v. Testing Environment Configuration
-To ensure reliability and 100% test isolation, we use the following configuration:
-1.  **In-Memory Database**: We utilize `mongodb-memory-server` in `tests/setup.js`. This creates a fresh, temporary database for every test run, ensuring zero data pollution.
-2.  **Auto-Auth Hooks**: Integration tests use `beforeAll` hooks to automatically register/login test users and inject the generated JWT into subsequent request headers.
-3.  **Cleanup Logic**: `afterEach` hooks programmatically clear all collections, ensuring each test case starts with a "blank slate."
+### iv. Testing Environment Configuration Details
+1.  **Isolation**: We use `mongodb-memory-server` to run a temporary, in-memory MongoDB instance for every test session.
+2.  **State Management**: `beforeAll` and `afterEach` hooks in `setup.js` handle automatic database cleanup and connection persistence.
+3.  **Mocking**: Authentication is bypassed or mocked using auto-generated test tokens to ensure tests focus on business logic.
 
 ---
 
 ## 👥 Group Details
 - **Group ID**: [Your Group ID]
 - **Members**:
-    - [Name 1] (Student ID: [ID 1])
-    - [Name 2] (Student ID: [ID 2])
-    - [Name 3] (Student ID: [ID 3])
-    - [Name 4] (Student ID: [ID 4])
+    - [Name 1] (ID: [ID 1])
+    - [Name 2] (ID: [ID 2])
+    - [Name 3] (ID: [ID 3])
+    - [Name 4] (ID: [ID 4])
 
 ---
-Developed for SLIIT Application Framework (AF) Module evaluation. 🌿
+Developed for the SLIIT Application Framework (AF) Module evaluation. 🌿
