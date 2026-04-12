@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }) => {
       console.error('Auth context register error:', error);
       const errorMessage = error.response?.data?.message 
         || error.message 
-        || 'Failed to connect to server. Please make sure the backend is running on http://localhost:5000';
+        || 'Failed to connect to server. Please ensure the backend is reachable.';
       return {
         success: false,
         message: errorMessage,

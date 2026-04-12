@@ -167,12 +167,56 @@ import MapExample from './components/MapExample';
 
 This project is open source and available under the MIT License.
 
-## Author
+## 🚀 Deployment
 
+This application is deployed and satisfies the SLIIT project requirements.
+
+### 🔌 Backend Deployment (Render)
+
+The backend is deployed on **Render**.
+
+**Setup Steps:**
+1. Connect this GitHub repository to a new "Web Service" on Render.
+2. Set the **Root Directory** to `backend`.
+3. **Build Command**: `npm install`
+4. **Start Command**: `node server.js`
+5. Configure the following **Environment Variables**:
+   - `MONGODB_URI`: Your MongoDB Atlas connection string.
+   - `JWT_SECRET`: A secure random string for signing tokens.
+   - `FRONTEND_URL`: The live URL of your Vercel frontend.
+   - `PORT`: 5000 (Render usually provides this automatically).
+
+### 🎨 Frontend Deployment (Vercel)
+
+The frontend is deployed on **Vercel**.
+
+**Setup Steps:**
+1. Connect this GitHub repository to a new project on Vercel.
+2. Set the **Root Directory** to `frontend`.
+3. **Framework Preset**: `Vite`.
+4. Configure the following **Environment Variable**:
+   - `VITE_API_BASE_URL`: The live URL of your Render backend.
+
+### 🔐 Environment Variables Summary
+
+| Service | Variable Name | Purpose |
+| :--- | :--- | :--- |
+| **Backend** | `MONGODB_URI` | Connection to Cloud MongoDB (Atlas) |
+| **Backend** | `JWT_SECRET` | Secret key for authentication security |
+| **Backend** | `FRONTEND_URL` | Live frontend URL for CORS policy |
+| **Frontend** | `VITE_API_BASE_URL` | Live backend URL for API communication |
+
+### 🌐 Live URLs
+
+- **Backend (Render)**: [Will be available after connecting GitHub to Render]
+- **Frontend (Vercel)**: [Will be available after connecting GitHub to Vercel]
+
+---
+
+## Author
 [Your Name]
 
 ## Acknowledgments
-
 - Leaflet for open-source mapping
 - OpenStreetMap for map tiles
 - MongoDB for database
