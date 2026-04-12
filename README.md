@@ -134,14 +134,4 @@ All endpoints (except Auth) require a Bearer Token in the `Authorization` header
 - **Persistence**: MongoDB, Mongoose ODM
 
 ---
-
-## 👥 Group Details
-- **Group ID**: [Your Group ID]
-- **Members**:
-    - Member 1 (ID: XXXXXXXX)
-    - Member 2 (ID: XXXXXXXX)
-    - Member 3 (ID: XXXXXXXX)
-    - Member 4 (ID: XXXXXXXX)
-
----
 Developed for SLIIT Application Framework (AF) Module. 🌿
