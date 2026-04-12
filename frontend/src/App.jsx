@@ -13,8 +13,9 @@ import BatchDetail from './pages/farmer/BatchDetail';
 import EditBatch from './pages/farmer/EditBatch';
 import TraceView from './pages/TraceView';
 
-// Import consumer component
+// Import consumer components
 import ConsumerProfile from './pages/consumer/ConsumerProfile';
+import ProductCatalog from './pages/consumer/ProductCatalog';
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
@@ -74,8 +75,9 @@ function App() {
               </PublicRoute>
             }
           />
-          {/* Public consumer traceability route (QR codes point here) */}
+          {/* Public consumer traceability routes */}
           <Route path="/trace/:batchId" element={<TraceView />} />
+          <Route path="/products" element={<ProductCatalog />} />
           <Route
             path="/dashboard"
             element={

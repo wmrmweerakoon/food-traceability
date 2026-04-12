@@ -47,6 +47,11 @@ export const consumerAPI = {
   getDailyHealthTip: async () => {
     const response = await api.get('/api/consumer/health-tip');
     return response.data;
+  },
+  
+  getAllProducts: async (filters = {}) => {
+    const response = await api.get('/api/consumer/products', { params: filters });
+    return response.data;
   }
 };
 

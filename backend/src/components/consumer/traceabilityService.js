@@ -186,9 +186,44 @@ const getDailyHealthTip = async () => {
     }
 };
 
+const getAllAvailableProducts = async (filters = {}) => {
+  const query = { status: 'available' };
+  
+  if (filters.category) {
+    query.category = filters.category;
+  }
+
+  const products = await StoreInventory.find(query)
+    .populate('productId', 'productName qualityGrade harvestDate expiryDate batchId')
+    .populate('retailerId', 'firstName lastName contactNumber address')
+    .populate('storeId', 'shopName location')
+    .sort({ createdAt: -1 });
+
+  return products.map(p => ({
+    _id: p._id,
+    productName: p.productName || p.productId?.productName,
+    batchId: p.batchId,
+    internalBatchId: p.productId?._id,
+    sku: p.sku,
+    category: p.category,
+    unitPrice: p.unitPrice,
+    currency: p.currency,
+    qualityGrade: p.productId?.qualityGrade || p.qualityStatus,
+    harvestDate: p.productId?.harvestDate,
+    expiryDate: p.expiryDate,
+    status: p.status,
+    store: {
+      name: p.storeId?.shopName || 'AgriTrace Partner',
+      location: p.storeId?.location || p.location?.address,
+      retailerName: `${p.retailerId?.firstName} ${p.retailerId?.lastName}`
+    }
+  }));
+};
+
 module.exports = {
   getProductHistory,
   saveFeedback,
   getFeedbackByBatch,
-  getDailyHealthTip
+  getDailyHealthTip,
+  getAllAvailableProducts
 };

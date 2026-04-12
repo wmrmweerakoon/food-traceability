@@ -183,13 +183,36 @@ function ProductJourney({ traceabilityData }) {
                           )}
 
                           {stage.id === 'retail' && (
-                            <div className="flex items-center space-x-6">
-                              <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center border border-emerald-100">
-                                <Store className="w-7 h-7 text-emerald-600" />
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+                              <div className="flex items-center space-x-6">
+                                <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center border border-emerald-100">
+                                  <Store className="w-7 h-7 text-emerald-600" />
+                                </div>
+                                <div>
+                                  <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Store Branch</p>
+                                  <p className="text-xl font-black text-slate-900">{stage.data.storeName || 'Verified Merchant'}</p>
+                                </div>
                               </div>
-                              <div>
-                                <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Store Branch</p>
-                                <p className="text-xl font-black text-slate-900">{stage.data.storeName || 'Verified Merchant'}</p>
+                              
+                              <div className="flex flex-wrap gap-4">
+                                <div className="bg-slate-50 px-5 py-3 rounded-2xl border border-slate-100 min-w-[120px]">
+                                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Unit Price</p>
+                                  <p className="text-lg font-black text-emerald-600">
+                                    {stage.data.price ? `${stage.data.currency || 'LKR'} ${stage.data.price.toFixed(2)}` : 'Contact Store'}
+                                  </p>
+                                </div>
+                                <div className={`px-5 py-3 rounded-2xl border min-w-[120px] ${
+                                  stage.data.status === 'available' 
+                                    ? 'bg-emerald-50 border-emerald-100' 
+                                    : 'bg-rose-50 border-rose-100'
+                                }`}>
+                                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Availability</p>
+                                  <p className={`text-lg font-black ${
+                                    stage.data.status === 'available' ? 'text-emerald-700' : 'text-rose-600'
+                                  }`}>
+                                    {stage.data.status === 'available' ? 'In Stock' : (stage.data.status || 'Out of Stock').replace('-', ' ')}
+                                  </p>
+                                </div>
                               </div>
                             </div>
                           )}

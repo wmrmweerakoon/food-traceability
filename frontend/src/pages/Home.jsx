@@ -10,7 +10,8 @@ import {
   ShieldCheck, 
   Clock,
   ArrowRight,
-  QrCode
+  QrCode,
+  ShoppingBag
 } from 'lucide-react';
 import QRScannerModal from '../components/QRScannerModal';
 
@@ -53,6 +54,10 @@ function Home() {
           <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600">
             <a href="#how-it-works" className="hover:text-emerald-600 transition">How it Works</a>
             <a href="#features" className="hover:text-emerald-600 transition">Features</a>
+            <Link to="/products" className="flex items-center text-emerald-600 font-bold hover:text-emerald-700 transition">
+              <ShoppingBag className="w-4 h-4 mr-2" />
+              Marketplace
+            </Link>
             <Link to="/login" className="hover:text-emerald-600 transition">Sign In</Link>
             <Link to="/register" className="px-5 py-2.5 bg-slate-900 text-white rounded-full hover:bg-slate-800 transition shadow-md">
               Get Started

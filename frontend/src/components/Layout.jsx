@@ -52,6 +52,13 @@ function Layout({ children }) {
                 </span>
               </div>
               
+              <Link 
+                to="/products"
+                className="text-xs font-black text-slate-900 border border-slate-200 bg-slate-50 px-4 py-2 rounded-xl flex items-center hover:bg-emerald-50 hover:border-emerald-100 hover:text-emerald-700 transition uppercase tracking-widest"
+              >
+                Marketplace
+              </Link>
+
               {user?.role === 'ROLE_CONSUMER' && (
                 <Link 
                   to="/consumer/profile"

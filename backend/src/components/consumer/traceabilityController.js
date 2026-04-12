@@ -159,11 +159,31 @@ const getDailyHealthTip = async (req, res) => {
     }
 };
 
+const getAvailableProducts = async (req, res) => {
+    try {
+        const filters = {
+            category: req.query.category
+        };
+        const products = await traceabilityService.getAllAvailableProducts(filters);
+        res.status(200).json({
+            success: true,
+            count: products.length,
+            data: products
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
 module.exports = {
   getTraceabilityReport,
   generateQRCode,
   submitFeedback,
   getFeedback,
   generateFeedbackQRCode,
-  getDailyHealthTip
+  getDailyHealthTip,
+  getAvailableProducts
 };
