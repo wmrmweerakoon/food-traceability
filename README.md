@@ -103,8 +103,10 @@ We use the following variables to manage environments without exposing secrets:
 | **Frontend** | `VITE_API_BASE_URL` | API communication bridge |
 
 ### 📸 Deployment Evidence
-> [!TIP]
-> **Manual Step Required**: Please take screenshots of your successful Render and Vercel dashboards and place them in a folder or paste them below for your final submission.
+
+| Render Backend | Vercel Frontend |
+| :--- | :--- |
+| ![Render Deployment](./screenshots/render.png) | ![Vercel Deployment](./screenshots/vercel.png) |
 
 ---
 
