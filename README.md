@@ -224,14 +224,4 @@ Simulates high concurrent traffic load using **Artillery.io**.
 3.  **Mocking**: Authentication is bypassed or mocked using auto-generated test tokens to ensure tests focus on business logic.
 
 ---
-
-## 👥 Group Details
-- **Group ID**: [Your Group ID]
-- **Members**:
-    - [Name 1] (ID: [ID 1])
-    - [Name 2] (ID: [ID 2])
-    - [Name 3] (ID: [ID 3])
-    - [Name 4] (ID: [ID 4])
-
----
 Developed for the SLIIT Application Framework (AF) Module evaluation. 🌿
