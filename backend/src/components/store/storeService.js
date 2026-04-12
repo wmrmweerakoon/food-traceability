@@ -4,89 +4,41 @@ const ProductBatch = require('../../models/ProductBatch');
 const RetailStore = require('../../models/RetailStore');
 
 /**
- * Fetch typical shelf life from OpenFoodFacts API by product name.
- * Returns the shelf life in days, or null if unavailable.
+ * Fetch global exchange rates for LKR (or base currency) using open.er-api.com.
  */
-const fetchShelfLifeFromOpenFoodFacts = async (productName) => {
+const getExchangeRates = async (baseCurrency = 'LKR') => {
     try {
-        if (!productName) {
-            return null;
+        const response = await axios.get(`https://open.er-api.com/v6/latest/${baseCurrency}`);
+        
+        if (response.data && response.data.result === 'success') {
+            return {
+                base: baseCurrency,
+                rates: {
+                    USD: response.data.rates.USD,
+                    EUR: response.data.rates.EUR,
+                    GBP: response.data.rates.GBP,
+                    INR: response.data.rates.INR
+                },
+                updatedAt: response.data.time_last_update_utc
+            };
+        } else {
+            throw new Error('Failed to fetch exchange rates');
         }
-
-        const searchUrl = `https://world.openfoodfacts.org/cgi/search.pl`;
-        const response = await axios.get(searchUrl, {
-            params: {
-                search_terms: productName,
-                search_simple: 1,
-                action: 'process',
-                json: 1,
-                page_size: 5
-            },
-            headers: {
-                'User-Agent': 'Food-Traceability-App 1.0 (contact@foodtraceability.com)'
-            },
-            timeout: 10000
-        });
-
-        if (!response.data || !response.data.products || response.data.products.length === 0) {
-            return null;
-        }
-
-        // Search through returned products for one with shelf_life data
-        for (const product of response.data.products) {
-            if (product.shelf_life) {
-                const shelfLifeDays = parseShelfLifeToDays(product.shelf_life);
-                if (shelfLifeDays !== null) {
-                    return shelfLifeDays;
-                }
-            }
-        }
-
-        return null;
     } catch (error) {
-        // Fallback: API unreachable, return null to allow manual entry
-        console.warn(`OpenFoodFacts API error for "${productName}":`, error.message);
-        return null;
+        console.warn('Currency API Error (Service):', error.message);
+        // Fallback rates if API fails
+        return {
+            base: baseCurrency,
+            rates: { USD: 0.0033, EUR: 0.0031, GBP: 0.0026, INR: 0.28 },
+            isFallback: true
+        };
     }
-};
-
-/**
- * Parse a shelf life string (e.g. "7 days", "2 weeks", "6 months") into days.
- */
-const parseShelfLifeToDays = (shelfLifeStr) => {
-    if (!shelfLifeStr || typeof shelfLifeStr !== 'string') {
-        return null;
-    }
-
-    const normalized = shelfLifeStr.toLowerCase().trim();
-
-    // Try to match patterns like "7 days", "2 weeks", "3 months", "1 year"
-    const match = normalized.match(/(\d+)\s*(day|days|week|weeks|month|months|year|years)/);
-    if (match) {
-        const value = parseInt(match[1], 10);
-        const unit = match[2];
-
-        if (unit.startsWith('day')) return value;
-        if (unit.startsWith('week')) return value * 7;
-        if (unit.startsWith('month')) return value * 30;
-        if (unit.startsWith('year')) return value * 365;
-    }
-
-    // Try plain number (assume days)
-    const plainNumber = parseInt(normalized, 10);
-    if (!isNaN(plainNumber) && plainNumber > 0) {
-        return plainNumber;
-    }
-
-    return null;
 };
 
 /**
  * Add a product to a store inventory.
- * Queries OpenFoodFacts for shelf life and calculates expiryDate.
- * If manual expiryDate exceeds the API-suggested period, it is rejected.
  */
-const addProductToStore = async (batchId, storeId, shelfDate, manualExpiryDate) => {
+const addProductToStore = async (batchId, storeId, shelfDate, expiryDate) => {
     // 1. Find the ProductBatch by batchId string
     const productBatch = await ProductBatch.findOne({ batchId });
     if (!productBatch) {
@@ -99,55 +51,25 @@ const addProductToStore = async (batchId, storeId, shelfDate, manualExpiryDate) 
         throw new Error(`Retail store not found with id: ${storeId}`);
     }
 
-    // 3. Query OpenFoodFacts for shelf life
-    const shelfLifeDays = await fetchShelfLifeFromOpenFoodFacts(productBatch.productName);
+    if (!expiryDate) {
+        throw new Error('A manual expiryDate is required.');
+    }
 
     const effectiveShelfDate = shelfDate ? new Date(shelfDate) : new Date();
-    let calculatedExpiryDate;
-
-    if (shelfLifeDays !== null) {
-        // API returned a shelf life — calculate expiry
-        calculatedExpiryDate = new Date(effectiveShelfDate);
-        calculatedExpiryDate.setDate(calculatedExpiryDate.getDate() + shelfLifeDays);
-
-        // If a manual expiry was provided, validate it doesn't exceed the API threshold
-        if (manualExpiryDate) {
-            const manualExpiry = new Date(manualExpiryDate);
-            if (manualExpiry > calculatedExpiryDate) {
-                throw new Error(
-                    `Manual expiry date (${manualExpiry.toISOString().split('T')[0]}) exceeds the ` +
-                    `API-suggested shelf life of ${shelfLifeDays} days. ` +
-                    `Maximum allowed expiry: ${calculatedExpiryDate.toISOString().split('T')[0]}`
-                );
-            }
-            // Manual date is within range — use it
-            calculatedExpiryDate = manualExpiry;
-        }
-    } else {
-        // API unreachable or no data — fallback to manual entry
-        if (!manualExpiryDate) {
-            throw new Error(
-                'OpenFoodFacts API could not determine shelf life. A manual expiryDate is required.'
-            );
-        }
-        calculatedExpiryDate = new Date(manualExpiryDate);
-    }
 
     // 4. Create inventory record
     const inventoryItem = new StoreInventory({
         batchId,
         storeId,
         shelfDate: effectiveShelfDate,
-        expiryDate: calculatedExpiryDate,
+        expiryDate: new Date(expiryDate),
         isAvailable: true
     });
 
     const savedItem = await inventoryItem.save();
 
     return {
-        inventory: savedItem,
-        shelfLifeDays,
-        apiUsed: shelfLifeDays !== null
+        inventory: savedItem
     };
 };
 
@@ -203,8 +125,7 @@ const removeProduct = async (batchId) => {
 };
 
 module.exports = {
-    fetchShelfLifeFromOpenFoodFacts,
-    parseShelfLifeToDays,
+    getExchangeRates,
     addProductToStore,
     updateStoreProduct,
     getStoreProduct,

@@ -150,7 +150,10 @@ const generateFeedbackQRCode = async (req, res) => {
 const getDailyHealthTip = async (req, res) => {
     try {
         const result = await traceabilityService.getDailyHealthTip();
-        res.status(200).json(result);
+        res.status(200).json({
+            success: true,
+            data: result
+        });
     } catch (error) {
         res.status(500).json({
             success: false,

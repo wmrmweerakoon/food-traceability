@@ -1,13 +1,6 @@
 const ProductBatch = require('../../models/ProductBatch');
 const QRCode = require('qrcode');
-
-// Generate a unique batch ID
-const generateBatchId = () => {
-  return `BATCH-${Date.now()}-${Math.random()
-    .toString(36)
-    .substr(2, 9)
-    .toUpperCase()}`;
-};
+const { generateBatchId } = require('../../utils/batchHelper');
 
 // Create a new product batch
 const createBatch = async (req, res) => {
@@ -126,7 +119,7 @@ const getBatchById = async (req, res) => {
     }
 
     if (
-      batch.farmerId._id.toString() !== req.user.id &&
+      (!batch.farmerId || batch.farmerId._id.toString() !== req.user.id) &&
       req.user.role !== 'ROLE_ADMIN'
     ) {
       return res.status(403).json({
@@ -166,7 +159,7 @@ const updateBatch = async (req, res) => {
     }
 
     if (
-      batch.farmerId._id.toString() !== req.user.id &&
+      (!batch.farmerId || batch.farmerId._id.toString() !== req.user.id) &&
       req.user.role !== 'ROLE_ADMIN'
     ) {
       return res.status(403).json({
@@ -212,7 +205,7 @@ const deleteBatch = async (req, res) => {
     }
 
     if (
-      batch.farmerId._id.toString() !== req.user.id &&
+      (!batch.farmerId || batch.farmerId._id.toString() !== req.user.id) &&
       req.user.role !== 'ROLE_ADMIN'
     ) {
       return res.status(403).json({
@@ -253,7 +246,7 @@ const generateQRCode = async (req, res) => {
     }
 
     if (
-      batch.farmerId._id.toString() !== req.user.id &&
+      (!batch.farmerId || batch.farmerId._id.toString() !== req.user.id) &&
       req.user.role !== 'ROLE_ADMIN'
     ) {
       return res.status(403).json({

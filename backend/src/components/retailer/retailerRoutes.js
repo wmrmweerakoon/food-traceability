@@ -9,7 +9,6 @@ const {
     getInventoryItemById,
     updateInventoryItem,
     deleteInventoryItem,
-    validateProductExpiry,
     getRetailerStores,
     getAvailableBatches,
     getIncomingShipments,
@@ -50,7 +49,6 @@ router.post('/store/:batchId/sell', sellProductByBatchId);
 
 // --- Additional Utility Routes ---
 router.get('/incoming-shipments', getIncomingShipments);
-router.post('/validate-expiry', validateProductExpiry);
 router.get('/stores', getRetailerStores);
 router.post('/stores', createStore);
 router.put('/stores/:id', updateStore);

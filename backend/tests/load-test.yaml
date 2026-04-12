@@ -1,0 +1,96 @@
+# ==============================================================================
+# ARTILLERY PERFORMANCE TEST CONFIGURATION
+# This file simulates real-world traffic to test how the server handles load.
+# ==============================================================================
+
+config:
+  # The base URL of the backend server we are testing
+  target: "http://localhost:5000"
+  
+  # Phases define HOW the load is applied over time
+  phases:
+    - duration: 30       # Phase lasts 30 seconds
+      arrivalRate: 2     # Start with 2 new users per second
+      rampTo: 5          # Gradually increase to 5 new users per second
+      name: Warm up phase  # Helps "wake up" the server and fill caches
+      
+    - duration: 30       # Phase lasts 30 seconds
+      arrivalRate: 5     # Stay at a constant 5 new users per second
+      name: Sustained load phase # This is the main "Stress Test"
+
+  # Default settings for all HTTP requests in the test
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+# Scenarios define WHAT the simulated users actually do
+scenarios:
+  # ----------------------------------------------------------------------------
+  # SCENARIO 1: CONSUMER (Most common user path)
+  # ----------------------------------------------------------------------------
+  - name: "Consumer Traceability Path (Common)"
+    weight: 70  # 70% of all virtual users will follow this path
+    flow:
+      - get:
+          url: "/api/consumer/trace/BATCH-1775959000778-EE6HQNZX3" # View product journey
+      - get:
+          url: "/api/consumer/products" # Browse available products
+      - get:
+          url: "/api/consumer/health-tip" # Fetch daily health data
+
+  # ----------------------------------------------------------------------------
+  # SCENARIO 2: RETAILER (Store management)
+  # ----------------------------------------------------------------------------
+  - name: "Retailer Global Pricing Path"
+    weight: 10  # 10% of users simulate retailers
+    flow:
+      - post:   # Step 1: Login to get a security token
+          url: "/api/auth/login"
+          json:
+            email: "r@gmail.com"
+            password: "password123"
+          capture:
+            - json: "$.token"
+              as: "token" # Save the token to use in the next step
+      - get:    # Step 2: Check global currency prices
+          url: "/api/retailer/global-pricing"
+          headers:
+            Authorization: "Bearer {{ token }}"
+
+  # ----------------------------------------------------------------------------
+  # SCENARIO 3: FARMER (Batch creation)
+  # ----------------------------------------------------------------------------
+  - name: "Farmer Dashboard Access"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "f@gmail.com"
+            password: "password123"
+          capture:
+            - json: "$.token"
+              as: "token"
+      - get:
+          url: "/api/farmer/batches" # View all crop batches
+          headers:
+            Authorization: "Bearer {{ token }}"
+
+  # ----------------------------------------------------------------------------
+  # SCENARIO 4: DISTRIBUTOR (Logistics tracking)
+  # ----------------------------------------------------------------------------
+  - name: "Distributor Route Tracking Path"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "d@gmail.com"
+            password: "password123"
+          capture:
+            - json: "$.token"
+              as: "token"
+      - get:
+          url: "/api/distributor/available-batches" # Check for shipments to track
+          headers:
+            Authorization: "Bearer {{ token }}"

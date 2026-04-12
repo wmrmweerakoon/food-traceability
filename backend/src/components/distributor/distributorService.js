@@ -53,8 +53,27 @@ const calculateRouteInfo = (originCoords, destCoords) => {
 };
 
 /**
+ * Helper to resolve batchId (string) or _id (ObjectId) into a valid ObjectId.
+ * Supports dual-id lookups during transition.
+ */
+const resolveBatchId = async (idOrBatchId) => {
+    if (!idOrBatchId) return null;
+    
+    // 1. Check if it's already a valid ObjectId
+    if (mongoose.Types.ObjectId.isValid(idOrBatchId)) {
+        const batch = await ProductBatch.findById(idOrBatchId);
+        if (batch) return batch._id;
+    }
+
+    // 2. Lookup by batchId string
+    const batchByStr = await ProductBatch.findOne({ batchId: idOrBatchId });
+    if (batchByStr) return batchByStr._id;
+
+    throw new Error(`Batch ID resolution failed: ${idOrBatchId}`);
+};
+
+/**
  * Validate a location string using Google Maps Geocoding API.
- * Falls back to original string if GOOGLE_MAPS_API_KEY is not defined.
  */
 const validateLocationWithMaps = async (locationString) => {
     try {
@@ -335,14 +354,22 @@ const updateLogistics = async (batchIdInput, updateData, userId) => {
         if (deliveryStatus.toLowerCase() === 'delivered') normalizedStatus = 'Delivered';
         if (deliveryStatus.toLowerCase() === 'cancelled') normalizedStatus = 'Cancelled';
 
-        // Simplify "Delivered" flow: Auto-set dates/locations if missing
+        // Strict validation for "Delivered" flow
         if (normalizedStatus === 'Delivered') {
-            const effectiveDeliveryDate = deliveryDate || update.deliveryDate || transport.deliveryDate || new Date();
-            const effectiveWarehouse = warehouseLocation || update.warehouseLocation || transport.warehouseLocation || transport.destination?.locationName;
-
-            update.actualArrivalTime = effectiveDeliveryDate;
-            update.deliveryDate = effectiveDeliveryDate;
-            update.warehouseLocation = effectiveWarehouse;
+            const errors = [];
+            if (!deliveryDate && !update.deliveryDate && !transport.deliveryDate) {
+                errors.push('deliveryDate is required');
+            }
+            if (!warehouseLocation && !update.warehouseLocation && !transport.warehouseLocation) {
+                errors.push('warehouseLocation is required');
+            }
+            
+            if (errors.length > 0) {
+                const error = new Error(`Validation failed for Delivered status: ${errors.join(', ')}`);
+                error.statusCode = 400;
+                throw error;
+            }
+            update.actualArrivalTime = deliveryDate || update.deliveryDate || transport.deliveryDate;
         }
         update.deliveryStatus = normalizedStatus;
     }
@@ -361,22 +388,6 @@ const updateLogistics = async (batchIdInput, updateData, userId) => {
     return updatedTransport;
 };
 
-/**
- * Helper to resolve human-readable batchId string to MongoDB ObjectId
- */
-const resolveBatchId = async (batchId) => {
-    // If it's already a valid ObjectId string, return it
-    if (mongoose.Types.ObjectId.isValid(batchId)) return batchId;
-    
-    // Otherwise, find the ProductBatch by its human-readable batchId string
-    const batch = await ProductBatch.findOne({ batchId });
-    if (!batch) {
-        const error = new Error(`Product batch with ID ${batchId} not found`);
-        error.statusCode = 404;
-        throw error;
-    }
-    return batch._id;
-};
 
 /**
  * Retrieve the full transport/logistics history for a specific batch.
