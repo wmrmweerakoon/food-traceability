@@ -1,230 +1,110 @@
-# Food Traceability Application
+# 🌿 AgriTrace: Blockchain-Inspired Food Traceability System
 
-A comprehensive food traceability system that tracks products from farm to consumer, ensuring transparency and accountability throughout the supply chain.
+[![Testing Status](https://img.shields.io/badge/Tests-43%2B%20Passing-success)](https://github.com/wmrmweerakoon/food-traceability)
+[![Deployment](https://img.shields.io/badge/Deployment-Live-blue)](https://food-traceability-app.vercel.app)
 
-## Features
-
-- **Multi-role System**: Supports Farmers, Distributors, Retailers, and Consumers
-- **Product Batch Tracking**: Create and manage product batches with QR codes
-- **Transport Management**: Track shipments with real-time location updates
-- **Inventory Management**: Retailers can manage store inventory
-- **Consumer Traceability**: Consumers can scan QR codes to view product history
-- **Interactive Maps**: Uses Leaflet for map visualization (no API keys required)
-- **RESTful API**: Well-structured API endpoints for all operations
-
-## Tech Stack
-
-### Backend
-- **Node.js** with Express.js
-- **MongoDB** with Mongoose
-- **JWT** for authentication
-- **geolib** for distance calculations
-- **QRCode** for QR code generation
-- **bcryptjs** for password hashing
-
-### Frontend
-- **React** 19 with Vite
-- **React Router** for navigation
-- **Leaflet & React-Leaflet** for maps
-- **Tailwind CSS** for styling
-- **Axios** for API calls
-
-## Project Structure
-
-```
-food-traceability-app/
-├── backend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── farmer/          # Farmer routes and controllers
-│   │   │   ├── distributor/     # Distributor routes and controllers
-│   │   │   ├── retailer/        # Retailer routes and controllers
-│   │   │   └── consumer/         # Consumer routes and controllers
-│   │   ├── config/
-│   │   │   └── db.js            # Database configuration
-│   │   ├── middleware/
-│   │   │   └── auth.js          # Authentication middleware
-│   │   ├── models/              # MongoDB models
-│   │   └── app.js               # Express app setup
-│   └── server.js                # Server entry point
-├── frontend/
-│   ├── src/
-│   │   ├── components/          # React components
-│   │   ├── pages/               # Page components
-│   │   └── App.jsx              # Main app component
-│   └── package.json
-└── package.json                 # Root dependencies
-```
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v18 or higher)
-- MongoDB (local or Atlas)
-- npm or yarn
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/wmrmweerakoon/food-traceability.git
-cd food-traceability
-```
-
-2. Install root dependencies:
-```bash
-npm install
-```
-
-3. Install backend dependencies:
-```bash
-cd backend
-npm install
-```
-
-4. Install frontend dependencies:
-```bash
-cd ../frontend
-npm install
-```
-
-### Configuration
-
-1. Create a `.env` file in the `backend` directory:
-```env
-MONGODB_URI=mongodb://localhost:27017/food-traceability
-JWT_SECRET=your-secret-key-here
-PORT=5000
-```
-
-### Running the Application
-
-1. Start the backend server:
-```bash
-cd backend
-npm run dev
-```
-
-2. Start the frontend development server (in a new terminal):
-```bash
-cd frontend
-npm run dev
-```
-
-The backend will run on `http://localhost:5000` and the frontend on `http://localhost:5173`.
-
-## API Documentation
-
-This project uses **Postman** for API testing and documentation. Import the API endpoints into Postman to test and document the API.
-
-### Main API Endpoints
-
-- `/api/farmer/*` - Farmer operations (batch creation, management)
-- `/api/distributor/*` - Distributor operations (transport management)
-- `/api/retailer/*` - Retailer operations (inventory management)
-- `/api/consumer/*` - Consumer operations (product traceability)
-
-All endpoints require JWT authentication except for registration/login endpoints.
-
-## Map Integration
-
-The application uses **Leaflet** for map visualization. Example usage:
-
-```jsx
-import MapExample from './components/MapExample';
-
-<MapExample 
-  origin={{ lat: 40.7128, lng: -74.0060 }} 
-  destination={{ lat: 40.7589, lng: -73.9851 }}
-/>
-```
-
-## Key Features
-
-### Distance Calculation
-- Uses `geolib` library for coordinate-based distance calculations
-- No external API keys required
-- Calculates distance and estimated travel time
-
-### Authentication
-- JWT-based authentication
-- Role-based access control (Farmer, Distributor, Retailer, Consumer, Admin)
-
-### QR Code Generation
-- Automatic QR code generation for product batches
-- Consumers can scan QR codes to view full product history
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-This project is open source and available under the MIT License.
-
-## 🚀 Deployment
-
-This application is deployed and satisfies the SLIIT project requirements.
-
-### 🔌 Backend Deployment (Render)
-
-The backend is deployed on **Render**.
-
-**Setup Steps:**
-1. Connect this GitHub repository to a new "Web Service" on Render.
-2. Set the **Root Directory** to `backend`.
-3. **Build Command**: `npm install`
-4. **Start Command**: `node server.js`
-5. Configure the following **Environment Variables**:
-   - `MONGODB_URI`: Your MongoDB Atlas connection string.
-   - `JWT_SECRET`: A secure random string for signing tokens.
-   - `FRONTEND_URL`: The live URL of your Vercel frontend.
-   - `PORT`: 5000 (Render usually provides this automatically).
-
-### 🎨 Frontend Deployment (Vercel)
-
-The frontend is deployed on **Vercel**.
-
-**Setup Steps:**
-1. Connect this GitHub repository to a new project on Vercel.
-2. Set the **Root Directory** to `frontend`.
-3. **Framework Preset**: `Vite`.
-4. Configure the following **Environment Variable**:
-   - `VITE_API_BASE_URL`: The live URL of your Render backend.
-
-### 🔐 Environment Variables Summary
-
-| Service | Variable Name | Purpose |
-| :--- | :--- | :--- |
-| **Backend** | `MONGODB_URI` | Connection to Cloud MongoDB (Atlas) |
-| **Backend** | `JWT_SECRET` | Secret key for authentication security |
-| **Backend** | `FRONTEND_URL` | Live frontend URL for CORS policy |
-| **Frontend** | `VITE_API_BASE_URL` | Live backend URL for API communication |
-
-### 🌐 Live URLs
-
-- **Backend (Render)**: [https://food-traceability-backend.onrender.com](https://food-traceability-backend.onrender.com)
-- **Frontend (Vercel)**: [https://food-traceability-app.vercel.app](https://food-traceability-app.vercel.app)
+AgriTrace is a high-fidelity food traceability platform designed to ensure transparency and accountability from farm to table. By digitizing every step of the supply chain, we empower consumers to verify the origin, quality, and journey of their food.
 
 ---
 
-## 🏗️ Project Verification
-All systems have been verified for production:
-- ✅ **Unit Testing**: 100% Success (43+ Test Cases)
-- ✅ **Integration Testing**: 100% Success
-- ✅ **Performance Tracking**: Artillery Cloud integration complete
-- ✅ **Cloud Deployment**: Fully operational on Render + Vercel
+## 🌐 Live Application
 
-## Author
-[Your Name]
+> [!IMPORTANT]
+> **Production Links for Evaluation:**
+> *   **Frontend (UI)**: [https://food-traceability-app.vercel.app](https://food-traceability-app.vercel.app)
+> *   **Backend (API)**: [https://food-traceability-backend.onrender.com](https://food-traceability-backend.onrender.com)
+> *   **Database**: MongoDB Atlas (Cloud)
 
-## Acknowledgments
-- Leaflet for open-source mapping
-- OpenStreetMap for map tiles
-- MongoDB for database
-- React team for the amazing framework
+---
+
+## ✨ Key Features
+
+### 👨‍🌾 Multi-Role Ecosystem
+- **Farmers**: Create batch identities, log harvest details, and generate unique QR codes.
+- **Distributors**: Manage logistics, track transport routes, and calculate travel distances.
+- **Retailers**: Monitor store inventory, manage pricing, and track global currency conversions.
+- **Consumers**: Scan QR codes to view the entire "Journey of the Product."
+
+### 🗺️ Real-Time Intelligence
+- **Interactive Mapping**: Leaflet-based visualization of the transport journey.
+- **Smart Logistics**: Automatic distance and ETA calculations using geographic data.
+- **QR Traceability**: Dynamic QR code generation for every product batch.
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technology |
+| :--- | :--- |
+| **Frontend** | React 19, Vite, Tailwind CSS, Leaflet |
+| **Backend** | Node.js, Express.js |
+| **Database** | MongoDB Atlas, Mongoose ODM |
+| **Auth** | JWT (JSON Web Tokens), Bcrypt.js |
+| **Testing** | Jest, Supertest, Artillery.io (Performance) |
+
+---
+
+## 🧪 Quality Assurance & Testing
+
+This project adheres to rigorous testing standards required for the SLIIT evaluation.
+
+### 🛡️ Unit & Integration Testing
+We have implemented **43+ automated test cases** covering every component:
+- **Farmer Services**: Verified batch creation and lifecycle.
+- **Distributor Services**: Verified transport state transitions.
+- **Retailer Services**: Confirmed inventory and pricing logic.
+- **Consumer Services**: Validated traceability report generation.
+
+**Command to run tests locally:**
+```bash
+cd backend
+npm test
+```
+
+### 🚀 Performance Testing (Artillery)
+We use **Artillery.io** for load testing to ensure system stability under concurrent traffic.
+- **Local Test**: `npm run test:load`
+- **Cloud Report**: `npm run test:load:cloud` (Visualized results via Artillery Cloud)
+
+---
+
+## 🚀 Deployment Architecture
+
+### Backend (Render)
+- **Host**: Render PaaS
+- **Root**: `/backend`
+- **Build**: `npm install`
+- **Key Config**: `MONGODB_URI`, `JWT_SECRET`, `FRONTEND_URL`
+
+### Frontend (Vercel)
+- **Host**: Vercel
+- **Root**: `/frontend`
+- **Framework**: Vite
+- **Key Config**: `VITE_API_BASE_URL`
+
+---
+
+## 🛠️ Local Development Setup
+
+1. **Clone the Repo**:
+   ```bash
+   git clone https://github.com/wmrmweerakoon/food-traceability.git
+   ```
+2. **Setup Backend**:
+   ```bash
+   cd backend
+   npm install
+   # Create .env with MONGODB_URI and JWT_SECRET
+   npm run dev
+   ```
+3. **Setup Frontend**:
+   ```bash
+   cd ../frontend
+   npm install
+   npm run dev
+   ```
+
+---
+
+## 📄 License
+This project is developed for educational purposes under the SLIIT AF Module.
