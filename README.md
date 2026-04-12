@@ -68,19 +68,43 @@ We use **Artillery.io** for load testing to ensure system stability under concur
 
 ---
 
-## 🚀 Deployment Architecture
+## 🚀 Deployment Documentation
 
-### Backend (Render)
-- **Host**: Render PaaS
-- **Root**: `/backend`
-- **Build**: `npm install`
-- **Key Config**: `MONGODB_URI`, `JWT_SECRET`, `FRONTEND_URL`
+This application is fully deployed and satisfies all SLIIT technical requirements.
 
-### Frontend (Vercel)
-- **Host**: Vercel
-- **Root**: `/frontend`
-- **Framework**: Vite
-- **Key Config**: `VITE_API_BASE_URL`
+### 🔌 Backend Deployment (Render)
+*   **Platform**: Render Cloud (Web Service)
+*   **Setup Steps**:
+    1.  Connected GitHub repository to Render dashboard.
+    2.  Set **Root Directory** to `backend`.
+    3.  Configured **Build Command**: `npm install`.
+    4.  Configured **Start Command**: `node server.js`.
+    5.  Added Environment Variables (MONGODB_URI, JWT_SECRET, FRONTEND_URL).
+*   **Live API URL**: [https://food-traceability-backend.onrender.com](https://food-traceability-backend.onrender.com)
+
+### 🎨 Frontend Deployment (Vercel)
+*   **Platform**: Vercel (Production Hosting)
+*   **Setup Steps**:
+    1.  Imported project from GitHub.
+    2.  Set **Root Directory** to `frontend`.
+    3.  Framework Preset: **Vite**.
+    4.  Overrode the **Install Command** to `npm install --legacy-peer-deps` to handle React 19 dependency resolution.
+    5.  Added Environment Variable: `VITE_API_BASE_URL`.
+*   **Live App URL**: [https://food-traceability-app.vercel.app](https://food-traceability-app.vercel.app)
+
+### 🔐 Environment Variables
+We use the following variables to manage environments without exposing secrets:
+
+| Service | Variable | Purpose |
+| :--- | :--- | :--- |
+| **Backend** | `MONGODB_URI` | Cloud Database Connection (Atlas) |
+| **Backend** | `JWT_SECRET` | Authentication security key |
+| **Backend** | `FRONTEND_URL` | CORS policy whitelist |
+| **Frontend** | `VITE_API_BASE_URL` | API communication bridge |
+
+### 📸 Deployment Evidence
+> [!TIP]
+> **Manual Step Required**: Please take screenshots of your successful Render and Vercel dashboards and place them in a folder or paste them below for your final submission.
 
 ---
 
